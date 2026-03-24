@@ -1,5 +1,7 @@
 # 🌍 OpenScientist
 
+**Our mission: to distill the world's most advanced scientific know-how into AI — and build the AI Scientist.**
+
 > A living repository where the world's leading scientists encode the deepest knowledge of their fields — so that AI can stand on the shoulders of giants.
 
 ```mermaid
@@ -174,6 +176,8 @@ MIT
 ---
 
 # 🌍 OpenScientist（中文）
+
+**我们的使命：将人类最前沿的科学知识与 know-how 注入 AI，打造真正的 AI 科学家。**
 
 > 汇聚全球各领域顶尖科学家的毕生所学，让 AI 站在巨人的肩膀上。
 
