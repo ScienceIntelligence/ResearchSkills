@@ -1,0 +1,31 @@
+name: Validate Skills
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**/*.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Validate changed skill files
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'skills/**/*.md')
+          if [ -z "$CHANGED" ]; then
+            echo "No skill files changed."
+            exit 0
+          fi
+          echo "Validating: $CHANGED"
+          python tools/validate.py $CHANGED

@@ -1,0 +1,16 @@
+# CODEOWNERS — Domain expert reviewers
+# Each line maps a path to the GitHub usernames responsible for reviewing PRs touching that path.
+# Replace placeholder usernames with actual contributor GitHub handles as experts join.
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Core team owns root-level files
+*                          @HHHHHejia
+
+# Domain maintainers — fill in as experts are onboarded
+skills/physics/            @HHHHHejia   # TODO: replace with physics maintainer
+skills/biology/            @HHHHHejia   # TODO: replace with biology maintainer
+skills/chemistry/          @HHHHHejia   # TODO: replace with chemistry maintainer
+skills/mathematics/        @HHHHHejia   # TODO: replace with math maintainer
+skills/neuroscience/       @HHHHHejia   # TODO: replace with neuroscience maintainer
+skills/computer-science/   @HHHHHejia   # TODO: replace with CS maintainer
+skills/cross-domain/       @HHHHHejia
