@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenScientist — Knowledge Tree</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(160deg, #0a0e18 0%, #121628 50%, #0e1220 100%);
+    color: #c8d0e0;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #e8ecf4;
+    margin-bottom: 8px;
+  }
+  header h1 .emoji { font-size: 2.4rem; }
+  header p {
+    font-size: 1rem;
+    color: #7888a8;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  header a {
+    color: #5a9cf5;
+    text-decoration: none;
+  }
+  header a:hover { text-decoration: underline; }
+
+  .tree {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  /* ── node ── */
+  .node {
+    position: relative;
+    margin-left: 24px;
+    padding-left: 20px;
+    border-left: 1px solid rgba(74, 144, 217, 0.15);
+  }
+  .node:last-child { border-left-color: transparent; }
+  .node:last-child::before {
+    content: '';
+    position: absolute;
+    left: -1px; top: 0;
+    width: 1px; height: 20px;
+    background: rgba(74, 144, 217, 0.15);
+  }
+
+  .node-label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    margin: 4px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .node-label:hover {
+    background: rgba(255,255,255,0.04);
+  }
+  .node-label::before {
+    content: '';
+    position: absolute;
+    left: -20px; top: 50%;
+    width: 20px; height: 1px;
+    background: rgba(74, 144, 217, 0.2);
+  }
+
+  .node-label .arrow {
+    display: inline-block;
+    width: 18px; height: 18px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 18px;
+    color: #5878a0;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  .node-label .arrow.open { transform: rotate(90deg); }
+  .node-label .arrow.leaf { visibility: hidden; }
+
+  .node-label .icon { font-size: 1.3em; flex-shrink: 0; }
+
+  .node-label .name {
+    font-weight: 600;
+    color: #dce2f0;
+    font-size: 0.95rem;
+  }
+  .node-label .code {
+    font-size: 0.78rem;
+    color: #5a7090;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    opacity: 0.85;
+  }
+  .node-label .count {
+    font-size: 0.72rem;
+    color: #4a6080;
+    background: rgba(74,144,217,0.08);
+    padding: 1px 8px;
+    border-radius: 10px;
+  }
+
+  /* children container */
+  .children {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+  }
+  .children.open {
+    max-height: 5000px;
+    opacity: 1;
+  }
+
+  /* ── depth-specific colors ── */
+  .depth-0 > .node-label .name { font-size: 1.3rem; color: #f0f2f8; }
+  .depth-0 > .node-label { padding: 12px 20px; }
+  .depth-0 { border-left: none; margin-left: 0; padding-left: 0; }
+  .depth-0 > .node-label::before { display: none; }
+
+  .depth-1 > .node-label .name { font-size: 1.05rem; color: #c8d8f0; }
+
+  .leaf-node > .node-label {
+    cursor: default;
+  }
+  .leaf-node > .node-label .name {
+    font-weight: 400;
+    color: #98a8c0;
+    font-size: 0.88rem;
+  }
+
+  /* ── responsive ── */
+  @media (max-width: 600px) {
+    body { padding: 24px 8px 60px; }
+    .node { margin-left: 16px; padding-left: 14px; }
+    header h1 { font-size: 1.6rem; }
+  }
+
+  /* ── footer ── */
+  footer {
+    text-align: center;
+    margin-top: 64px;
+    color: #3a4a68;
+    font-size: 0.82rem;
+  }
+  footer a { color: #4a7ab8; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="emoji">🌍</span> OpenScientist</h1>
+  <p>Interactive knowledge tree — aligned with the
+    <a href="https://arxiv.org/category_taxonomy" target="_blank">arXiv category taxonomy</a>.
+    Click any domain to expand.
+  </p>
+</header>
+
+<div class="tree" id="tree"></div>
+
+<footer>
+  <a href="https://github.com/HHHHHejia/OpenScientist">GitHub Repository</a>
+  &nbsp;·&nbsp; 8 domains &nbsp;·&nbsp; 155 subcategories
+</footer>
+
+<script>
+const DATA = [
+  { name: "Natural Sciences", icon: "🔬", children: [
+    { name: "Physics", icon: "⚛️", code: "", children: [
+      { name: "Astrophysics", code: "astro-ph", children: [
+        { name: "Cosmology and Nongalactic Astrophysics", code: "astro-ph.CO" },
+        { name: "Earth and Planetary Astrophysics", code: "astro-ph.EP" },
+        { name: "Astrophysics of Galaxies", code: "astro-ph.GA" },
+        { name: "High Energy Astrophysical Phenomena", code: "astro-ph.HE" },
+        { name: "Instrumentation and Methods for Astrophysics", code: "astro-ph.IM" },
+        { name: "Solar and Stellar Astrophysics", code: "astro-ph.SR" },
+      ]},
+      { name: "Condensed Matter", code: "cond-mat", children: [
+        { name: "Disordered Systems and Neural Networks", code: "cond-mat.dis-nn" },
+        { name: "Mesoscale and Nanoscale Physics", code: "cond-mat.mes-hall" },
+        { name: "Materials Science", code: "cond-mat.mtrl-sci" },
+        { name: "Other Condensed Matter", code: "cond-mat.other" },
+        { name: "Quantum Gases", code: "cond-mat.quant-gas" },
+        { name: "Soft Condensed Matter", code: "cond-mat.soft" },
+        { name: "Statistical Mechanics", code: "cond-mat.stat-mech" },
+        { name: "Strongly Correlated Electrons", code: "cond-mat.str-el" },
+        { name: "Superconductivity", code: "cond-mat.supr-con" },
+      ]},
+      { name: "High Energy Physics", code: "", children: [
+        { name: "Experiment", code: "hep-ex" },
+        { name: "Lattice", code: "hep-lat" },
+        { name: "Phenomenology", code: "hep-ph" },
+        { name: "Theory", code: "hep-th" },
+      ]},
+      { name: "General Relativity and Quantum Cosmology", code: "gr-qc" },
+      { name: "Mathematical Physics", code: "math-ph" },
+      { name: "Nuclear Experiment", code: "nucl-ex" },
+      { name: "Nuclear Theory", code: "nucl-th" },
+      { name: "Quantum Physics", code: "quant-ph" },
+      { name: "Nonlinear Sciences", code: "nlin", children: [
+        { name: "Adaptation and Self-Organizing Systems", code: "nlin.AO" },
+        { name: "Chaotic Dynamics", code: "nlin.CD" },
+        { name: "Cellular Automata and Lattice Gases", code: "nlin.CG" },
+        { name: "Pattern Formation and Solitons", code: "nlin.PS" },
+        { name: "Exactly Solvable and Integrable Systems", code: "nlin.SI" },
+      ]},
+      { name: "Physics", code: "physics", children: [
+        { name: "Accelerator Physics", code: "physics.acc-ph" },
+        { name: "Atmospheric and Oceanic Physics", code: "physics.ao-ph" },
+        { name: "Applied Physics", code: "physics.app-ph" },
+        { name: "Atomic and Molecular Clusters", code: "physics.atm-clus" },
+        { name: "Atomic Physics", code: "physics.atom-ph" },
+        { name: "Biological Physics", code: "physics.bio-ph" },
+        { name: "Chemical Physics", code: "physics.chem-ph" },
+        { name: "Classical Physics", code: "physics.class-ph" },
+        { name: "Computational Physics", code: "physics.comp-ph" },
+        { name: "Data Analysis, Statistics and Probability", code: "physics.data-an" },
+        { name: "Fluid Dynamics", code: "physics.flu-dyn" },
+        { name: "General Physics", code: "physics.gen-ph" },
+        { name: "Geophysics", code: "physics.geo-ph" },
+        { name: "Instrumentation and Detectors", code: "physics.ins-det" },
+        { name: "Medical Physics", code: "physics.med-ph" },
+        { name: "Optics", code: "physics.optics" },
+        { name: "Plasma Physics", code: "physics.plasm-ph" },
+        { name: "Space Physics", code: "physics.space-ph" },
+      ]},
+    ]},
+    { name: "Quantitative Biology", icon: "🧬", code: "q-bio", children: [
+      { name: "Biomolecules", code: "q-bio.BM" },
+      { name: "Cell Behavior", code: "q-bio.CB" },
+      { name: "Genomics", code: "q-bio.GN" },
+      { name: "Molecular Networks", code: "q-bio.MN" },
+      { name: "Neurons and Cognition", code: "q-bio.NC" },
+      { name: "Other Quantitative Biology", code: "q-bio.OT" },
+      { name: "Populations and Evolution", code: "q-bio.PE" },
+      { name: "Quantitative Methods", code: "q-bio.QM" },
+      { name: "Subcellular Processes", code: "q-bio.SC" },
+      { name: "Tissues and Organs", code: "q-bio.TO" },
+    ]},
+    { name: "Electrical Engineering and Systems Science", icon: "⚡", code: "eess", children: [
+      { name: "Audio and Speech Processing", code: "eess.AS" },
+      { name: "Image and Video Processing", code: "eess.IV" },
+      { name: "Signal Processing", code: "eess.SP" },
+      { name: "Systems and Control", code: "eess.SY" },
+    ]},
+  ]},
+  { name: "Formal Sciences", icon: "📐", children: [
+    { name: "Mathematics", icon: "➗", code: "math", children: [
+      { name: "Commutative Algebra", code: "math.AC" },
+      { name: "Algebraic Geometry", code: "math.AG" },
+      { name: "Analysis of PDEs", code: "math.AP" },
+      { name: "Algebraic Topology", code: "math.AT" },
+      { name: "Classical Analysis and ODEs", code: "math.CA" },
+      { name: "Combinatorics", code: "math.CO" },
+      { name: "Category Theory", code: "math.CT" },
+      { name: "Complex Variables", code: "math.CV" },
+      { name: "Differential Geometry", code: "math.DG" },
+      { name: "Dynamical Systems", code: "math.DS" },
+      { name: "Functional Analysis", code: "math.FA" },
+      { name: "General Mathematics", code: "math.GM" },
+      { name: "General Topology", code: "math.GN" },
+      { name: "Group Theory", code: "math.GR" },
+      { name: "Geometric Topology", code: "math.GT" },
+      { name: "History and Overview", code: "math.HO" },
+      { name: "Information Theory", code: "math.IT" },
+      { name: "K-Theory and Homology", code: "math.KT" },
+      { name: "Logic", code: "math.LO" },
+      { name: "Metric Geometry", code: "math.MG" },
+      { name: "Mathematical Physics", code: "math.MP" },
+      { name: "Numerical Analysis", code: "math.NA" },
+      { name: "Number Theory", code: "math.NT" },
+      { name: "Operator Algebras", code: "math.OA" },
+      { name: "Optimization and Control", code: "math.OC" },
+      { name: "Probability", code: "math.PR" },
+      { name: "Quantum Algebra", code: "math.QA" },
+      { name: "Rings and Algebras", code: "math.RA" },
+      { name: "Representation Theory", code: "math.RT" },
+      { name: "Symplectic Geometry", code: "math.SG" },
+      { name: "Spectral Theory", code: "math.SP" },
+      { name: "Statistics Theory", code: "math.ST" },
+    ]},
+    { name: "Computer Science", icon: "💻", code: "cs", children: [
+      { name: "Artificial Intelligence", code: "cs.AI" },
+      { name: "Hardware Architecture", code: "cs.AR" },
+      { name: "Computational Complexity", code: "cs.CC" },
+      { name: "Computational Engineering, Finance, and Science", code: "cs.CE" },
+      { name: "Computational Geometry", code: "cs.CG" },
+      { name: "Computation and Language", code: "cs.CL" },
+      { name: "Cryptography and Security", code: "cs.CR" },
+      { name: "Computer Vision and Pattern Recognition", code: "cs.CV" },
+      { name: "Computers and Society", code: "cs.CY" },
+      { name: "Databases", code: "cs.DB" },
+      { name: "Distributed, Parallel, and Cluster Computing", code: "cs.DC" },
+      { name: "Digital Libraries", code: "cs.DL" },
+      { name: "Discrete Mathematics", code: "cs.DM" },
+      { name: "Data Structures and Algorithms", code: "cs.DS" },
+      { name: "Emerging Technologies", code: "cs.ET" },
+      { name: "Formal Languages and Automata Theory", code: "cs.FL" },
+      { name: "General Literature", code: "cs.GL" },
+      { name: "Graphics", code: "cs.GR" },
+      { name: "Computer Science and Game Theory", code: "cs.GT" },
+      { name: "Human-Computer Interaction", code: "cs.HC" },
+      { name: "Information Retrieval", code: "cs.IR" },
+      { name: "Information Theory", code: "cs.IT" },
+      { name: "Machine Learning", code: "cs.LG" },
+      { name: "Logic in Computer Science", code: "cs.LO" },
+      { name: "Multiagent Systems", code: "cs.MA" },
+      { name: "Multimedia", code: "cs.MM" },
+      { name: "Mathematical Software", code: "cs.MS" },
+      { name: "Numerical Analysis", code: "cs.NA" },
+      { name: "Neural and Evolutionary Computing", code: "cs.NE" },
+      { name: "Networking and Internet Architecture", code: "cs.NI" },
+      { name: "Other Computer Science", code: "cs.OH" },
+      { name: "Operating Systems", code: "cs.OS" },
+      { name: "Performance", code: "cs.PF" },
+      { name: "Programming Languages", code: "cs.PL" },
+      { name: "Robotics", code: "cs.RO" },
+      { name: "Symbolic Computation", code: "cs.SC" },
+      { name: "Sound", code: "cs.SD" },
+      { name: "Software Engineering", code: "cs.SE" },
+      { name: "Social and Information Networks", code: "cs.SI" },
+      { name: "Systems and Control", code: "cs.SY" },
+    ]},
+    { name: "Statistics", icon: "📊", code: "stat", children: [
+      { name: "Applications", code: "stat.AP" },
+      { name: "Computation", code: "stat.CO" },
+      { name: "Methodology", code: "stat.ME" },
+      { name: "Machine Learning", code: "stat.ML" },
+      { name: "Other Statistics", code: "stat.OT" },
+      { name: "Statistics Theory", code: "stat.TH" },
+    ]},
+    { name: "Economics", icon: "📈", code: "econ", children: [
+      { name: "Econometrics", code: "econ.EM" },
+      { name: "General Economics", code: "econ.GN" },
+      { name: "Theoretical Economics", code: "econ.TH" },
+    ]},
+    { name: "Quantitative Finance", icon: "💹", code: "q-fin", children: [
+      { name: "Computational Finance", code: "q-fin.CP" },
+      { name: "Economics", code: "q-fin.EC" },
+      { name: "General Finance", code: "q-fin.GN" },
+      { name: "Mathematical Finance", code: "q-fin.MF" },
+      { name: "Portfolio Management", code: "q-fin.PM" },
+      { name: "Pricing of Securities", code: "q-fin.PR" },
+      { name: "Risk Management", code: "q-fin.RM" },
+      { name: "Statistical Finance", code: "q-fin.ST" },
+      { name: "Trading and Market Microstructure", code: "q-fin.TR" },
+    ]},
+  ]},
+];
+
+function countLeaves(node) {
+  if (!node.children || node.children.length === 0) return 1;
+  return node.children.reduce((s, c) => s + countLeaves(c), 0);
+}
+
+function renderNode(node, depth) {
+  const hasChildren = node.children && node.children.length > 0;
+  const isLeaf = !hasChildren;
+  const count = hasChildren ? countLeaves(node) : 0;
+
+  const el = document.createElement('div');
+  el.className = `node depth-${depth}` + (isLeaf ? ' leaf-node' : '');
+
+  const label = document.createElement('div');
+  label.className = 'node-label';
+
+  // arrow
+  const arrow = document.createElement('span');
+  arrow.className = 'arrow' + (isLeaf ? ' leaf' : '');
+  arrow.textContent = '▶';
+  label.appendChild(arrow);
+
+  // icon
+  if (node.icon) {
+    const icon = document.createElement('span');
+    icon.className = 'icon';
+    icon.textContent = node.icon;
+    label.appendChild(icon);
+  }
+
+  // name
+  const name = document.createElement('span');
+  name.className = 'name';
+  name.textContent = node.name;
+  label.appendChild(name);
+
+  // code
+  if (node.code) {
+    const code = document.createElement('span');
+    code.className = 'code';
+    code.textContent = node.code;
+    label.appendChild(code);
+  }
+
+  // count badge
+  if (hasChildren && depth >= 1) {
+    const badge = document.createElement('span');
+    badge.className = 'count';
+    badge.textContent = count;
+    label.appendChild(badge);
+  }
+
+  el.appendChild(label);
+
+  // children container
+  if (hasChildren) {
+    const childrenEl = document.createElement('div');
+    childrenEl.className = 'children';
+    node.children.forEach(child => {
+      childrenEl.appendChild(renderNode(child, depth + 1));
+    });
+    el.appendChild(childrenEl);
+
+    label.addEventListener('click', () => {
+      const isOpen = childrenEl.classList.contains('open');
+      childrenEl.classList.toggle('open');
+      arrow.classList.toggle('open');
+    });
+  }
+
+  return el;
+}
+
+const tree = document.getElementById('tree');
+DATA.forEach(group => {
+  const el = renderNode(group, 0);
+  tree.appendChild(el);
+  // auto-expand top-level groups (Natural Sciences, Formal Sciences)
+  const children = el.querySelector('.children');
+  const arrow = el.querySelector('.arrow');
+  if (children) { children.classList.add('open'); arrow.classList.add('open'); }
+});
+</script>
+
+</body>
+</html>

@@ -24,7 +24,13 @@
 **Call for action:** Share your research expertise. Together, we create the AI-era Einstein, Da Vinci, and Kant.
 
 <p align="center">
-  <img src="assets/knowledge-tree.png" alt="Knowledge Tree" width="100%">
+  <a href="https://hhhhhejia.github.io/OpenScientist/">
+    <img src="assets/knowledge-tree.png" alt="Knowledge Tree" width="100%">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://hhhhhejia.github.io/OpenScientist/">View Interactive Knowledge Tree →</a>
 </p>
 
 ---
