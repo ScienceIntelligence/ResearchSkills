@@ -173,58 +173,7 @@ Reviewers are domain experts who ensure the scientific quality of skills in thei
 
 [**View all reviewers in the Knowledge Tree →**](https://hhhhhejia.github.io/OpenScientist/)
 
-<table>
-<tr>
-<td align="center" width="33%">
-<a href="https://www.linkedin.com/in/ktwu01/"><b>Koutian Wu</b></a><br>
-<sub>PhD Student · UT Austin</sub><br>
-<sub><i>Physics / Atmospheric and Oceanic Physics</i></sub><br>
-<a href="https://github.com/ktwu01"><sub>@ktwu01</sub></a>
-</td>
-<td align="center" width="33%">
-<a href="https://www.linkedin.com/in/sijia-chen-897a201b9/"><b>Sijia Chen</b></a><br>
-<sub>Research Fellow · Flatiron Institute</sub><br>
-<sub><i>Physics / Chemical Physics</i></sub><br>
-<a href="https://github.com/Alexandrina-Chen"><sub>@Alexandrina-Chen</sub></a>
-</td>
-<td align="center" width="33%">
-<a href="https://www.linkedin.com/in/zesen-huang-839b6a109/"><b>Zesen Huang</b></a><br>
-<sub>Postdoc · UCLA</sub><br>
-<sub><i>Physics / Space Physics</i></sub><br>
-<a href="https://github.com/huangzesen"><sub>@huangzesen</sub></a>
-</td>
-</tr>
-<tr>
-<td align="center">
-<a href="https://www.linkedin.com/in/zhang-yanbo-57b690101/"><b>Yanbo Zhang</b></a><br>
-<sub>Postdoc · Tufts University</sub><br>
-<sub><i>CS / Artificial Intelligence</i></sub><br>
-<a href="https://github.com/Zhangyanbo"><sub>@Zhangyanbo</sub></a>
-</td>
-<td align="center">
-<a href="https://zhichenzzz.github.io/"><b>Zhichen Zeng</b></a><br>
-<sub>PhD Student · University of Washington</sub><br>
-<sub><i>CS / Hardware Architecture</i></sub><br>
-<a href="https://github.com/Zhichenzzz"><sub>@Zhichenzzz</sub></a>
-</td>
-<td align="center">
-<a href="https://scholar.google.com/citations?user=WURsNDYAAAAJ&hl=en"><b>Xiaohang Yu</b></a><br>
-<sub>PhD Student · Imperial College London</sub><br>
-<sub><i>CS / Cryptography and Security</i></sub><br>
-<a href="https://github.com/xhyumiracle"><sub>@xhyumiracle</sub></a>
-</td>
-</tr>
-<tr>
-<td align="center">
-<a href="https://www.linkedin.com/in/suqisheng/"><b>Qisheng Su</b></a><br>
-<sub>PhD Student · USTC</sub><br>
-<sub><i>CS / Multiagent Systems</i></sub><br>
-<a href="https://github.com/suqisheng"><sub>@suqisheng</sub></a>
-</td>
-<td></td>
-<td></td>
-</tr>
-</table>
+[**View all reviewers list →**](https://hhhhhejia.github.io/OpenScientist/reviewers.html)
 
 ---
 
@@ -406,58 +355,7 @@ cp OpenScientist/skills/physics/quantum-physics/quantum-entanglement.md ~/.claud
 
 [**查看全部审稿人（知识树）→**](https://hhhhhejia.github.io/OpenScientist/)
 
-<table>
-<tr>
-<td align="center" width="33%">
-<a href="https://www.linkedin.com/in/ktwu01/"><b>Koutian Wu</b></a><br>
-<sub>PhD Student · UT Austin</sub><br>
-<sub><i>Physics / Atmospheric and Oceanic Physics</i></sub><br>
-<a href="https://github.com/ktwu01"><sub>@ktwu01</sub></a>
-</td>
-<td align="center" width="33%">
-<a href="https://www.linkedin.com/in/sijia-chen-897a201b9/"><b>Sijia Chen</b></a><br>
-<sub>Research Fellow · Flatiron Institute</sub><br>
-<sub><i>Physics / Chemical Physics</i></sub><br>
-<a href="https://github.com/Alexandrina-Chen"><sub>@Alexandrina-Chen</sub></a>
-</td>
-<td align="center" width="33%">
-<a href="https://www.linkedin.com/in/zesen-huang-839b6a109/"><b>Zesen Huang</b></a><br>
-<sub>Postdoc · UCLA</sub><br>
-<sub><i>Physics / Space Physics</i></sub><br>
-<a href="https://github.com/huangzesen"><sub>@huangzesen</sub></a>
-</td>
-</tr>
-<tr>
-<td align="center">
-<a href="https://www.linkedin.com/in/zhang-yanbo-57b690101/"><b>Yanbo Zhang</b></a><br>
-<sub>Postdoc · Tufts University</sub><br>
-<sub><i>CS / Artificial Intelligence</i></sub><br>
-<a href="https://github.com/Zhangyanbo"><sub>@Zhangyanbo</sub></a>
-</td>
-<td align="center">
-<a href="https://zhichenzzz.github.io/"><b>Zhichen Zeng</b></a><br>
-<sub>PhD Student · University of Washington</sub><br>
-<sub><i>CS / Hardware Architecture</i></sub><br>
-<a href="https://github.com/Zhichenzzz"><sub>@Zhichenzzz</sub></a>
-</td>
-<td align="center">
-<a href="https://scholar.google.com/citations?user=WURsNDYAAAAJ&hl=en"><b>Xiaohang Yu</b></a><br>
-<sub>PhD Student · Imperial College London</sub><br>
-<sub><i>CS / Cryptography and Security</i></sub><br>
-<a href="https://github.com/xhyumiracle"><sub>@xhyumiracle</sub></a>
-</td>
-</tr>
-<tr>
-<td align="center">
-<a href="https://www.linkedin.com/in/suqisheng/"><b>Qisheng Su</b></a><br>
-<sub>PhD Student · USTC</sub><br>
-<sub><i>CS / Multiagent Systems</i></sub><br>
-<a href="https://github.com/suqisheng"><sub>@suqisheng</sub></a>
-</td>
-<td></td>
-<td></td>
-</tr>
-</table>
+[**查看全部审稿人列表 →**](https://hhhhhejia.github.io/OpenScientist/reviewers.html)
 
 ---
 

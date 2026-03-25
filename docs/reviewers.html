@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenScientist — Reviewers</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(160deg, #0a0e18 0%, #121628 50%, #0e1220 100%);
+    color: #c8d0e0;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  header { text-align: center; margin-bottom: 40px; }
+  header h1 { font-size: 2rem; font-weight: 700; color: #e8ecf4; margin-bottom: 8px; }
+  header p { font-size: 0.95rem; color: #7888a8; max-width: 520px; margin: 0 auto 16px; }
+  header a { color: #5a9cf5; text-decoration: none; }
+  header a:hover { text-decoration: underline; }
+
+  .back-link {
+    display: inline-block; margin-bottom: 24px;
+    font-size: 0.88rem; color: #5a9cf5; text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .reviewer-count {
+    font-size: 1.1rem; color: #34d399; font-weight: 600;
+    text-align: center; margin-bottom: 32px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    border-color: var(--accent, rgba(255,255,255,0.15));
+    box-shadow: 0 0 20px var(--glow, rgba(255,255,255,0.05));
+  }
+
+  .card-name {
+    font-size: 1.1rem; font-weight: 700; color: #e8ecf4;
+    margin-bottom: 4px;
+  }
+  .card-role {
+    font-size: 0.88rem; color: #8898b8; margin-bottom: 8px;
+  }
+  .card-subdomain {
+    display: inline-block;
+    font-size: 0.78rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .card-links {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .card-links a {
+    font-size: 0.82rem; color: #5a9cf5; text-decoration: none;
+  }
+  .card-links a:hover { text-decoration: underline; }
+
+  .apply-banner {
+    text-align: center; margin-top: 48px; padding: 24px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; max-width: 600px; margin-left: auto; margin-right: auto;
+  }
+  .apply-banner p { font-size: 0.95rem; color: #8898b8; margin-bottom: 12px; }
+  .apply-banner a {
+    display: inline-block; padding: 10px 24px;
+    background: linear-gradient(135deg, #34d39930, #34d39915);
+    border: 1px solid #34d39950; border-radius: 10px;
+    color: #34d399; font-weight: 600; font-size: 0.92rem;
+    text-decoration: none; transition: box-shadow 0.2s;
+  }
+  .apply-banner a:hover { box-shadow: 0 0 16px rgba(52,211,153,0.3); }
+
+  @media (max-width: 600px) {
+    body { padding: 20px 12px 60px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-link" href="./">&larr; Back to Knowledge Tree</a>
+  <h1>OpenScientist Reviewers</h1>
+  <p>Domain experts ensuring the scientific quality of skills across all categories.</p>
+</header>
+
+<div class="reviewer-count" id="count"></div>
+<div class="grid" id="grid"></div>
+
+<div class="apply-banner">
+  <p>Want to contribute your expertise?</p>
+  <a href="https://github.com/HHHHHejia/OpenScientist/issues/new?template=maintainer-application.yml">Apply to become a category reviewer &rarr;</a>
+</div>
+
+<script>
+var REVIEWERS = [
+  {
+    name: "Koutian Wu",
+    nameCn: "\u5434\u53e9\u5929",
+    role: "PhD Student",
+    affiliation: "UT Austin",
+    subdomain: "Physics / Atmospheric and Oceanic Physics",
+    github: "ktwu01",
+    homepage: "https://www.linkedin.com/in/ktwu01/",
+    color: "#f87171"
+  },
+  {
+    name: "Sijia Chen",
+    nameCn: "\u9648\u601d\u4f73",
+    role: "Research Fellow",
+    affiliation: "Flatiron Institute",
+    subdomain: "Physics / Chemical Physics",
+    github: "Alexandrina-Chen",
+    homepage: "https://www.linkedin.com/in/sijia-chen-897a201b9/",
+    color: "#f87171"
+  },
+  {
+    name: "Zesen Huang",
+    nameCn: "\u9ec4\u6cfd\u68ee",
+    role: "Postdoc",
+    affiliation: "UCLA",
+    subdomain: "Physics / Space Physics",
+    github: "huangzesen",
+    homepage: "https://www.linkedin.com/in/zesen-huang-839b6a109/",
+    color: "#f87171"
+  },
+  {
+    name: "Yanbo Zhang",
+    nameCn: "\u7ae0\u5f66\u535a",
+    role: "Postdoc",
+    affiliation: "Tufts University",
+    subdomain: "CS / Artificial Intelligence",
+    github: "Zhangyanbo",
+    homepage: "https://www.linkedin.com/in/zhang-yanbo-57b690101/",
+    color: "#22d3ee"
+  },
+  {
+    name: "Zhichen Zeng",
+    nameCn: "\u66fe\u90c5\u7428",
+    role: "PhD Student",
+    affiliation: "University of Washington",
+    subdomain: "CS / Hardware Architecture",
+    github: "Zhichenzzz",
+    homepage: "https://zhichenzzz.github.io/",
+    color: "#22d3ee"
+  },
+  {
+    name: "Xiaohang Yu",
+    nameCn: "\u4f59\u6653\u822a",
+    role: "PhD Student",
+    affiliation: "Imperial College London",
+    subdomain: "CS / Cryptography and Security",
+    github: "xhyumiracle",
+    homepage: "https://scholar.google.com/citations?user=WURsNDYAAAAJ&hl=en",
+    color: "#22d3ee"
+  },
+  {
+    name: "Qisheng Su",
+    nameCn: "\u82cf\u542f\u6668",
+    role: "PhD Student",
+    affiliation: "USTC",
+    subdomain: "CS / Multiagent Systems",
+    github: "suqisheng",
+    homepage: "https://www.linkedin.com/in/suqisheng/",
+    color: "#22d3ee"
+  }
+];
+
+document.getElementById('count').textContent = REVIEWERS.length + ' Reviewers';
+
+var grid = document.getElementById('grid');
+
+REVIEWERS.forEach(function(r) {
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.style.setProperty('--accent', r.color + '60');
+  card.style.setProperty('--glow', r.color + '20');
+  card.style.borderLeftWidth = '3px';
+  card.style.borderLeftColor = r.color + '80';
+
+  var name = document.createElement('div');
+  name.className = 'card-name';
+  name.textContent = r.nameCn + ' / ' + r.name;
+  card.appendChild(name);
+
+  var role = document.createElement('div');
+  role.className = 'card-role';
+  role.textContent = r.role + ' \u00b7 ' + r.affiliation;
+  card.appendChild(role);
+
+  var sub = document.createElement('div');
+  sub.className = 'card-subdomain';
+  sub.textContent = r.subdomain;
+  sub.style.background = 'linear-gradient(135deg, ' + r.color + '25, ' + r.color + '10)';
+  sub.style.color = r.color;
+  sub.style.border = '1px solid ' + r.color + '40';
+  card.appendChild(sub);
+
+  var links = document.createElement('div');
+  links.className = 'card-links';
+
+  var gh = document.createElement('a');
+  gh.href = 'https://github.com/' + r.github;
+  gh.target = '_blank';
+  gh.rel = 'noopener';
+  gh.textContent = '@' + r.github + ' \u2192';
+  links.appendChild(gh);
+
+  if (r.homepage) {
+    var hp = document.createElement('a');
+    hp.href = r.homepage;
+    hp.target = '_blank';
+    hp.rel = 'noopener';
+    hp.textContent = '\ud83d\udd17 ' + r.homepage.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    links.appendChild(hp);
+  }
+
+  card.appendChild(links);
+  grid.appendChild(card);
+});
+</script>
+
+</body>
+</html>
