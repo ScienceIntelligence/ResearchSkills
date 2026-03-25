@@ -61,84 +61,7 @@ Turning your know-how into AI-reusable knowledge means:
 
 ---
 
-<h2 align="center">2. How It Works</h2>
-
-### 2.1 Install
-
-Each skill is a single `.md` file. Install it once, invoke it any time in Claude Code:
-
-```bash
-# 1. Clone
-git clone https://github.com/HHHHHejia/OpenScientist.git
-
-# 2. Copy a skill (or symlink a whole domain)
-cp OpenScientist/skills/physics/quantum-physics/quantum-entanglement.md ~/.claude/skills/
-# or: ln -s $(pwd)/OpenScientist/skills/physics ~/.claude/skills/os-physics
-
-# 3. Invoke in Claude Code
-/quantum-entanglement  →  Claude reasons as a quantum physics expert
-```
-
-### 2.2 What's inside a skill file?
-
-| Section                 | Purpose                                                 |
-| ------------------------- | --------------------------------------------------------- |
-| YAML frontmatter        | Machine-readable metadata: name, domain, author, status |
-| `## Purpose`            | When to invoke this skill                               |
-| `## Domain Knowledge`   | Core concepts, equations, established facts             |
-| `## Reasoning Protocol` | Step-by-step guide for AI reasoning                     |
-| `## Tools`              | Key software, libraries, databases used in this domain  |
-| `## Common Pitfalls`    | Mistakes and edge cases to avoid                        |
-| `## Examples`           | Worked examples                                         |
-| `## References`         | Key papers and textbooks                                |
-
-### 2.3 Quality tiers
-
-| Status     | Meaning                                |
-| ------------ | ---------------------------------------- |
-| `draft`    | Authored, not yet peer-reviewed        |
-| `reviewed` | Approved by a domain expert reviewer |
-| `verified` | Tested in real AI-scientist workflows  |
-
-Every pull request touching a skill file triggers CI (`utils/tools/validate.py`) that checks required fields and section structure. A PR cannot be merged if validation fails.
-
----
-
-<h2 align="center">3. How to Contribute</h2>
-
-We welcome contributions from domain experts. See [CONTRIBUTING.md](utils/CONTRIBUTING.md) for the full guide.
-
-### 3.1 Contributor Requirements
-
-> **Who can contribute?** We maintain a high bar for scientific accuracy.
-
-- **Academic credential** — PhD degree or equivalent research position (postdoc, research scientist, professor, etc.) is **required**
-- **Real-name identity** — Contributors must use their real name and institutional affiliation in the `author` field (e.g., `"Dr. Albert Einstein (ETH Zürich Physics)"`)
-- **Domain expertise** — You may only contribute skills within your area of professional expertise
-
-### 3.2 Five Steps
-
-- **Fork** this repo
-- **Copy the template** into the right domain folder:
-  ```bash
-  cp skills/_template.md skills/<domain>/<subdomain>/<your-skill-name>.md
-  ```
-- **Fill in every section** — Purpose, Domain Knowledge, Reasoning Protocol, Tools, Common Pitfalls
-- **Validate locally** (optional but recommended):
-  ```bash
-  python utils/tools/validate.py skills/<domain>/<subdomain>/<your-skill-name>.md
-  ```
-- **Open a pull request** — title format: `[physics/quantum-physics] Add quantum-entanglement skill`
-
-A domain reviewer listed in CODEOWNERS will be automatically assigned to review your PR for scientific accuracy.
-
-### 3.3 Don't see your field?
-
-- [**Propose a new area →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=propose-new-area.md)
-
----
-
-<h2 align="center">4. Domains</h2>
+<h2 align="center">2. Domains</h2>
 
 Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy). 8 domains, 155 subcategories.
 
@@ -154,6 +77,83 @@ Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy).
 | 💹 Quantitative Finance | q-fin | 9 | *Seeking reviewer* |
 
 > [View all 155 subcategories in the interactive knowledge tree →](https://hhhhhejia.github.io/OpenScientist/)
+
+---
+
+<h2 align="center">3. How It Works</h2>
+
+### 3.1 Install
+
+Each skill is a single `.md` file. Install it once, invoke it any time in Claude Code:
+
+```bash
+# 1. Clone
+git clone https://github.com/HHHHHejia/OpenScientist.git
+
+# 2. Copy a skill (or symlink a whole domain)
+cp OpenScientist/skills/physics/quantum-physics/quantum-entanglement.md ~/.claude/skills/
+# or: ln -s $(pwd)/OpenScientist/skills/physics ~/.claude/skills/os-physics
+
+# 3. Invoke in Claude Code
+/quantum-entanglement  →  Claude reasons as a quantum physics expert
+```
+
+### 3.2 What's inside a skill file?
+
+| Section                 | Purpose                                                 |
+| ------------------------- | --------------------------------------------------------- |
+| YAML frontmatter        | Machine-readable metadata: name, domain, author, status |
+| `## Purpose`            | When to invoke this skill                               |
+| `## Domain Knowledge`   | Core concepts, equations, established facts             |
+| `## Reasoning Protocol` | Step-by-step guide for AI reasoning                     |
+| `## Tools`              | Key software, libraries, databases used in this domain  |
+| `## Common Pitfalls`    | Mistakes and edge cases to avoid                        |
+| `## Examples`           | Worked examples                                         |
+| `## References`         | Key papers and textbooks                                |
+
+### 3.3 Quality tiers
+
+| Status     | Meaning                                |
+| ------------ | ---------------------------------------- |
+| `draft`    | Authored, not yet peer-reviewed        |
+| `reviewed` | Approved by a domain expert reviewer |
+| `verified` | Tested in real AI-scientist workflows  |
+
+Every pull request touching a skill file triggers CI (`utils/tools/validate.py`) that checks required fields and section structure. A PR cannot be merged if validation fails.
+
+---
+
+<h2 align="center">4. How to Contribute</h2>
+
+We welcome contributions from domain experts. See [CONTRIBUTING.md](utils/CONTRIBUTING.md) for the full guide.
+
+### 4.1 Contributor Requirements
+
+> **Who can contribute?** We maintain a high bar for scientific accuracy.
+
+- **Academic credential** — PhD degree or equivalent research position (postdoc, research scientist, professor, etc.) is **required**
+- **Real-name identity** — Contributors must use their real name and institutional affiliation in the `author` field (e.g., `"Dr. Albert Einstein (ETH Zürich Physics)"`)
+- **Domain expertise** — You may only contribute skills within your area of professional expertise
+
+### 4.2 Five Steps
+
+- **Fork** this repo
+- **Copy the template** into the right domain folder:
+  ```bash
+  cp skills/_template.md skills/<domain>/<subdomain>/<your-skill-name>.md
+  ```
+- **Fill in every section** — Purpose, Domain Knowledge, Reasoning Protocol, Tools, Common Pitfalls
+- **Validate locally** (optional but recommended):
+  ```bash
+  python utils/tools/validate.py skills/<domain>/<subdomain>/<your-skill-name>.md
+  ```
+- **Open a pull request** — title format: `[physics/quantum-physics] Add quantum-entanglement skill`
+
+A domain reviewer listed in CODEOWNERS will be automatically assigned to review your PR for scientific accuracy.
+
+### 4.3 Don't see your field?
+
+- [**Propose a new area →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=propose-new-area.md)
 
 ---
 

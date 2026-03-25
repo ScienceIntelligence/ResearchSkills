@@ -28,15 +28,6 @@ body:
       required: false
 
   - type: input
-    id: github_username
-    attributes:
-      label: GitHub Username
-      description: Your GitHub username (without the @ symbol)
-      placeholder: "e.g. alberteinstein"
-    validations:
-      required: true
-
-  - type: input
     id: affiliation
     attributes:
       label: Affiliation

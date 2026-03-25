@@ -53,19 +53,14 @@ jobs:
             const englishName = extractField('English Name');
             const chineseNameRaw = extractField('Chinese Name');
             const chineseName = (chineseNameRaw && chineseNameRaw !== '_No response_') ? chineseNameRaw : englishName;
-            const githubUsername = extractField('GitHub Username');
+            // Use the issue author's GitHub username (more secure than self-reported)
+            const githubUsername = context.payload.issue.user.login;
             const affiliation = extractField('Affiliation');
             const shortAffiliation = extractField('Short Affiliation');
             const role = extractField('Role');
             const homepage = extractField('Homepage');
             const domain = extractField('Domain');
             const subdomainRaw = extractField('Subdomain');
-
-            // Validate github username: alphanumeric and hyphens only
-            if (!/^[a-zA-Z0-9-]+$/.test(githubUsername)) {
-              core.setFailed(`Invalid GitHub username: ${githubUsername}`);
-              return;
-            }
 
             // Validate free-text fields against JS/HTML injection characters
             const fieldsToValidate = {
