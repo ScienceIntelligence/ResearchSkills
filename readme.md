@@ -25,7 +25,7 @@
 
 <p align="center">
   <a href="https://hhhhhejia.github.io/OpenScientist/">
-    <img src="assets/knowledge-tree.png?v=2" alt="Knowledge Tree" width="100%">
+    <img src="https://raw.githubusercontent.com/HHHHHejia/OpenScientist/main/assets/knowledge-tree.png" alt="Knowledge Tree" width="100%">
   </a>
 </p>
 
