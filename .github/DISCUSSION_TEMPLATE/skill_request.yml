@@ -1,0 +1,39 @@
+name: Skill Request
+description: Request a new Claude Code Skill from a domain expert
+title: "[Skill Request]: "
+labels: ["skill request"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for requesting a new skill! Our community of PhDs and domain experts can help build it if you provide the right context."
+  - type: input
+    id: domain
+    attributes:
+      label: Target Domain / Subdomain
+      description: e.g., Physics / Condensed Matter
+      placeholder: Biology
+    validations:
+      required: true
+  - type: input
+    id: skill_name
+    attributes:
+      label: Proposed Skill Name
+      description: What should this skill be called?
+      placeholder: alphafold-prediction
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: What are you trying to accomplish?
+      description: Describe the reasoning task you need the AI agent to perform.
+      placeholder: "I want an agent that can..."
+    validations:
+      required: true
+  - type: textarea
+    id: resources
+    attributes:
+      label: Relevant Tools or Resources (Optional)
+      description: Links to essential textbooks, papers, or databases the expert should include.
+    validations:
+      required: false

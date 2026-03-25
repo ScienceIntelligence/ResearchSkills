@@ -49,7 +49,8 @@ Each skill is written by a domain expert and encodes the knowledge, tools, reaso
 
 ### 1.3 What can you do
 
-Contribute your expertise, or use this repo to supercharge your AI agent's scientific discovery.
+- **As an Expert:** Contribute your expertise to supercharge AI agents' scientific discovery.
+- **As an AI User:** Use this repo to supercharge your agent, and **[Request a New Skill in Discussions](https://github.com/HHHHHejia/OpenScientist/discussions/categories/skill-requests)** if there's a domain you need an expert to codify!
 
 ### 1.4 Why should you contribute?
 
@@ -133,6 +134,9 @@ We welcome contributions from domain experts. See [CONTRIBUTING.md](utils/CONTRI
 A domain maintainer listed in [CODEOWNERS](.github/CODEOWNERS) will be automatically assigned to review your PR for scientific accuracy.
 
 **Don't see your field?** You can propose a new subdomain or top-level domain — see [CONTRIBUTING.md § Propose a New Area](utils/CONTRIBUTING.md#3-propose-a-new-area).
+
+### 3.3 Request a Skill
+Not a domain expert but need an AI skill? Open a **[Skill Request](https://github.com/HHHHHejia/OpenScientist/discussions/categories/skill-requests)** in GitHub Discussions. A domain expert from the community might pick it up and write the reasoning protocol for you!
 
 ---
 
