@@ -190,6 +190,7 @@ skills/physics/    @their-github-handle
 | ⚛️ Physics | Earth System Modeling | [@ktwu01](https://github.com/ktwu01) | UT Austin PhD Student |
 | ⚛️ Physics | Chemical Physics | [@Alexandrina-Chen](https://github.com/Alexandrina-Chen) | Flatiron Institute Research Fellow |
 | 💻 Computer Science | Hardware Architecture | [@Zhichenzzz](https://github.com/Zhichenzzz) | UW CS PhD Student |
+| 💻 Computer Science | Multiagent Systems | [@suqisheng](https://github.com/suqisheng) | USTC PhD Student |
 
 > Want to maintain a subdomain? Open an issue or reach out to [@HHHHHejia](https://github.com/HHHHHejia).
 
@@ -363,6 +364,7 @@ skills/physics/    @their-github-handle
 | ⚛️ Physics | Earth System Modeling | [@ktwu01](https://github.com/ktwu01) | UT Austin PhD Student |
 | ⚛️ Physics | Chemical Physics | [@Alexandrina-Chen](https://github.com/Alexandrina-Chen) | Flatiron Institute Research Fellow |
 | 💻 Computer Science | Hardware Architecture | [@Zhichenzzz](https://github.com/Zhichenzzz) | UW CS PhD Student |
+| 💻 Computer Science | Multiagent Systems | [@suqisheng](https://github.com/suqisheng) | USTC PhD Student |
 
 > 想认领一个子领域？提交 Issue 或联系 [@HHHHHejia](https://github.com/HHHHHejia)。
 
