@@ -44,6 +44,8 @@ jobs:
             const githubUsername = extractField('GitHub Username');
             const affiliation = extractField('Affiliation');
             const shortAffiliation = extractField('Short Affiliation');
+            const role = extractField('Role');
+            const homepage = extractField('Homepage');
             const domain = extractField('Domain');
             const subdomainRaw = extractField('Subdomain');
 
@@ -66,18 +68,6 @@ jobs:
               .replace(/-+/g, '-')
               .replace(/^-|-$/g, '');
 
-            // Map domain to emoji
-            const emojiMap = {
-              'Physics': '⚛️',
-              'Mathematics': '➗',
-              'Computer Science': '💻',
-              'Quantitative Biology': '🧬',
-              'Statistics': '📊',
-              'EESS': '⚡',
-              'Economics': '📈',
-              'Quantitative Finance': '💹',
-            };
-
             // Map domain to folder name
             const folderMap = {
               'Physics': 'physics',
@@ -96,7 +86,6 @@ jobs:
               return;
             }
 
-            const emoji = emojiMap[domain] || '';
             const domainFolder = folderMap[domain];
 
             core.setOutput('english_name', englishName);
@@ -104,13 +93,15 @@ jobs:
             core.setOutput('github_username', githubUsername);
             core.setOutput('affiliation', affiliation);
             core.setOutput('short_affiliation', shortAffiliation);
+            core.setOutput('role', role);
+            core.setOutput('homepage', homepage);
             core.setOutput('domain', domain);
-            core.setOutput('emoji', emoji);
             core.setOutput('domain_folder', domainFolder);
             core.setOutput('subdomain_display', subdomainDisplay);
             core.setOutput('subdomain_folder', subdomainFolder);
 
             console.log(`Parsed: ${englishName} (${chineseName}), @${githubUsername}`);
+            console.log(`Role: ${role}, Affiliation: ${affiliation}`);
             console.log(`Domain: ${domain} (${domainFolder}), Subdomain: ${subdomainDisplay} (${subdomainFolder})`);
 
       - name: Update CODEOWNERS
@@ -140,39 +131,24 @@ jobs:
           echo "Updated CODEOWNERS:"
           cat "$CODEOWNERS_PATH"
 
-      - name: Update readme.md English table
-        env:
-          EMOJI: ${{ steps.parse.outputs.emoji }}
-          DOMAIN: ${{ steps.parse.outputs.domain }}
-          SUBDOMAIN: ${{ steps.parse.outputs.subdomain_display }}
-          ENGLISH_NAME: ${{ steps.parse.outputs.english_name }}
-          USERNAME: ${{ steps.parse.outputs.github_username }}
-          AFFILIATION: ${{ steps.parse.outputs.affiliation }}
+      - name: Update readme.md reviewer count
         run: |
-          NEW_ROW="| ${EMOJI} ${DOMAIN} | ${SUBDOMAIN} | ${ENGLISH_NAME} [@${USERNAME}](https:\/\/github.com\/${USERNAME}) | ${AFFILIATION} |"
-          sed -i "/^> Want to become a reviewer/i\\${NEW_ROW}" readme.md
-          echo "Updated English reviewer table"
-
-      - name: Update readme.md Chinese table
-        env:
-          EMOJI: ${{ steps.parse.outputs.emoji }}
-          DOMAIN: ${{ steps.parse.outputs.domain }}
-          SUBDOMAIN: ${{ steps.parse.outputs.subdomain_display }}
-          CHINESE_NAME: ${{ steps.parse.outputs.chinese_name }}
-          USERNAME: ${{ steps.parse.outputs.github_username }}
-          AFFILIATION: ${{ steps.parse.outputs.affiliation }}
-        run: |
-          NEW_ROW="| ${EMOJI} ${DOMAIN} | ${SUBDOMAIN} | ${CHINESE_NAME} [@${USERNAME}](https:\/\/github.com\/${USERNAME}) | ${AFFILIATION} |"
-          sed -i "/^> 想成为审稿人/i\\${NEW_ROW}" readme.md
-          echo "Updated Chinese reviewer table"
+          # Count unique reviewers from CODEOWNERS (exclude repo owner @HHHHHejia)
+          COUNT=$(grep -oP '@[\w-]+' .github/CODEOWNERS | sort -u | grep -v '@HHHHHejia' | wc -l | tr -d ' ')
+          sed -i "s/\*\*[0-9]\+ reviewers\*\*/\*\*${COUNT} reviewers\*\*/" readme.md
+          sed -i "s/\*\*[0-9]\+ 位审稿人\*\*/\*\*${COUNT} 位审稿人\*\*/" readme.md
+          echo "Updated readme.md reviewer count to ${COUNT}"
 
       - name: Update docs/index.html
         uses: actions/github-script@v7
         env:
           SUBDOMAIN_DISPLAY: ${{ steps.parse.outputs.subdomain_display }}
+          ENGLISH_NAME: ${{ steps.parse.outputs.english_name }}
           CHINESE_NAME: ${{ steps.parse.outputs.chinese_name }}
           USERNAME: ${{ steps.parse.outputs.github_username }}
           SHORT_AFFILIATION: ${{ steps.parse.outputs.short_affiliation }}
+          ROLE: ${{ steps.parse.outputs.role }}
+          HOMEPAGE: ${{ steps.parse.outputs.homepage }}
         with:
           script: |
             const fs = require('fs');
@@ -180,24 +156,32 @@ jobs:
             let content = fs.readFileSync(filePath, 'utf8');
 
             const subdomainDisplay = process.env.SUBDOMAIN_DISPLAY;
+            const englishName = process.env.ENGLISH_NAME;
             const chineseName = process.env.CHINESE_NAME;
             const username = process.env.USERNAME;
             const shortAffiliation = process.env.SHORT_AFFILIATION;
+            const role = process.env.ROLE;
+            const homepage = process.env.HOMEPAGE || '';
 
-            const maintainerValue = `${chineseName} @${username} (${shortAffiliation})`;
+            // Build structured maintainer object as JS literal
+            let maintainerObj = `{ name: "${chineseName}", nameEn: "${englishName}", github: "${username}", affiliation: "${shortAffiliation}", role: "${role}"`;
+            if (homepage && homepage !== '_No response_') {
+              maintainerObj += `, homepage: "${homepage}"`;
+            }
+            maintainerObj += ' }';
 
             // Escape the subdomain name for use in regex
             const escapedName = subdomainDisplay.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
             // Check if this subdomain node already has a maintainer field
             const withMaintainerRegex = new RegExp(
-              `(\\{ name: "${escapedName}",.*?)maintainer: "[^"]*"`,
+              `(\\{ name: "${escapedName}",.*?)maintainer: \\{[^}]*\\}`,
               'g'
             );
 
             if (withMaintainerRegex.test(content)) {
-              // Update existing maintainer
-              content = content.replace(withMaintainerRegex, `$1maintainer: "${maintainerValue}"`);
+              // Update existing structured maintainer
+              content = content.replace(withMaintainerRegex, `$1maintainer: ${maintainerObj}`);
               console.log(`Updated existing maintainer for "${subdomainDisplay}"`);
             } else {
               // No maintainer field yet — add it
@@ -212,16 +196,15 @@ jobs:
                     // Parent node: insert maintainer before ", children:"
                     lines[i] = line.replace(
                       /, children:/,
-                      `, maintainer: "${maintainerValue}", children:`
+                      `, maintainer: ${maintainerObj}, children:`
                     );
                     modified = true;
                   } else if (line.match(/\}\s*,?\s*$/)) {
                     // Leaf node: insert maintainer before closing }
                     lines[i] = line.replace(
                       /(\s*)\}\s*(,?)\s*$/,
-                      `, maintainer: "${maintainerValue}" $1}$2`
+                      `, maintainer: ${maintainerObj} $1}$2`
                     );
-                    // Clean up extra spaces
                     lines[i] = lines[i].replace(/\s+\}/, ' }');
                     modified = true;
                   }
@@ -273,10 +256,8 @@ jobs:
                 ``,
                 `**What was updated:**`,
                 `- \`.github/CODEOWNERS\` — PRs touching your subdomain will now request your review`,
-                `- \`readme.md\` — your name appears in both the English and Chinese reviewer tables`,
+                `- \`readme.md\` — reviewer count updated`,
                 `- \`docs/index.html\` — your name appears on the interactive knowledge tree`,
-                ``,
-                `**Next step:** Please check your GitHub notifications and **accept the collaborator invitation** for this repository so you can review and approve PRs.`,
                 ``,
                 `Thank you for contributing your expertise to OpenScientist!`,
               ].join('\n'),

@@ -40,8 +40,8 @@ body:
     id: affiliation
     attributes:
       label: Affiliation
-      description: Your institution and role
-      placeholder: "e.g. ETH Zürich Professor"
+      description: Your institution
+      placeholder: "e.g. ETH Zürich"
     validations:
       required: true
 
@@ -51,6 +51,32 @@ body:
       label: Short Affiliation
       description: Short version for the knowledge tree badge
       placeholder: "e.g. ETH Zürich"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Role
+      description: Your current academic/research role
+      options:
+        - Professor
+        - Associate Professor
+        - Assistant Professor
+        - Postdoc
+        - PhD Student
+        - Research Scientist
+        - Research Fellow
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: homepage
+    attributes:
+      label: Homepage
+      description: "Your academic profile URL (Google Scholar, LinkedIn, OpenReview, or personal homepage)"
+      placeholder: "e.g. https://scholar.google.com/citations?user=XXXXXXX"
     validations:
       required: true
 

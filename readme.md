@@ -196,15 +196,7 @@ Reviewers are domain experts who ensure the scientific quality of skills in thei
 - Self-approve and merge your own PRs within your subdomain
 - Auto-assigned as reviewer via [CODEOWNERS](.github/CODEOWNERS) when a PR touches your subdomain
 
-| Domain | Subdomain | Reviewer | Affiliation |
-|---|---|---|---|
-| ⚛️ Physics | Space Physics | Zesen Huang [@huangzesen](https://github.com/huangzesen) | UCLA Postdoc |
-| ⚛️ Physics | Atmospheric and Oceanic Physics | Koutian Wu [@ktwu01](https://github.com/ktwu01) | UT Austin PhD Student |
-| ⚛️ Physics | Chemical Physics | Sijia Chen [@Alexandrina-Chen](https://github.com/Alexandrina-Chen) | Flatiron Institute Research Fellow |
-| 💻 Computer Science | Artificial Intelligence | Yanbo Zhang [@Zhangyanbo](https://github.com/Zhangyanbo) | Tufts University Postdoc |
-| 💻 Computer Science | Hardware Architecture | Zhichen Zeng [@Zhichenzzz](https://github.com/Zhichenzzz) | UW CS PhD Student |
-| 💻 Computer Science | Multiagent Systems | Qisheng Su [@suqisheng](https://github.com/suqisheng) | USTC PhD Student |
-| 💻 Computer Science | Cryptography and Security | Xiaohang Yu [@xhyumiracle](https://github.com/xhyumiracle) | Imperial College PhD Student |
+🧑‍🔬 **7 reviewers** across 8 domains · [View all reviewers in the Knowledge Tree →](https://hhhhhejia.github.io/OpenScientist/)
 
 > Want to become a reviewer? [**Apply here →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=maintainer-application.yml)
 
@@ -384,15 +376,7 @@ skills/physics/    @their-github-handle
 - 在自己的子领域内可以自审自批、合并自己的 PR
 - 通过 [CODEOWNERS](.github/CODEOWNERS) 自动分配为审稿人
 
-| 领域 | 子领域 | 审稿人 | 机构 |
-|---|---|---|---|
-| ⚛️ Physics | Space Physics | 黄泽森 [@huangzesen](https://github.com/huangzesen) | UCLA Postdoc |
-| ⚛️ Physics | Atmospheric and Oceanic Physics | 吴叩天 [@ktwu01](https://github.com/ktwu01) | UT Austin PhD Student |
-| ⚛️ Physics | Chemical Physics | 陈思佳 [@Alexandrina-Chen](https://github.com/Alexandrina-Chen) | Flatiron Institute Research Fellow |
-| 💻 Computer Science | Artificial Intelligence | 章彦博 [@Zhangyanbo](https://github.com/Zhangyanbo) | Tufts University Postdoc |
-| 💻 Computer Science | Hardware Architecture | 曾郅琛 [@Zhichenzzz](https://github.com/Zhichenzzz) | UW CS PhD Student |
-| 💻 Computer Science | Multiagent Systems | 苏启晟 [@suqisheng](https://github.com/suqisheng) | USTC PhD Student |
-| 💻 Computer Science | Cryptography and Security | 余晓航 [@xhyumiracle](https://github.com/xhyumiracle) | Imperial College PhD Student |
+🧑‍🔬 **7 位审稿人** 覆盖 8 大领域 · [查看全部审稿人（知识树）→](https://hhhhhejia.github.io/OpenScientist/)
 
 > 想成为审稿人？[**点击申请 →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=maintainer-application.yml)
 

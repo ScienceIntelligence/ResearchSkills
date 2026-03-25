@@ -13,180 +13,221 @@
     color: #c8d0e0;
     min-height: 100vh;
     padding: 40px 20px 80px;
+    overflow-x: auto;
   }
 
-  header {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-  header h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #e8ecf4;
-    margin-bottom: 8px;
-  }
+  header { text-align: center; margin-bottom: 32px; }
+  header h1 { font-size: 2.2rem; font-weight: 700; color: #e8ecf4; margin-bottom: 8px; }
   header h1 .emoji { font-size: 2.4rem; }
-  header p {
-    font-size: 1rem;
-    color: #7888a8;
-    max-width: 520px;
-    margin: 0 auto;
-  }
-  header a {
-    color: #5a9cf5;
-    text-decoration: none;
-  }
+  header p { font-size: 1rem; color: #7888a8; max-width: 520px; margin: 0 auto; }
+  header a { color: #5a9cf5; text-decoration: none; }
   header a:hover { text-decoration: underline; }
 
-  .tree {
-    max-width: 880px;
-    margin: 0 auto;
+  /* ── stats banner ── */
+  .stats-banner {
+    display: flex; justify-content: center; align-items: center; gap: 32px;
+    margin: 0 auto 24px; padding: 20px 32px; max-width: 680px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px;
   }
+  .stat-item { text-align: center; }
+  .stat-number { font-size: 2rem; font-weight: 700; color: #e8ecf4; line-height: 1.2; }
+  .stat-number.highlight { color: #34d399; }
+  .stat-label { font-size: 0.82rem; color: #5a7090; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.08); }
 
-  /* ── node ── */
-  .node {
+  /* ── search bar ── */
+  .search-container { max-width: 680px; margin: 0 auto 40px; position: relative; }
+  .search-input {
+    width: 100%; padding: 12px 44px 12px 16px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; color: #dce2f0; font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-input::placeholder { color: #4a5a78; }
+  .search-input:focus { border-color: rgba(90,156,245,0.4); box-shadow: 0 0 0 3px rgba(90,156,245,0.1); }
+  .search-clear {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: #5a7090; font-size: 1.2rem;
+    cursor: pointer; display: none; padding: 4px; line-height: 1;
+  }
+  .search-clear.visible { display: block; }
+  .search-clear:hover { color: #8898b8; }
+
+  /* ── tree graph layout ── */
+  .tree-graph { display: flex; flex-direction: column; align-items: center; min-width: fit-content; }
+
+  .tnode {
+    display: flex; flex-direction: column; align-items: center;
     position: relative;
-    margin-left: 24px;
-    padding-left: 20px;
-    border-left: 1px solid rgba(74, 144, 217, 0.15);
-  }
-  .node:last-child { border-left-color: transparent; }
-  .node:last-child::before {
-    content: '';
-    position: absolute;
-    left: -1px; top: 0;
-    width: 1px; height: 20px;
-    background: rgba(74, 144, 217, 0.15);
   }
 
-  .node-label {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 16px;
-    margin: 4px 0;
-    border-radius: 8px;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.2s, box-shadow 0.2s;
-  }
-  .node-label:hover {
-    background: rgba(255,255,255,0.04);
-  }
-  .node-label::before {
-    content: '';
-    position: absolute;
-    left: -20px; top: 50%;
-    width: 20px; height: 1px;
-    background: rgba(74, 144, 217, 0.2);
-  }
-
-  .node-label .arrow {
-    display: inline-block;
-    width: 18px; height: 18px;
-    text-align: center;
-    font-size: 11px;
-    line-height: 18px;
-    color: #5878a0;
-    transition: transform 0.25s ease;
-    flex-shrink: 0;
-  }
-  .node-label .arrow.open { transform: rotate(90deg); }
-  .node-label .arrow.leaf { visibility: hidden; }
-
-  .node-label .icon { font-size: 1.3em; flex-shrink: 0; }
-
-  .node-label .name {
-    font-weight: 600;
+  .tnode-box {
+    padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 0.95rem;
+    cursor: pointer; user-select: none; white-space: nowrap; position: relative;
+    transition: transform 0.15s, box-shadow 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
     color: #dce2f0;
-    font-size: 0.95rem;
   }
-  .node-label .code {
-    font-size: 0.78rem;
-    color: #5a7090;
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    opacity: 0.85;
-  }
-  .node-label .count {
-    font-size: 0.72rem;
-    color: #4a6080;
-    background: rgba(74,144,217,0.08);
-    padding: 1px 8px;
-    border-radius: 10px;
+  .tnode-box:hover { transform: translateY(-2px); }
+  .tnode-box .icon { margin-right: 6px; }
+  .tnode-box .code { font-size: 0.72rem; color: #5a7090; margin-left: 8px; font-family: 'SF Mono','Fira Code','Consolas',monospace; }
+  .tnode-box .badge-count {
+    font-size: 0.68rem; background: rgba(255,255,255,0.08); color: #7888a8;
+    padding: 1px 7px; border-radius: 8px; margin-left: 8px;
   }
 
-  /* children container */
-  .children {
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
+  /* Root node */
+  .tnode-root > .tnode-box {
+    font-size: 1.4rem; padding: 14px 32px;
+    background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);
+    color: #f0f2f8;
+  }
+
+  /* Group nodes (Natural Sciences, Formal Sciences) */
+  .tnode-group > .tnode-box {
+    font-size: 1.05rem; padding: 10px 24px;
+    background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);
+    color: #e0e4f0;
+  }
+
+  /* Domain nodes — colored, fixed width */
+  .tnode-domain {
+    width: 300px; align-items: stretch;
+  }
+  .tnode-domain > .tnode-box {
+    font-size: 0.88rem; padding: 10px 16px;
+    cursor: pointer; white-space: normal; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .tnode-domain.active > .tnode-box {
+    box-shadow: 0 0 20px var(--dcolor, rgba(255,255,255,0.2));
+  }
+  .dbox-top {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dbox-top .icon { font-size: 1.2em; }
+  .dbox-name {
+    font-size: 0.85rem; color: #e8ecf4; line-height: 1.3;
+  }
+
+  /* ── tree connector lines ── */
+  .tnode-kids {
+    display: flex; justify-content: center; align-items: flex-start;
+    padding-top: 40px; position: relative;
+  }
+
+  /* Vertical line from parent label down to children's horizontal bar */
+  .tnode-kids::before {
+    content: ''; position: absolute; top: 0; left: 50%;
+    width: 1px; height: 20px; background: rgba(74,144,217,0.25);
+  }
+
+  /* Each child: vertical line up + horizontal bar segment */
+  .tnode-kids > .tnode { padding: 0 12px; position: relative; }
+
+  .tnode-kids > .tnode::before {
+    content: ''; position: absolute; top: -20px; left: 50%;
+    width: 1px; height: 20px; background: rgba(74,144,217,0.25);
+  }
+  .tnode-kids > .tnode::after {
+    content: ''; position: absolute; top: -20px; left: 0; right: 0;
+    height: 1px; background: rgba(74,144,217,0.25);
+  }
+  .tnode-kids > .tnode:first-child::after { left: 50%; }
+  .tnode-kids > .tnode:last-child::after { right: 50%; }
+  .tnode-kids > .tnode:only-child::after { display: none; }
+
+  /* ── subdomain panel ── */
+  .subdomain-panel {
+    width: 100%; margin-top: 8px;
+    border-left: 2px solid var(--dcolor, rgba(255,255,255,0.1));
+    padding: 4px 0 4px 10px;
+    max-height: 0; overflow: hidden; opacity: 0;
     transition: max-height 0.4s ease, opacity 0.3s ease;
   }
-  .children.open {
-    max-height: 5000px;
-    opacity: 1;
+  .subdomain-panel.open {
+    max-height: 8000px; opacity: 1;
   }
 
-  /* ── depth-specific colors ── */
-  .depth-0 > .node-label .name { font-size: 1.3rem; color: #f0f2f8; }
-  .depth-0 > .node-label { padding: 12px 20px; }
-  .depth-0 { border-left: none; margin-left: 0; padding-left: 0; }
-  .depth-0 > .node-label::before { display: none; }
 
-  .depth-1 > .node-label .name { font-size: 1.05rem; color: #c8d8f0; }
+  /* Sub-group header (Astrophysics, Condensed Matter, etc.) */
+  .sub-group-header {
+    padding: 6px 8px 3px; font-size: 0.8rem; font-weight: 600;
+    color: #b8c8e0; cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.15s;
+  }
+  .sub-group-header:hover { color: #dce4f0; }
+  .sub-group-header .sg-arrow {
+    font-size: 9px; transition: transform 0.2s; display: inline-block;
+  }
+  .sub-group-header .sg-arrow.open { transform: rotate(90deg); }
+  .sub-group-header .sg-code { font-size: 0.72rem; color: #7888a8; font-family: 'SF Mono','Fira Code','Consolas',monospace; }
+  .sub-group-header .sg-count { font-size: 0.68rem; color: #4a6080; background: rgba(74,144,217,0.08); padding: 1px 6px; border-radius: 8px; margin-left: auto; }
 
-  .leaf-node > .node-label {
-    cursor: default;
-  }
-  .leaf-node > .node-label .name {
-    font-weight: 400;
-    color: #98a8c0;
-    font-size: 0.88rem;
-  }
+  .sub-group-kids { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
+  .sub-group-kids.open { max-height: 2000px; }
 
-  .maintainer-badge {
-    font-size: 0.73rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(16, 185, 129, 0.12));
-    color: #34d399;
-    padding: 3px 10px;
-    border-radius: 12px;
-    margin-left: 8px;
-    border: 1px solid rgba(52, 211, 153, 0.3);
-    letter-spacing: 0.02em;
-    animation: maintainer-glow 3s ease-in-out infinite alternate;
+  /* Leaf subdomain item */
+  .sub-item {
+    padding: 3px 6px; font-size: 0.78rem; color: #d0d8e8;
+    transition: background 0.15s; border-radius: 4px;
+    line-height: 1.4; padding-left: 16px; position: relative;
   }
-  @keyframes maintainer-glow {
-    from { box-shadow: 0 0 4px rgba(52, 211, 153, 0.15); }
-    to   { box-shadow: 0 0 12px rgba(52, 211, 153, 0.3); }
+  .sub-item::before {
+    content: '\2022'; position: absolute; left: 4px; color: #6878a0;
   }
-  .has-maintainer > .node-label {
-    background: rgba(52, 211, 153, 0.04);
-    border-left: 2px solid rgba(52, 211, 153, 0.4);
-    padding-left: 14px;
-    border-radius: 6px;
+  .sub-item:hover { background: rgba(255,255,255,0.03); }
+  .sub-item.search-match { background: rgba(90,156,245,0.08); }
+  .sub-item.search-match .sub-name { color: #dce2f0; }
+  .sub-item .sub-name { }
+  .sub-item .sub-code { font-size: 0.7rem; color: #8898b8; font-family: 'SF Mono','Fira Code','Consolas',monospace; }
+
+  /* Reviewer badge in list */
+  .sub-reviewer {
+    display: block; margin-top: 2px;
+    font-size: 0.7rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 10px; cursor: pointer;
+    transition: box-shadow 0.2s;
+    white-space: nowrap; width: fit-content;
   }
-  .has-maintainer > .node-label .name {
-    color: #d0e8dc !important;
+  .sub-reviewer:hover { box-shadow: 0 0 10px var(--dcolor, rgba(52,211,153,0.3)); }
+
+  /* Reviewer detail card (inside panel) */
+  .reviewer-card {
+    margin: 4px 0 8px 16px; padding: 10px 14px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(52,211,153,0.2);
+    border-radius: 8px; animation: card-in 0.2s ease;
   }
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reviewer-card .rc-name { font-size: 0.92rem; font-weight: 600; color: #e8ecf4; margin-bottom: 3px; }
+  .reviewer-card .rc-role { font-size: 0.82rem; color: #8898b8; margin-bottom: 6px; }
+  .reviewer-card .rc-link { display: block; font-size: 0.78rem; color: #5a9cf5; text-decoration: none; margin-bottom: 2px; }
+  .reviewer-card .rc-link:hover { text-decoration: underline; }
 
   /* ── responsive ── */
+  @media (max-width: 900px) {
+    .tnode-kids > .tnode { padding: 0 6px; }
+    .tnode-box { font-size: 0.82rem; padding: 8px 12px; }
+    .tnode-root > .tnode-box { font-size: 1.1rem; padding: 12px 24px; }
+  }
   @media (max-width: 600px) {
-    body { padding: 24px 8px 60px; }
-    .node { margin-left: 16px; padding-left: 14px; }
-    header h1 { font-size: 1.6rem; }
+    body { padding: 20px 8px 60px; }
+    .stats-banner { gap: 16px; padding: 14px 16px; }
+    .stat-number { font-size: 1.4rem; }
+    .tnode-box { font-size: 0.75rem; padding: 6px 10px; }
+    .tnode-box .code { display: none; }
+    .tnode-box .badge-count { display: none; }
+    .tnode-root > .tnode-box { font-size: 1rem; }
+    .tnode-kids > .tnode { padding: 0 3px; }
+    .subdomain-panel { min-width: 280px; max-width: 90vw; }
   }
 
-  /* ── footer ── */
-  footer {
-    text-align: center;
-    margin-top: 64px;
-    color: #3a4a68;
-    font-size: 0.82rem;
-  }
-  footer a { color: #4a7ab8; text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
+
 </style>
 </head>
 <body>
@@ -195,21 +236,24 @@
   <h1><span class="emoji">🌍</span> OpenScientist</h1>
   <p>Interactive knowledge tree — aligned with the
     <a href="https://arxiv.org/category_taxonomy" target="_blank">arXiv category taxonomy</a>.
-    Click any domain to expand.
+    Click a domain to explore its subcategories.
   </p>
 </header>
 
-<div class="tree" id="tree"></div>
+<div class="stats-banner" id="stats-banner"></div>
 
-<footer>
-  <a href="https://github.com/HHHHHejia/OpenScientist">GitHub Repository</a>
-  &nbsp;·&nbsp; 8 domains &nbsp;·&nbsp; 155 subcategories
-</footer>
+<div class="search-container">
+  <input type="text" class="search-input" id="search-input" placeholder="Search subcategories... (e.g. Machine Learning, cs.LG)">
+  <button class="search-clear" id="search-clear">&times;</button>
+</div>
+
+<div id="tree-container" style="display:flex;justify-content:center;overflow-x:auto;padding:0 20px;"></div>
+
 
 <script>
-const DATA = [
-  { name: "Natural Sciences", icon: "🔬", children: [
-    { name: "Physics", icon: "⚛️", code: "", children: [
+var DATA = [
+  { name: "Natural Sciences", icon: "\ud83d\udd2c", children: [
+    { name: "Physics", icon: "\u269b\ufe0f", code: "", color: "#f87171", children: [
       { name: "Astrophysics", code: "astro-ph", children: [
         { name: "Cosmology and Nongalactic Astrophysics", code: "astro-ph.CO" },
         { name: "Earth and Planetary Astrophysics", code: "astro-ph.EP" },
@@ -249,12 +293,12 @@ const DATA = [
       ]},
       { name: "Physics", code: "physics", children: [
         { name: "Accelerator Physics", code: "physics.acc-ph" },
-        { name: "Atmospheric and Oceanic Physics", code: "physics.ao-ph", maintainer: "吴叩天 @ktwu01 (UT Austin)" },
+        { name: "Atmospheric and Oceanic Physics", code: "physics.ao-ph", maintainer: { name: "\u5434\u53e9\u5929", nameEn: "Koutian Wu", github: "ktwu01", affiliation: "UT Austin", role: "PhD Student" } },
         { name: "Applied Physics", code: "physics.app-ph" },
         { name: "Atomic and Molecular Clusters", code: "physics.atm-clus" },
         { name: "Atomic Physics", code: "physics.atom-ph" },
         { name: "Biological Physics", code: "physics.bio-ph" },
-        { name: "Chemical Physics", code: "physics.chem-ph", maintainer: "陈思佳 @Alexandrina-Chen (Flatiron)" },
+        { name: "Chemical Physics", code: "physics.chem-ph", maintainer: { name: "\u9648\u601d\u4f73", nameEn: "Sijia Chen", github: "Alexandrina-Chen", affiliation: "Flatiron Institute", role: "Research Fellow" } },
         { name: "Classical Physics", code: "physics.class-ph" },
         { name: "Computational Physics", code: "physics.comp-ph" },
         { name: "Data Analysis, Statistics and Probability", code: "physics.data-an" },
@@ -265,10 +309,10 @@ const DATA = [
         { name: "Medical Physics", code: "physics.med-ph" },
         { name: "Optics", code: "physics.optics" },
         { name: "Plasma Physics", code: "physics.plasm-ph" },
-        { name: "Space Physics", code: "physics.space-ph", maintainer: "黄泽森 @huangzesen (UCLA)" },
+        { name: "Space Physics", code: "physics.space-ph", maintainer: { name: "\u9ec4\u6cfd\u68ee", nameEn: "Zesen Huang", github: "huangzesen", affiliation: "UCLA", role: "Postdoc" } },
       ]},
     ]},
-    { name: "Quantitative Biology", icon: "🧬", code: "q-bio", children: [
+    { name: "Quantitative Biology", icon: "\ud83e\uddec", code: "q-bio", color: "#fb923c", children: [
       { name: "Biomolecules", code: "q-bio.BM" },
       { name: "Cell Behavior", code: "q-bio.CB" },
       { name: "Genomics", code: "q-bio.GN" },
@@ -280,15 +324,15 @@ const DATA = [
       { name: "Subcellular Processes", code: "q-bio.SC" },
       { name: "Tissues and Organs", code: "q-bio.TO" },
     ]},
-    { name: "Electrical Engineering and Systems Science", icon: "⚡", code: "eess", children: [
+    { name: "Electrical Engineering and Systems Science", icon: "\u26a1", code: "eess", color: "#fbbf24", children: [
       { name: "Audio and Speech Processing", code: "eess.AS" },
       { name: "Image and Video Processing", code: "eess.IV" },
       { name: "Signal Processing", code: "eess.SP" },
       { name: "Systems and Control", code: "eess.SY" },
     ]},
   ]},
-  { name: "Formal Sciences", icon: "📐", children: [
-    { name: "Mathematics", icon: "➗", code: "math", children: [
+  { name: "Formal Sciences", icon: "\ud83d\udcd0", children: [
+    { name: "Mathematics", icon: "\u2797", code: "math", color: "#34d399", children: [
       { name: "Commutative Algebra", code: "math.AC" },
       { name: "Algebraic Geometry", code: "math.AG" },
       { name: "Analysis of PDEs", code: "math.AP" },
@@ -322,14 +366,14 @@ const DATA = [
       { name: "Spectral Theory", code: "math.SP" },
       { name: "Statistics Theory", code: "math.ST" },
     ]},
-    { name: "Computer Science", icon: "💻", code: "cs", children: [
-      { name: "Artificial Intelligence", code: "cs.AI", maintainer: "章彦博 @Zhangyanbo (Tufts)" },
-      { name: "Hardware Architecture", code: "cs.AR", maintainer: "曾郅琛 @Zhichenzzz (UW)" },
+    { name: "Computer Science", icon: "\ud83d\udcbb", code: "cs", color: "#22d3ee", children: [
+      { name: "Artificial Intelligence", code: "cs.AI", maintainer: { name: "\u7ae0\u5f66\u535a", nameEn: "Yanbo Zhang", github: "Zhangyanbo", affiliation: "Tufts University", role: "Postdoc" } },
+      { name: "Hardware Architecture", code: "cs.AR", maintainer: { name: "\u66fe\u90c5\u7428", nameEn: "Zhichen Zeng", github: "Zhichenzzz", affiliation: "University of Washington", role: "PhD Student" } },
       { name: "Computational Complexity", code: "cs.CC" },
       { name: "Computational Engineering, Finance, and Science", code: "cs.CE" },
       { name: "Computational Geometry", code: "cs.CG" },
       { name: "Computation and Language", code: "cs.CL" },
-      { name: "Cryptography and Security", code: "cs.CR", maintainer: "余晓航 @xhyumiracle (Imperial)" },
+      { name: "Cryptography and Security", code: "cs.CR", maintainer: { name: "\u4f59\u6653\u822a", nameEn: "Xiaohang Yu", github: "xhyumiracle", affiliation: "Imperial College London", role: "PhD Student" } },
       { name: "Computer Vision and Pattern Recognition", code: "cs.CV" },
       { name: "Computers and Society", code: "cs.CY" },
       { name: "Databases", code: "cs.DB" },
@@ -347,7 +391,7 @@ const DATA = [
       { name: "Information Theory", code: "cs.IT" },
       { name: "Machine Learning", code: "cs.LG" },
       { name: "Logic in Computer Science", code: "cs.LO" },
-      { name: "Multiagent Systems", code: "cs.MA", maintainer: "苏启晟 @suqisheng (USTC)" },
+      { name: "Multiagent Systems", code: "cs.MA", maintainer: { name: "\u82cf\u542f\u6668", nameEn: "Qisheng Su", github: "suqisheng", affiliation: "USTC", role: "PhD Student" } },
       { name: "Multimedia", code: "cs.MM" },
       { name: "Mathematical Software", code: "cs.MS" },
       { name: "Numerical Analysis", code: "cs.NA" },
@@ -364,7 +408,7 @@ const DATA = [
       { name: "Social and Information Networks", code: "cs.SI" },
       { name: "Systems and Control", code: "cs.SY" },
     ]},
-    { name: "Statistics", icon: "📊", code: "stat", children: [
+    { name: "Statistics", icon: "\ud83d\udcca", code: "stat", color: "#60a5fa", children: [
       { name: "Applications", code: "stat.AP" },
       { name: "Computation", code: "stat.CO" },
       { name: "Methodology", code: "stat.ME" },
@@ -372,12 +416,12 @@ const DATA = [
       { name: "Other Statistics", code: "stat.OT" },
       { name: "Statistics Theory", code: "stat.TH" },
     ]},
-    { name: "Economics", icon: "📈", code: "econ", children: [
+    { name: "Economics", icon: "\ud83d\udcc8", code: "econ", color: "#818cf8", children: [
       { name: "Econometrics", code: "econ.EM" },
       { name: "General Economics", code: "econ.GN" },
       { name: "Theoretical Economics", code: "econ.TH" },
     ]},
-    { name: "Quantitative Finance", icon: "💹", code: "q-fin", children: [
+    { name: "Quantitative Finance", icon: "\ud83d\udcb9", code: "q-fin", color: "#c084fc", children: [
       { name: "Computational Finance", code: "q-fin.CP" },
       { name: "Economics", code: "q-fin.EC" },
       { name: "General Finance", code: "q-fin.GN" },
@@ -391,95 +435,290 @@ const DATA = [
   ]},
 ];
 
-function countLeaves(node) {
-  if (!node.children || node.children.length === 0) return 1;
-  return node.children.reduce((s, c) => s + countLeaves(c), 0);
+/* ── helpers ── */
+function countLeaves(n) {
+  if (!n.children || !n.children.length) return 1;
+  return n.children.reduce(function(s,c){ return s + countLeaves(c); }, 0);
+}
+function countReviewers(arr) {
+  var n = 0;
+  arr.forEach(function(d) {
+    if (d.maintainer) n++;
+    if (d.children) n += countReviewers(d.children);
+  });
+  return n;
 }
 
-function renderNode(node, depth) {
-  const hasChildren = node.children && node.children.length > 0;
-  const isLeaf = !hasChildren;
-  const count = hasChildren ? countLeaves(node) : 0;
+var totalDomains = 8;
+var totalSubs = DATA.reduce(function(s,g){ return s + countLeaves(g); }, 0);
+var totalReviewers = countReviewers(DATA);
 
-  const el = document.createElement('div');
-  el.className = `node depth-${depth}` + (isLeaf ? ' leaf-node' : '') + (node.maintainer ? ' has-maintainer' : '');
+/* ── stats banner ── */
+function mkStat(val, label, hl) {
+  var d = document.createElement('div'); d.className = 'stat-item';
+  var n = document.createElement('div'); n.className = 'stat-number' + (hl ? ' highlight' : ''); n.textContent = val;
+  var l = document.createElement('div'); l.className = 'stat-label'; l.textContent = label;
+  d.appendChild(n); d.appendChild(l); return d;
+}
+function mkDiv(cls) { var d = document.createElement('div'); d.className = cls; return d; }
 
-  const label = document.createElement('div');
-  label.className = 'node-label';
+var banner = document.getElementById('stats-banner');
+banner.appendChild(mkStat(totalDomains, 'Domains', false));
+banner.appendChild(mkDiv('stat-divider'));
+banner.appendChild(mkStat(totalSubs, 'Subcategories', false));
+banner.appendChild(mkDiv('stat-divider'));
+banner.appendChild(mkStat(totalReviewers, 'Reviewers', true));
 
-  // arrow
-  const arrow = document.createElement('span');
-  arrow.className = 'arrow' + (isLeaf ? ' leaf' : '');
-  arrow.textContent = '▶';
-  label.appendChild(arrow);
+/* ── track state ── */
+var activePanel = null;
+var activeDomain = null;
+var openCard = null;
 
-  // icon
-  if (node.icon) {
-    const icon = document.createElement('span');
-    icon.className = 'icon';
-    icon.textContent = node.icon;
-    label.appendChild(icon);
-  }
-
-  // name
-  const name = document.createElement('span');
-  name.className = 'name';
-  name.textContent = node.name;
-  label.appendChild(name);
-
-  // code
-  if (node.code) {
-    const code = document.createElement('span');
-    code.className = 'code';
-    code.textContent = node.code;
-    label.appendChild(code);
-  }
-
-  // count badge
-  if (hasChildren && depth >= 1) {
-    const badge = document.createElement('span');
-    badge.className = 'count';
-    badge.textContent = count;
-    label.appendChild(badge);
-  }
-
-  // maintainer badge
-  if (node.maintainer) {
-    const mt = document.createElement('span');
-    mt.className = 'maintainer-badge';
-    mt.textContent = '✅ ' + node.maintainer;
-    label.appendChild(mt);
-  }
-
-  el.appendChild(label);
-
-  // children container
-  if (hasChildren) {
-    const childrenEl = document.createElement('div');
-    childrenEl.className = 'children';
-    node.children.forEach(child => {
-      childrenEl.appendChild(renderNode(child, depth + 1));
-    });
-    el.appendChild(childrenEl);
-
-    label.addEventListener('click', () => {
-      const isOpen = childrenEl.classList.contains('open');
-      childrenEl.classList.toggle('open');
-      arrow.classList.toggle('open');
-    });
-  }
-
-  return el;
+function closePanel() {
+  if (activePanel) { activePanel.classList.remove('open'); activePanel = null; }
+  if (activeDomain) { activeDomain.classList.remove('active'); activeDomain = null; }
+  if (openCard) { openCard.remove(); openCard = null; }
 }
 
-const tree = document.getElementById('tree');
-DATA.forEach(group => {
-  const el = renderNode(group, 0);
-  tree.appendChild(el);
-  // auto-expand top-level groups (Natural Sciences, Formal Sciences)
-  const children = el.querySelector('.children');
-  const arrow = el.querySelector('.arrow');
-  if (children) { children.classList.add('open'); arrow.classList.add('open'); }
+/* ── build subdomain panel content ── */
+function buildSubdomainPanel(domain, color) {
+  var panel = document.createElement('div');
+  panel.className = 'subdomain-panel';
+
+
+  function addLeafItem(sub, parent) {
+    var item = document.createElement('div');
+    item.className = 'sub-item';
+    item._name = (sub.name || '').toLowerCase();
+    item._code = (sub.code || '').toLowerCase();
+
+    var nm = document.createElement('span');
+    nm.className = 'sub-name';
+    nm.textContent = sub.name;
+    item.appendChild(nm);
+
+    if (sub.code) {
+      var cd = document.createElement('span');
+      cd.className = 'sub-code';
+      cd.textContent = sub.code;
+      item.appendChild(cd);
+    }
+
+    if (sub.maintainer) {
+      var badge = document.createElement('span');
+      badge.className = 'sub-reviewer';
+      badge.textContent = sub.maintainer.nameEn;
+      badge.style.background = 'linear-gradient(135deg, ' + color + '25, ' + color + '12)';
+      badge.style.color = color;
+      badge.style.border = '1px solid ' + color + '50';
+      badge.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (openCard) { var prev = openCard; openCard.remove(); openCard = null; if (prev._gh === sub.maintainer.github) return; }
+        var m = sub.maintainer;
+        var card = document.createElement('div');
+        card.className = 'reviewer-card';
+        card._gh = m.github;
+        card.style.borderColor = color + '40';
+
+        var rn = document.createElement('div'); rn.className = 'rc-name'; rn.textContent = m.name + ' / ' + m.nameEn; card.appendChild(rn);
+        var rr = document.createElement('div'); rr.className = 'rc-role'; rr.textContent = m.role + ' \u00b7 ' + m.affiliation; card.appendChild(rr);
+        var rl = document.createElement('a'); rl.className = 'rc-link'; rl.href = 'https://github.com/' + m.github; rl.target = '_blank'; rl.rel = 'noopener'; rl.textContent = '@' + m.github + ' \u2192'; card.appendChild(rl);
+        if (m.homepage) {
+          var rh = document.createElement('a'); rh.className = 'rc-link'; rh.href = m.homepage; rh.target = '_blank'; rh.rel = 'noopener'; rh.textContent = '\ud83d\udd17 ' + m.homepage.replace(/^https?:\/\//, ''); card.appendChild(rh);
+        }
+        item.insertAdjacentElement('afterend', card);
+        openCard = card;
+      });
+      item.appendChild(badge);
+    }
+
+    parent.appendChild(item);
+  }
+
+  function addChildren(children, parentEl) {
+    children.forEach(function(sub) {
+      if (sub.children && sub.children.length > 0) {
+        /* Sub-group (e.g. Astrophysics, Condensed Matter) */
+        var hdr = document.createElement('div');
+        hdr.className = 'sub-group-header';
+        hdr._name = (sub.name || '').toLowerCase();
+        hdr._code = (sub.code || '').toLowerCase();
+
+        var arr = document.createElement('span'); arr.className = 'sg-arrow'; arr.textContent = '\u25b6'; hdr.appendChild(arr);
+        var hn = document.createElement('span'); hn.textContent = sub.name; hdr.appendChild(hn);
+        if (sub.code) { var hc = document.createElement('span'); hc.className = 'sg-code'; hc.textContent = sub.code; hdr.appendChild(hc); }
+        var cnt = document.createElement('span'); cnt.className = 'sg-count'; cnt.textContent = sub.children.length; hdr.appendChild(cnt);
+
+        var kids = document.createElement('div');
+        kids.className = 'sub-group-kids';
+
+        hdr.addEventListener('click', function() {
+          kids.classList.toggle('open');
+          arr.classList.toggle('open');
+        });
+
+        parentEl.appendChild(hdr);
+        addChildren(sub.children, kids);
+        parentEl.appendChild(kids);
+      } else {
+        addLeafItem(sub, parentEl);
+      }
+    });
+  }
+
+  addChildren(domain.children, panel);
+  return panel;
+}
+
+/* ── build tree graph ── */
+var container = document.getElementById('tree-container');
+var graph = document.createElement('div');
+graph.className = 'tree-graph';
+
+/* Root node */
+var rootNode = document.createElement('div');
+rootNode.className = 'tnode tnode-root';
+var rootBox = document.createElement('div');
+rootBox.className = 'tnode-box';
+rootBox.textContent = '\ud83c\udf0d OpenScientist';
+rootNode.appendChild(rootBox);
+graph.appendChild(rootNode);
+
+/* Groups level */
+var groupKids = document.createElement('div');
+groupKids.className = 'tnode-kids';
+
+DATA.forEach(function(group) {
+  var gNode = document.createElement('div');
+  gNode.className = 'tnode tnode-group';
+
+  var gBox = document.createElement('div');
+  gBox.className = 'tnode-box';
+  var gIcon = document.createElement('span'); gIcon.className = 'icon'; gIcon.textContent = group.icon; gBox.appendChild(gIcon);
+  var gName = document.createTextNode(group.name); gBox.appendChild(gName);
+  gNode.appendChild(gBox);
+
+  /* Domain level */
+  var domainKids = document.createElement('div');
+  domainKids.className = 'tnode-kids';
+
+  group.children.forEach(function(domain) {
+    var dNode = document.createElement('div');
+    dNode.className = 'tnode tnode-domain';
+    dNode.style.setProperty('--dcolor', domain.color);
+
+    var dBox = document.createElement('div');
+    dBox.className = 'tnode-box';
+    dBox.style.borderColor = domain.color + '60';
+    dBox.style.background = 'linear-gradient(135deg, ' + domain.color + '18, ' + domain.color + '08)';
+
+    var topRow = document.createElement('div'); topRow.className = 'dbox-top';
+    var dIcon = document.createElement('span'); dIcon.className = 'icon'; dIcon.textContent = domain.icon; topRow.appendChild(dIcon);
+    var leafCount = countLeaves(domain);
+    var bc = document.createElement('span'); bc.className = 'badge-count'; bc.textContent = leafCount; topRow.appendChild(bc);
+    dBox.appendChild(topRow);
+
+    var dName = document.createElement('div'); dName.className = 'dbox-name'; dName.textContent = domain.name;
+    dBox.appendChild(dName);
+
+    dNode.appendChild(dBox);
+
+    /* Subdomain panel */
+    var panel = buildSubdomainPanel(domain, domain.color);
+    dNode.appendChild(panel);
+
+    dBox.addEventListener('click', function() {
+      panel.classList.toggle('open');
+      dNode.classList.toggle('active');
+    });
+
+    domainKids.appendChild(dNode);
+  });
+
+  gNode.appendChild(domainKids);
+  groupKids.appendChild(gNode);
+});
+
+rootNode.appendChild(groupKids);
+container.appendChild(graph);
+
+/* ── search ── */
+var searchInput = document.getElementById('search-input');
+var searchClear = document.getElementById('search-clear');
+
+searchInput.addEventListener('input', function() {
+  var q = searchInput.value.trim().toLowerCase();
+  searchClear.classList.toggle('visible', q.length > 0);
+
+  /* Reset all search highlights */
+  document.querySelectorAll('.sub-item').forEach(function(el) { el.classList.remove('search-match'); });
+  document.querySelectorAll('.sub-group-kids').forEach(function(el) { el.classList.remove('open'); });
+  document.querySelectorAll('.sg-arrow').forEach(function(el) { el.classList.remove('open'); });
+
+  if (!q) { closePanel(); return; }
+
+  /* Find first matching domain and open it */
+  var bestDomain = null;
+  var bestNode = null;
+
+  document.querySelectorAll('.tnode-domain').forEach(function(dNode, idx) {
+    var panel = dNode.querySelector('.subdomain-panel');
+    if (!panel) return;
+    var items = panel.querySelectorAll('.sub-item');
+    var headers = panel.querySelectorAll('.sub-group-header');
+    var hasMatch = false;
+
+    items.forEach(function(item) {
+      if ((item._name && item._name.includes(q)) || (item._code && item._code.includes(q))) {
+        item.classList.add('search-match');
+        hasMatch = true;
+        /* expand parent sub-group if any */
+        var prev = item.previousElementSibling;
+        var parent = item.parentElement;
+        if (parent && parent.classList.contains('sub-group-kids')) {
+          parent.classList.add('open');
+          var hdr = parent.previousElementSibling;
+          if (hdr) {
+            var arrow = hdr.querySelector('.sg-arrow');
+            if (arrow) arrow.classList.add('open');
+          }
+        }
+      }
+    });
+
+    headers.forEach(function(hdr) {
+      if ((hdr._name && hdr._name.includes(q)) || (hdr._code && hdr._code.includes(q))) {
+        hasMatch = true;
+        var kids = hdr.nextElementSibling;
+        if (kids) {
+          kids.classList.add('open');
+          var arrow = hdr.querySelector('.sg-arrow');
+          if (arrow) arrow.classList.add('open');
+        }
+      }
+    });
+
+    if (hasMatch && !bestNode) {
+      bestNode = dNode;
+    }
+  });
+
+  /* Open the first matching domain's panel */
+  if (bestNode) {
+    closePanel();
+    var panel = bestNode.querySelector('.subdomain-panel');
+    activeDomain = bestNode;
+    activePanel = panel;
+    bestNode.classList.add('active');
+    panel.classList.add('open');
+    backdrop.classList.add('open');
+  }
+});
+
+searchClear.addEventListener('click', function() {
+  searchInput.value = '';
+  searchInput.dispatchEvent(new Event('input'));
+  searchInput.focus();
 });
 </script>
 
