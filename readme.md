@@ -72,11 +72,11 @@ Each skill is a single `.md` file. Install it once, invoke it any time in Claude
 git clone https://github.com/HHHHHejia/OpenScientist.git
 
 # 2. Copy a skill (or symlink a whole domain)
-cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
+cp OpenScientist/skills/physics/quantum-physics/quantum-entanglement.md ~/.claude/skills/
 # or: ln -s $(pwd)/OpenScientist/skills/physics ~/.claude/skills/os-physics
 
 # 3. Invoke in Claude Code
-/quantum-mechanics  →  Claude reasons as a quantum physics expert
+/quantum-entanglement  →  Claude reasons as a quantum physics expert
 ```
 
 ### 2.2 What's inside a skill file?
@@ -121,14 +121,14 @@ We welcome contributions from domain experts. See [CONTRIBUTING.md](CONTRIBUTING
 - **Fork** this repo
 - **Copy the template** into the right domain folder:
   ```bash
-  cp skills/_template.md skills/<domain>/<your-skill-name>.md
+  cp skills/_template.md skills/<domain>/<subdomain>/<your-skill-name>.md
   ```
 - **Fill in every section** — Purpose, Domain Knowledge, Reasoning Protocol, Tools, Common Pitfalls
 - **Validate locally** (optional but recommended):
   ```bash
-  python tools/validate.py skills/<domain>/<your-skill-name>.md
+  python tools/validate.py skills/<domain>/<subdomain>/<your-skill-name>.md
   ```
-- **Open a pull request** — title format: `[physics] Add quantum-entanglement skill`
+- **Open a pull request** — title format: `[physics/quantum-physics] Add quantum-entanglement skill`
 
 A domain maintainer listed in [CODEOWNERS](CODEOWNERS) will be automatically assigned to review your PR for scientific accuracy.
 
@@ -233,11 +233,11 @@ OpenScientist 是一个精心策划的 **Claude Code Skills 库** —— 每个 
 git clone https://github.com/HHHHHejia/OpenScientist.git
 
 # 2. 复制 Skill（或符号链接整个领域）
-cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
+cp OpenScientist/skills/physics/quantum-physics/quantum-entanglement.md ~/.claude/skills/
 # 或：ln -s $(pwd)/OpenScientist/skills/physics ~/.claude/skills/os-physics
 
 # 3. 在 Claude Code 中调用
-/quantum-mechanics  →  Claude 以量子物理专家身份推理
+/quantum-entanglement  →  Claude 以量子物理专家身份推理
 ```
 
 ### 2.2 Skill 文件的结构
@@ -282,14 +282,14 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 - **Fork** 本仓库
 - **复制模板** 到对应领域文件夹：
   ```bash
-  cp skills/_template.md skills/<领域>/<你的skill名称>.md
+  cp skills/_template.md skills/<领域>/<子领域>/<你的skill名称>.md
   ```
 - **填写每个章节** —— Purpose、Domain Knowledge、Reasoning Protocol、Tools、Common Pitfalls
 - **本地验证**（推荐）：
   ```bash
-  python tools/validate.py skills/<领域>/<你的skill名称>.md
+  python tools/validate.py skills/<领域>/<子领域>/<你的skill名称>.md
   ```
-- **提交 Pull Request** —— 标题格式：`[physics] Add quantum-entanglement skill`
+- **提交 Pull Request** —— 标题格式：`[physics/quantum-physics] Add quantum-entanglement skill`
 
 [CODEOWNERS](CODEOWNERS) 中的领域维护者会自动收到 review 请求，负责审核科学内容的准确性。
 

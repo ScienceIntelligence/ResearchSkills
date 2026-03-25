@@ -21,15 +21,15 @@ cd OpenScientist
 
 ### 2.2 Create your skill file
 
-Copy the template and place it in the correct domain folder:
+Copy the template and place it in the correct subdomain folder:
 
 ```bash
-cp skills/_template.md skills/<domain>/<your-skill-name>.md
+cp skills/_template.md skills/<domain>/<subdomain>/<your-skill-name>.md
 ```
 
 **File naming:** lowercase, hyphen-separated. Examples:
-- `skills/physics/quantum-entanglement.md`
-- `skills/biology/crispr-gene-editing.md`
+- `skills/physics/quantum-physics/quantum-entanglement.md`
+- `skills/computer-science/machine-learning/transformer-architectures.md`
 
 ### 2.3 Fill in the template
 
@@ -41,13 +41,13 @@ Required frontmatter fields:
 ### 2.4 Validate locally (optional but recommended)
 
 ```bash
-python tools/validate.py skills/<domain>/<your-skill-name>.md
+python tools/validate.py skills/<domain>/<subdomain>/<your-skill-name>.md
 ```
 
 ### 2.5 Open a Pull Request
 
 - Target branch: `main`
-- Title format: `[<domain>] Add <skill-name> skill`
+- Title format: `[<domain>/<subdomain>] Add <skill-name> skill`
 - The PR template will prompt you for a checklist
 
 A domain maintainer listed in [CODEOWNERS](CODEOWNERS) will review your submission for scientific accuracy.
@@ -58,16 +58,14 @@ A domain maintainer listed in [CODEOWNERS](CODEOWNERS) will review your submissi
 
 Don't see your field represented? You can propose a new **subdomain** (a folder within an existing domain) or an entirely new **top-level domain**.
 
-### 3.1 New subdomain (e.g. `skills/physics/optics/`)
+### 3.1 New subdomain
 
-A subdomain is just a subfolder. You don't need prior approval — create it directly in your PR alongside your first skill:
+All 131 arXiv-aligned subdomain folders are pre-created under `skills/`. If you believe a subdomain is missing, create it directly in your PR alongside your first skill:
 
 ```bash
-mkdir skills/physics/optics
-cp skills/_template.md skills/physics/optics/geometrical-optics.md
+mkdir skills/physics/your-new-subdomain
+cp skills/_template.md skills/physics/your-new-subdomain/your-skill.md
 ```
-
-Add a `README.md` to the new folder describing the subdomain and any relevant context.
 
 ### 3.2 New top-level domain (e.g. `skills/earth-science/`)
 
@@ -139,15 +137,15 @@ cd OpenScientist
 
 ### 2.2 创建你的 Skill 文件
 
-复制模板，放置到对应领域文件夹：
+复制模板，放置到对应子领域文件夹：
 
 ```bash
-cp skills/_template.md skills/<领域>/<你的skill名称>.md
+cp skills/_template.md skills/<领域>/<子领域>/<你的skill名称>.md
 ```
 
 **命名规范：** 小写字母，用连字符分隔。例如：
-- `skills/physics/quantum-entanglement.md`
-- `skills/biology/crispr-gene-editing.md`
+- `skills/physics/quantum-physics/quantum-entanglement.md`
+- `skills/computer-science/machine-learning/transformer-architectures.md`
 
 ### 2.3 填写模板
 
@@ -159,13 +157,13 @@ cp skills/_template.md skills/<领域>/<你的skill名称>.md
 ### 2.4 本地验证（推荐）
 
 ```bash
-python tools/validate.py skills/<领域>/<你的skill名称>.md
+python tools/validate.py skills/<领域>/<子领域>/<你的skill名称>.md
 ```
 
 ### 2.5 提交 Pull Request
 
 - 目标分支：`main`
-- 标题格式：`[<领域>] Add <skill名称> skill`
+- 标题格式：`[<领域>/<子领域>] Add <skill名称> skill`
 - PR 模板会提示你完成检查清单
 
 [CODEOWNERS](CODEOWNERS) 中列出的领域维护者将审核你的提交。
@@ -176,16 +174,14 @@ python tools/validate.py skills/<领域>/<你的skill名称>.md
 
 没有看到你的研究方向？你可以提议新的**子领域**（在已有领域下新建文件夹）或全新的**顶层领域**。
 
-### 3.1 新子领域（例如 `skills/physics/optics/`）
+### 3.1 新子领域
 
-子领域就是一个子文件夹，无需事先审批——直接在 PR 中连同第一个 Skill 文件一起创建：
+所有 131 个 arXiv 对齐的子领域文件夹已预创建在 `skills/` 下。如果你认为缺少某个子领域，可以直接在 PR 中新建：
 
 ```bash
-mkdir skills/physics/optics
-cp skills/_template.md skills/physics/optics/geometrical-optics.md
+mkdir skills/physics/your-new-subdomain
+cp skills/_template.md skills/physics/your-new-subdomain/your-skill.md
 ```
-
-在新文件夹中添加一个 `README.md`，说明该子领域的范围和相关背景。
 
 ### 3.2 新顶层领域（例如 `skills/earth-science/`）
 

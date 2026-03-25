@@ -7,10 +7,11 @@ This document defines the complete specification for OpenScientist skill files.
 ## 1. File Location
 
 ```
-skills/<domain>/<skill-name>.md
+skills/<domain>/<subdomain>/<skill-name>.md
 ```
 
 - `domain` must match one of: `physics`, `mathematics`, `computer-science`, `quantitative-biology`, `statistics`, `eess`, `economics`, `quantitative-finance`
+- `subdomain` must match one of the arXiv-aligned subdomain folders under each domain (see `skills/<domain>/` for the full list)
 - `skill-name` must be lowercase, hyphen-separated
 
 ---
