@@ -14,7 +14,7 @@ body:
     attributes:
       label: English Name
       description: Your full name in English
-      placeholder: "e.g. Zesen Huang"
+      placeholder: "e.g. John Smith"
     validations:
       required: true
 
@@ -23,7 +23,7 @@ body:
     attributes:
       label: Chinese Name
       description: Your full name in Chinese
-      placeholder: "e.g. 黄泽森"
+      placeholder: "e.g. 张三"
     validations:
       required: true
 
@@ -32,7 +32,7 @@ body:
     attributes:
       label: GitHub Username
       description: Your GitHub username (without the @ symbol)
-      placeholder: "e.g. huangzesen"
+      placeholder: "e.g. zhangsan"
     validations:
       required: true
 
