@@ -1,10 +1,10 @@
-# Neuroscience Skills
+# Statistics Skills
 
-This folder contains Claude Code Skills for the **Neuroscience** domain.
+This folder contains Claude Code Skills for the **Statistics** domain (arXiv: stat).
 
 ## Maintainer
 
-*Seeking domain maintainer — open an issue if you are a Neuroscience expert interested in contributing.*
+*Seeking domain maintainer — open an issue if you are a Statistics expert interested in contributing.*
 
 ## Skills in This Domain
 

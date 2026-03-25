@@ -22,8 +22,9 @@ REQUIRED_FIELDS = {
 }
 
 VALID_DOMAINS = {
-    "physics", "biology", "chemistry", "mathematics",
-    "neuroscience", "computer-science",
+    "physics", "mathematics", "computer-science",
+    "quantitative-biology", "statistics", "eess",
+    "economics", "quantitative-finance",
 }
 
 VALID_EXPERTISE_LEVELS = {"beginner", "intermediate", "advanced"}

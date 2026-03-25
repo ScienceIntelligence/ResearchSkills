@@ -1,10 +1,10 @@
-# Biology Skills
+# Quantitative Finance Skills
 
-This folder contains Claude Code Skills for the **Biology** domain.
+This folder contains Claude Code Skills for the **Quantitative Finance** domain (arXiv: q-fin).
 
 ## Maintainer
 
-*Seeking domain maintainer — open an issue if you are a Biology expert interested in contributing.*
+*Seeking domain maintainer — open an issue if you are a Quantitative Finance expert interested in contributing.*
 
 ## Skills in This Domain
 

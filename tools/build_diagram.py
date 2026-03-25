@@ -15,17 +15,19 @@ SKILLS_DIR = REPO_ROOT / "skills"
 README = REPO_ROOT / "readme.md"
 
 DOMAIN_EMOJI = {
-    "physics":          "⚛️",
-    "biology":          "🧬",
-    "chemistry":        "⚗️",
-    "mathematics":      "➗",
-    "neuroscience":     "🧠",
-    "computer-science": "💻",
+    "physics":              "⚛️",
+    "mathematics":          "➗",
+    "computer-science":     "💻",
+    "quantitative-biology": "🧬",
+    "statistics":           "📊",
+    "eess":                 "⚡",
+    "economics":            "📈",
+    "quantitative-finance": "💹",
 }
 
-# Broad groupings for colour coding (add new domains here as needed)
-NATURAL_SCIENCES = {"physics", "biology", "chemistry", "neuroscience"}
-FORMAL_SCIENCES  = {"mathematics", "computer-science"}
+# Broad groupings for colour coding (arXiv-aligned)
+NATURAL_SCIENCES = {"physics", "quantitative-biology", "eess"}
+FORMAL_SCIENCES  = {"mathematics", "computer-science", "statistics", "economics", "quantitative-finance"}
 
 
 def label(name: str) -> str:

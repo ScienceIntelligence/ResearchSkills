@@ -132,15 +132,60 @@ A domain maintainer listed in [CODEOWNERS](CODEOWNERS) will be automatically ass
 
 <h2 align="center">4. Domains</h2>
 
+Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy). 8 domains, 155 subcategories.
 
-| Domain              | Skills | Maintainer(s)        |
-| --------------------- | -------- | ---------------------- |
-| ⚛️ Physics        | —     | *Seeking maintainer* |
-| 🧬 Biology          | —     | *Seeking maintainer* |
-| ⚗️ Chemistry      | —     | *Seeking maintainer* |
-| ➗ Mathematics      | —     | *Seeking maintainer* |
-| 🧠 Neuroscience     | —     | *Seeking maintainer* |
-| 💻 Computer Science | —     | *Seeking maintainer* |
+| Domain | arXiv | Subcategories | Maintainer(s) |
+|---|---|---|---|
+| ⚛️ Physics | astro-ph, cond-mat, gr-qc, hep, nlin, physics, ... | 51 | *Seeking maintainer* |
+| ➗ Mathematics | math | 32 | *Seeking maintainer* |
+| 💻 Computer Science | cs | 40 | *Seeking maintainer* |
+| 🧬 Quantitative Biology | q-bio | 10 | *Seeking maintainer* |
+| 📊 Statistics | stat | 6 | *Seeking maintainer* |
+| ⚡ Electrical Engineering & Systems Science | eess | 4 | *Seeking maintainer* |
+| 📈 Economics | econ | 3 | *Seeking maintainer* |
+| 💹 Quantitative Finance | q-fin | 9 | *Seeking maintainer* |
+
+### 4.1 ⚛️ Physics
+
+**Astrophysics (astro-ph):** Cosmology and Nongalactic Astrophysics (CO) · Earth and Planetary Astrophysics (EP) · Astrophysics of Galaxies (GA) · High Energy Astrophysical Phenomena (HE) · Instrumentation and Methods for Astrophysics (IM) · Solar and Stellar Astrophysics (SR)
+
+**Condensed Matter (cond-mat):** Disordered Systems and Neural Networks (dis-nn) · Mesoscale and Nanoscale Physics (mes-hall) · Materials Science (mtrl-sci) · Other Condensed Matter (other) · Quantum Gases (quant-gas) · Soft Condensed Matter (soft) · Statistical Mechanics (stat-mech) · Strongly Correlated Electrons (str-el) · Superconductivity (supr-con)
+
+**High Energy Physics:** Experiment (hep-ex) · Lattice (hep-lat) · Phenomenology (hep-ph) · Theory (hep-th)
+
+**General Relativity and Quantum Cosmology** (gr-qc) · **Mathematical Physics** (math-ph) · **Nuclear Experiment** (nucl-ex) · **Nuclear Theory** (nucl-th) · **Quantum Physics** (quant-ph)
+
+**Nonlinear Sciences (nlin):** Adaptation and Self-Organizing Systems (AO) · Chaotic Dynamics (CD) · Cellular Automata and Lattice Gases (CG) · Pattern Formation and Solitons (PS) · Exactly Solvable and Integrable Systems (SI)
+
+**Physics (physics):** Accelerator Physics (acc-ph) · Atmospheric and Oceanic Physics (ao-ph) · Applied Physics (app-ph) · Atomic and Molecular Clusters (atm-clus) · Atomic Physics (atom-ph) · Biological Physics (bio-ph) · Chemical Physics (chem-ph) · Classical Physics (class-ph) · Computational Physics (comp-ph) · Data Analysis, Statistics and Probability (data-an) · Fluid Dynamics (flu-dyn) · General Physics (gen-ph) · Geophysics (geo-ph) · Instrumentation and Detectors (ins-det) · Medical Physics (med-ph) · Optics (optics) · Plasma Physics (plasm-ph) · Space Physics (space-ph)
+
+### 4.2 ➗ Mathematics (math)
+
+Commutative Algebra (AC) · Algebraic Geometry (AG) · Analysis of PDEs (AP) · Algebraic Topology (AT) · Classical Analysis and ODEs (CA) · Combinatorics (CO) · Category Theory (CT) · Complex Variables (CV) · Differential Geometry (DG) · Dynamical Systems (DS) · Functional Analysis (FA) · General Mathematics (GM) · General Topology (GN) · Group Theory (GR) · Geometric Topology (GT) · History and Overview (HO) · Information Theory (IT) · K-Theory and Homology (KT) · Logic (LO) · Metric Geometry (MG) · Mathematical Physics (MP) · Numerical Analysis (NA) · Number Theory (NT) · Operator Algebras (OA) · Optimization and Control (OC) · Probability (PR) · Quantum Algebra (QA) · Rings and Algebras (RA) · Representation Theory (RT) · Symplectic Geometry (SG) · Spectral Theory (SP) · Statistics Theory (ST)
+
+### 4.3 💻 Computer Science (cs)
+
+Artificial Intelligence (AI) · Hardware Architecture (AR) · Computational Complexity (CC) · Computational Engineering, Finance, and Science (CE) · Computational Geometry (CG) · Computation and Language (CL) · Cryptography and Security (CR) · Computer Vision and Pattern Recognition (CV) · Computers and Society (CY) · Databases (DB) · Distributed, Parallel, and Cluster Computing (DC) · Digital Libraries (DL) · Discrete Mathematics (DM) · Data Structures and Algorithms (DS) · Emerging Technologies (ET) · Formal Languages and Automata Theory (FL) · General Literature (GL) · Graphics (GR) · Computer Science and Game Theory (GT) · Human-Computer Interaction (HC) · Information Retrieval (IR) · Information Theory (IT) · Machine Learning (LG) · Logic in Computer Science (LO) · Multiagent Systems (MA) · Multimedia (MM) · Mathematical Software (MS) · Numerical Analysis (NA) · Neural and Evolutionary Computing (NE) · Networking and Internet Architecture (NI) · Other Computer Science (OH) · Operating Systems (OS) · Performance (PF) · Programming Languages (PL) · Robotics (RO) · Symbolic Computation (SC) · Sound (SD) · Software Engineering (SE) · Social and Information Networks (SI) · Systems and Control (SY)
+
+### 4.4 🧬 Quantitative Biology (q-bio)
+
+Biomolecules (BM) · Cell Behavior (CB) · Genomics (GN) · Molecular Networks (MN) · Neurons and Cognition (NC) · Other Quantitative Biology (OT) · Populations and Evolution (PE) · Quantitative Methods (QM) · Subcellular Processes (SC) · Tissues and Organs (TO)
+
+### 4.5 📊 Statistics (stat)
+
+Applications (AP) · Computation (CO) · Methodology (ME) · Machine Learning (ML) · Other Statistics (OT) · Statistics Theory (TH)
+
+### 4.6 ⚡ Electrical Engineering and Systems Science (eess)
+
+Audio and Speech Processing (AS) · Image and Video Processing (IV) · Signal Processing (SP) · Systems and Control (SY)
+
+### 4.7 📈 Economics (econ)
+
+Econometrics (EM) · General Economics (GN) · Theoretical Economics (TH)
+
+### 4.8 💹 Quantitative Finance (q-fin)
+
+Computational Finance (CP) · Economics (EC) · General Finance (GN) · Mathematical Finance (MF) · Portfolio Management (PM) · Pricing of Securities (PR) · Risk Management (RM) · Statistical Finance (ST) · Trading and Market Microstructure (TR)
 
 ---
 
@@ -288,15 +333,60 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 
 <h2 align="center">4. 领域列表</h2>
 
+对齐 [arXiv 分类体系](https://arxiv.org/category_taxonomy)。8 个顶层领域，155 个子领域。
 
-| 领域                       | Skills 数量 | 维护者   |
-| ---------------------------- | ------------- | ---------- |
-| ⚛️ Physics 物理          | —          | *招募中* |
-| 🧬 Biology 生物            | —          | *招募中* |
-| ⚗️ Chemistry 化学        | —          | *招募中* |
-| ➗ Mathematics 数学        | —          | *招募中* |
-| 🧠 Neuroscience 神经科学   | —          | *招募中* |
-| 💻 Computer Science 计算机 | —          | *招募中* |
+| 领域 | arXiv | 子领域数 | 维护者 |
+|---|---|---|---|
+| ⚛️ Physics 物理 | astro-ph, cond-mat, gr-qc, hep, nlin, physics, ... | 51 | *招募中* |
+| ➗ Mathematics 数学 | math | 32 | *招募中* |
+| 💻 Computer Science 计算机科学 | cs | 40 | *招募中* |
+| 🧬 Quantitative Biology 定量生物学 | q-bio | 10 | *招募中* |
+| 📊 Statistics 统计学 | stat | 6 | *招募中* |
+| ⚡ Electrical Engineering & Systems Science 电气工程与系统科学 | eess | 4 | *招募中* |
+| 📈 Economics 经济学 | econ | 3 | *招募中* |
+| 💹 Quantitative Finance 定量金融 | q-fin | 9 | *招募中* |
+
+### 4.1 ⚛️ Physics 物理
+
+**Astrophysics (astro-ph):** Cosmology and Nongalactic Astrophysics (CO) · Earth and Planetary Astrophysics (EP) · Astrophysics of Galaxies (GA) · High Energy Astrophysical Phenomena (HE) · Instrumentation and Methods for Astrophysics (IM) · Solar and Stellar Astrophysics (SR)
+
+**Condensed Matter (cond-mat):** Disordered Systems and Neural Networks (dis-nn) · Mesoscale and Nanoscale Physics (mes-hall) · Materials Science (mtrl-sci) · Other Condensed Matter (other) · Quantum Gases (quant-gas) · Soft Condensed Matter (soft) · Statistical Mechanics (stat-mech) · Strongly Correlated Electrons (str-el) · Superconductivity (supr-con)
+
+**High Energy Physics:** Experiment (hep-ex) · Lattice (hep-lat) · Phenomenology (hep-ph) · Theory (hep-th)
+
+**General Relativity and Quantum Cosmology** (gr-qc) · **Mathematical Physics** (math-ph) · **Nuclear Experiment** (nucl-ex) · **Nuclear Theory** (nucl-th) · **Quantum Physics** (quant-ph)
+
+**Nonlinear Sciences (nlin):** Adaptation and Self-Organizing Systems (AO) · Chaotic Dynamics (CD) · Cellular Automata and Lattice Gases (CG) · Pattern Formation and Solitons (PS) · Exactly Solvable and Integrable Systems (SI)
+
+**Physics (physics):** Accelerator Physics (acc-ph) · Atmospheric and Oceanic Physics (ao-ph) · Applied Physics (app-ph) · Atomic and Molecular Clusters (atm-clus) · Atomic Physics (atom-ph) · Biological Physics (bio-ph) · Chemical Physics (chem-ph) · Classical Physics (class-ph) · Computational Physics (comp-ph) · Data Analysis, Statistics and Probability (data-an) · Fluid Dynamics (flu-dyn) · General Physics (gen-ph) · Geophysics (geo-ph) · Instrumentation and Detectors (ins-det) · Medical Physics (med-ph) · Optics (optics) · Plasma Physics (plasm-ph) · Space Physics (space-ph)
+
+### 4.2 ➗ Mathematics 数学 (math)
+
+Commutative Algebra (AC) · Algebraic Geometry (AG) · Analysis of PDEs (AP) · Algebraic Topology (AT) · Classical Analysis and ODEs (CA) · Combinatorics (CO) · Category Theory (CT) · Complex Variables (CV) · Differential Geometry (DG) · Dynamical Systems (DS) · Functional Analysis (FA) · General Mathematics (GM) · General Topology (GN) · Group Theory (GR) · Geometric Topology (GT) · History and Overview (HO) · Information Theory (IT) · K-Theory and Homology (KT) · Logic (LO) · Metric Geometry (MG) · Mathematical Physics (MP) · Numerical Analysis (NA) · Number Theory (NT) · Operator Algebras (OA) · Optimization and Control (OC) · Probability (PR) · Quantum Algebra (QA) · Rings and Algebras (RA) · Representation Theory (RT) · Symplectic Geometry (SG) · Spectral Theory (SP) · Statistics Theory (ST)
+
+### 4.3 💻 Computer Science 计算机科学 (cs)
+
+Artificial Intelligence (AI) · Hardware Architecture (AR) · Computational Complexity (CC) · Computational Engineering, Finance, and Science (CE) · Computational Geometry (CG) · Computation and Language (CL) · Cryptography and Security (CR) · Computer Vision and Pattern Recognition (CV) · Computers and Society (CY) · Databases (DB) · Distributed, Parallel, and Cluster Computing (DC) · Digital Libraries (DL) · Discrete Mathematics (DM) · Data Structures and Algorithms (DS) · Emerging Technologies (ET) · Formal Languages and Automata Theory (FL) · General Literature (GL) · Graphics (GR) · Computer Science and Game Theory (GT) · Human-Computer Interaction (HC) · Information Retrieval (IR) · Information Theory (IT) · Machine Learning (LG) · Logic in Computer Science (LO) · Multiagent Systems (MA) · Multimedia (MM) · Mathematical Software (MS) · Numerical Analysis (NA) · Neural and Evolutionary Computing (NE) · Networking and Internet Architecture (NI) · Other Computer Science (OH) · Operating Systems (OS) · Performance (PF) · Programming Languages (PL) · Robotics (RO) · Symbolic Computation (SC) · Sound (SD) · Software Engineering (SE) · Social and Information Networks (SI) · Systems and Control (SY)
+
+### 4.4 🧬 Quantitative Biology 定量生物学 (q-bio)
+
+Biomolecules (BM) · Cell Behavior (CB) · Genomics (GN) · Molecular Networks (MN) · Neurons and Cognition (NC) · Other Quantitative Biology (OT) · Populations and Evolution (PE) · Quantitative Methods (QM) · Subcellular Processes (SC) · Tissues and Organs (TO)
+
+### 4.5 📊 Statistics 统计学 (stat)
+
+Applications (AP) · Computation (CO) · Methodology (ME) · Machine Learning (ML) · Other Statistics (OT) · Statistics Theory (TH)
+
+### 4.6 ⚡ Electrical Engineering and Systems Science 电气工程与系统科学 (eess)
+
+Audio and Speech Processing (AS) · Image and Video Processing (IV) · Signal Processing (SP) · Systems and Control (SY)
+
+### 4.7 📈 Economics 经济学 (econ)
+
+Econometrics (EM) · General Economics (GN) · Theoretical Economics (TH)
+
+### 4.8 💹 Quantitative Finance 定量金融 (q-fin)
+
+Computational Finance (CP) · Economics (EC) · General Finance (GN) · Mathematical Finance (MF) · Portfolio Management (PM) · Pricing of Securities (PR) · Risk Management (RM) · Statistical Finance (ST) · Trading and Market Microstructure (TR)
 
 ---
 

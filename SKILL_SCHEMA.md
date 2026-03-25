@@ -10,7 +10,7 @@ This document defines the complete specification for OpenScientist skill files.
 skills/<domain>/<skill-name>.md
 ```
 
-- `domain` must match one of: `physics`, `biology`, `chemistry`, `mathematics`, `neuroscience`, `computer-science`
+- `domain` must match one of: `physics`, `mathematics`, `computer-science`, `quantitative-biology`, `statistics`, `eess`, `economics`, `quantitative-finance`
 - `skill-name` must be lowercase, hyphen-separated
 
 ---
@@ -21,7 +21,7 @@ skills/<domain>/<skill-name>.md
 ---
 name: <string>                  # REQUIRED. Unique identifier. Lowercase, hyphen-separated. Used as the Claude Code skill invocation name.
 description: <string>           # REQUIRED. 1-2 sentences. When should this skill be invoked? What does it do?
-domain: <string>                # REQUIRED. One of: physics | biology | chemistry | mathematics | neuroscience | computer-science
+domain: <string>                # REQUIRED. One of: physics | mathematics | computer-science | quantitative-biology | statistics | eess | economics | quantitative-finance
 subdomain: <string>             # optional. More specific area within the domain.
 author: <string>                # REQUIRED. "Full Name (Affiliation)" — e.g. "Dr. Albert Einstein (ETH Zürich Physics)"
 expertise_level: <string>       # REQUIRED. One of: beginner | intermediate | advanced

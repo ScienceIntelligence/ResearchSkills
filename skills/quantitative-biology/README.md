@@ -1,10 +1,10 @@
-# Chemistry Skills
+# Quantitative Biology Skills
 
-This folder contains Claude Code Skills for the **Chemistry** domain.
+This folder contains Claude Code Skills for the **Quantitative Biology** domain (arXiv: q-bio).
 
 ## Maintainer
 
-*Seeking domain maintainer — open an issue if you are a Chemistry expert interested in contributing.*
+*Seeking domain maintainer — open an issue if you are a Quantitative Biology expert interested in contributing.*
 
 ## Skills in This Domain
 
