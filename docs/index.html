@@ -146,12 +146,29 @@
   }
 
   .maintainer-badge {
-    font-size: 0.72rem;
-    background: rgba(74, 144, 217, 0.15);
-    color: #7eb8f7;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-left: 4px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(16, 185, 129, 0.12));
+    color: #34d399;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-left: 8px;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    letter-spacing: 0.02em;
+    animation: maintainer-glow 3s ease-in-out infinite alternate;
+  }
+  @keyframes maintainer-glow {
+    from { box-shadow: 0 0 4px rgba(52, 211, 153, 0.15); }
+    to   { box-shadow: 0 0 12px rgba(52, 211, 153, 0.3); }
+  }
+  .has-maintainer > .node-label {
+    background: rgba(52, 211, 153, 0.04);
+    border-left: 2px solid rgba(52, 211, 153, 0.4);
+    padding-left: 14px;
+    border-radius: 6px;
+  }
+  .has-maintainer > .node-label .name {
+    color: #d0e8dc !important;
   }
 
   /* ── responsive ── */
@@ -237,12 +254,13 @@ const DATA = [
         { name: "Atomic and Molecular Clusters", code: "physics.atm-clus" },
         { name: "Atomic Physics", code: "physics.atom-ph" },
         { name: "Biological Physics", code: "physics.bio-ph" },
-        { name: "Chemical Physics", code: "physics.chem-ph" },
+        { name: "Chemical Physics", code: "physics.chem-ph", maintainer: "@Alexandrina-Chen (Flatiron)" },
         { name: "Classical Physics", code: "physics.class-ph" },
         { name: "Computational Physics", code: "physics.comp-ph" },
         { name: "Data Analysis, Statistics and Probability", code: "physics.data-an" },
         { name: "Fluid Dynamics", code: "physics.flu-dyn" },
         { name: "General Physics", code: "physics.gen-ph" },
+        { name: "Earth System Modeling", code: "physics.esm", maintainer: "@ktwu01 (UT Austin)" },
         { name: "Geophysics", code: "physics.geo-ph" },
         { name: "Instrumentation and Detectors", code: "physics.ins-det" },
         { name: "Medical Physics", code: "physics.med-ph" },
@@ -307,7 +325,7 @@ const DATA = [
     ]},
     { name: "Computer Science", icon: "💻", code: "cs", children: [
       { name: "Artificial Intelligence", code: "cs.AI" },
-      { name: "Hardware Architecture", code: "cs.AR" },
+      { name: "Hardware Architecture", code: "cs.AR", maintainer: "@Zhichenzzz (UW)" },
       { name: "Computational Complexity", code: "cs.CC" },
       { name: "Computational Engineering, Finance, and Science", code: "cs.CE" },
       { name: "Computational Geometry", code: "cs.CG" },
@@ -385,7 +403,7 @@ function renderNode(node, depth) {
   const count = hasChildren ? countLeaves(node) : 0;
 
   const el = document.createElement('div');
-  el.className = `node depth-${depth}` + (isLeaf ? ' leaf-node' : '');
+  el.className = `node depth-${depth}` + (isLeaf ? ' leaf-node' : '') + (node.maintainer ? ' has-maintainer' : '');
 
   const label = document.createElement('div');
   label.className = 'node-label';
@@ -430,7 +448,7 @@ function renderNode(node, depth) {
   if (node.maintainer) {
     const mt = document.createElement('span');
     mt.className = 'maintainer-badge';
-    mt.textContent = '👤 ' + node.maintainer;
+    mt.textContent = '✅ ' + node.maintainer;
     label.appendChild(mt);
   }
 
