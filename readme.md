@@ -144,8 +144,7 @@ A domain maintainer listed in [CODEOWNERS](CODEOWNERS) will be automatically ass
 
 ---
 
-<details open>
-<summary><strong>5. Repository Management</strong></summary>
+<h2 align="center">5. Repository Management</h2>
 
 ### 5.1 Domain ownership
 
@@ -170,8 +169,6 @@ skills/physics/    @their-github-handle
 
 - `draft` → `reviewed` (maintainer approves)
 - `reviewed` → `verified` (tested in a real workflow)
-
-</details>
 
 ---
 
@@ -303,8 +300,7 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 
 ---
 
-<details open>
-<summary><strong>5. 仓库管理</strong></summary>
+<h2 align="center">5. 仓库管理</h2>
 
 ### 5.1 领域归属
 
@@ -329,7 +325,5 @@ skills/physics/    @their-github-handle
 
 - `draft` → `reviewed`（维护者审核通过）
 - `reviewed` → `verified`（在真实工作流中验证）
-
-</details>
 
 </details>
