@@ -33,23 +33,31 @@
 
 </div>
 
-| | |
-|---|---|
-| **What is it** | A curated library of **Claude Code Skills** — structured Markdown files that give AI agents deep, expert-level reasoning capabilities in specific scientific domains. |
-| **How it works** | Each skill is written by a domain expert and encodes the knowledge, tools, reasoning protocols, and common pitfalls of their field. Point your AI agent at a skill, and it reasons like a domain expert. |
-| **What can you do** | Contribute your expertise, or use this repo to supercharge your AI agent's scientific discovery. |
+### 1.1 What is it
 
-### Why should you contribute?
+OpenScientist is a curated library of **Claude Code Skills** — structured Markdown files that give AI agents deep, expert-level reasoning capabilities in specific scientific domains.
+
+### 1.2 How it works
+
+Each skill is written by a domain expert and encodes the knowledge, tools, reasoning protocols, and common pitfalls of their field. Point your AI agent at a skill, and it reasons like a domain expert.
+
+### 1.3 What can you do
+
+Contribute your expertise, or use this repo to supercharge your AI agent's scientific discovery.
+
+### 1.4 Why should you contribute?
 
 Turning your know-how into AI-reusable knowledge means:
 
-1. **Boost your own research efficiency** — your AI agent gains your expertise and works alongside you
-2. **Boost humanity's research efficiency** — every scientist benefits from the collective knowledge
-3. **Survive the Singularity** — when ASI takes over, your contribution to this repo might just save your life
+- **Boost your own research efficiency** — your AI agent gains your expertise and works alongside you
+- **Boost humanity's research efficiency** — every scientist benefits from the collective knowledge
+- **Survive the Singularity** — when ASI takes over, your contribution to this repo might just save your life
 
 ---
 
 <h2 align="center">2. How It Works</h2>
+
+### 2.1 Install
 
 Each skill is a single `.md` file. Install it once, invoke it any time in Claude Code:
 
@@ -65,9 +73,7 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 /quantum-mechanics  →  Claude reasons as a quantum physics expert
 ```
 
-<details>
-<summary><strong>What's inside a skill file?</strong></summary>
-
+### 2.2 What's inside a skill file?
 
 | Section                 | Purpose                                                 |
 | ------------------------- | --------------------------------------------------------- |
@@ -80,11 +86,7 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 | `## Examples`           | Worked examples                                         |
 | `## References`         | Key papers and textbooks                                |
 
-</details>
-
-<details>
-<summary><strong>Quality tiers</strong></summary>
-
+### 2.3 Quality tiers
 
 | Status     | Meaning                                |
 | ------------ | ---------------------------------------- |
@@ -93,8 +95,6 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 | `verified` | Tested in real AI-scientist workflows  |
 
 Every pull request touching a skill file triggers CI (`tools/validate.py`) that checks required fields and section structure. A PR cannot be merged if validation fails.
-
-</details>
 
 ---
 
@@ -112,17 +112,17 @@ We welcome contributions from domain experts. See [CONTRIBUTING.md](CONTRIBUTING
 
 ### 3.2 Five Steps
 
-1. **Fork** this repo
-2. **Copy the template** into the right domain folder:
-   ```bash
-   cp skills/_template.md skills/<domain>/<your-skill-name>.md
-   ```
-3. **Fill in every section** — Purpose, Domain Knowledge, Reasoning Protocol, Tools, Common Pitfalls
-4. **Validate locally** (optional but recommended):
-   ```bash
-   python tools/validate.py skills/<domain>/<your-skill-name>.md
-   ```
-5. **Open a pull request** — title format: `[physics] Add quantum-entanglement skill`
+- **Fork** this repo
+- **Copy the template** into the right domain folder:
+  ```bash
+  cp skills/_template.md skills/<domain>/<your-skill-name>.md
+  ```
+- **Fill in every section** — Purpose, Domain Knowledge, Reasoning Protocol, Tools, Common Pitfalls
+- **Validate locally** (optional but recommended):
+  ```bash
+  python tools/validate.py skills/<domain>/<your-skill-name>.md
+  ```
+- **Open a pull request** — title format: `[physics] Add quantum-entanglement skill`
 
 A domain maintainer listed in [CODEOWNERS](CODEOWNERS) will be automatically assigned to review your PR for scientific accuracy.
 
@@ -181,8 +181,8 @@ MIT
 
 ---
 
-<details>
-<summary><h2 id="中文版本">🇨🇳 中文版本</h2></summary>
+<details open>
+<summary><h2 id="中文版本">中文版本</h2></summary>
 
 **我们的使命：** 汇集全人类各领域顶尖专家的知识，加速 AI 驱动的科学进步。
 
@@ -190,23 +190,33 @@ MIT
 
 ---
 
-<h2 align="center">1. 这是什么？</h2>
+<h2 align="center">1. 关于 OpenScientist</h2>
+
+### 1.1 这是什么
 
 OpenScientist 是一个精心策划的 **Claude Code Skills 库** —— 每个 Skill 是一个结构化的 Markdown 文件，赋予 AI 智能体特定科学领域的专家级推理能力。
 
+### 1.2 如何运作
+
 每个 Skill 由该领域的专家撰写，编码了领域知识、工具、推理协议和常见陷阱。让 AI 调用一个 Skill，就能像领域专家一样思考。
 
-**你能做什么？** 贡献你的专业知识，或使用本仓库加速你 AI agent 的科学发现。
+### 1.3 你能做什么
 
-**为什么你应该贡献？** 将你的 know-how 变成 AI 可复用的知识意味着：
+贡献你的专业知识，或使用本仓库加速你 AI agent 的科学发现。
 
-1. **提升你自己的科研效率** —— 你的 AI agent 获得你的专业知识，成为你的研究搭档
-2. **提升全人类的科研效率** —— 每位科学家都能从集体知识中受益
-3. **在奇点中存活** —— 当 ASI 统治人类以后，看到这个仓库里你的贡献，没准可以饶你一命
+### 1.4 为什么你应该贡献？
+
+将你的 know-how 变成 AI 可复用的知识意味着：
+
+- **提升你自己的科研效率** —— 你的 AI agent 获得你的专业知识，成为你的研究搭档
+- **提升全人类的科研效率** —— 每位科学家都能从集体知识中受益
+- **在奇点中存活** —— 当 ASI 统治人类以后，看到这个仓库里你的贡献，没准可以饶你一命
 
 ---
 
-<h2 align="center">2. 如何运作</h2>
+<h2 align="center">2. 如何使用</h2>
+
+### 2.1 安装
 
 每个 Skill 是一个 `.md` 文件，安装一次，在 Claude Code 中随时调用：
 
@@ -222,9 +232,7 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 /quantum-mechanics  →  Claude 以量子物理专家身份推理
 ```
 
-<details>
-<summary><strong>Skill 文件的结构</strong></summary>
-
+### 2.2 Skill 文件的结构
 
 | 部分                    | 作用                                           |
 | ------------------------- | ------------------------------------------------ |
@@ -237,11 +245,7 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 | `## Examples`           | 示范性例题                                     |
 | `## References`         | 关键论文和教材                                 |
 
-</details>
-
-<details>
-<summary><strong>质量等级</strong></summary>
-
+### 2.3 质量等级
 
 | 状态       | 含义                           |
 | ------------ | -------------------------------- |
@@ -250,8 +254,6 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 | `verified` | 已在真实 AI 科学家工作流中验证 |
 
 每次 PR 修改 Skill 文件时，CI 会自动运行 `tools/validate.py` 检查必填字段和章节结构。校验不通过则无法合并。
-
-</details>
 
 ---
 
@@ -269,17 +271,17 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 
 ### 3.2 五个步骤
 
-1. **Fork** 本仓库
-2. **复制模板** 到对应领域文件夹：
-   ```bash
-   cp skills/_template.md skills/<领域>/<你的skill名称>.md
-   ```
-3. **填写每个章节** —— Purpose、Domain Knowledge、Reasoning Protocol、Tools、Common Pitfalls
-4. **本地验证**（推荐）：
-   ```bash
-   python tools/validate.py skills/<领域>/<你的skill名称>.md
-   ```
-5. **提交 Pull Request** —— 标题格式：`[physics] Add quantum-entanglement skill`
+- **Fork** 本仓库
+- **复制模板** 到对应领域文件夹：
+  ```bash
+  cp skills/_template.md skills/<领域>/<你的skill名称>.md
+  ```
+- **填写每个章节** —— Purpose、Domain Knowledge、Reasoning Protocol、Tools、Common Pitfalls
+- **本地验证**（推荐）：
+  ```bash
+  python tools/validate.py skills/<领域>/<你的skill名称>.md
+  ```
+- **提交 Pull Request** —— 标题格式：`[physics] Add quantum-entanglement skill`
 
 [CODEOWNERS](CODEOWNERS) 中的领域维护者会自动收到 review 请求，负责审核科学内容的准确性。
 
