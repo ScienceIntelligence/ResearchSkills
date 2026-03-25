@@ -8,6 +8,7 @@
 
 # Domain maintainers (arXiv-aligned) — fill in as experts are onboarded
 skills/physics/                @HHHHHejia   # TODO: replace with physics maintainer
+skills/physics/space-physics/  @huangzesen @HHHHHejia
 skills/mathematics/            @HHHHHejia   # TODO: replace with math maintainer
 skills/computer-science/       @HHHHHejia   # TODO: replace with CS maintainer
 skills/quantitative-biology/   @HHHHHejia   # TODO: replace with q-bio maintainer

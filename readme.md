@@ -182,6 +182,16 @@ skills/physics/    @their-github-handle
 
 ---
 
+<h2 align="center">6. Maintainers</h2>
+
+| Domain | Subdomain | Maintainer | Affiliation |
+|---|---|---|---|
+| ⚛️ Physics | Space Physics | [@huangzesen](https://github.com/huangzesen) | UCLA Postdoc |
+
+> Want to maintain a subdomain? Open an issue or reach out to [@HHHHHejia](https://github.com/HHHHHejia).
+
+---
+
 ## License
 
 MIT
@@ -339,5 +349,15 @@ skills/physics/    @their-github-handle
 
 - `draft` → `reviewed`（维护者审核通过）
 - `reviewed` → `verified`（在真实工作流中验证）
+
+---
+
+<h2 align="center">6. 维护者</h2>
+
+| 领域 | 子领域 | 维护者 | 机构 |
+|---|---|---|---|
+| ⚛️ Physics | Space Physics | [@huangzesen](https://github.com/huangzesen) | UCLA Postdoc |
+
+> 想认领一个子领域？提交 Issue 或联系 [@HHHHHejia](https://github.com/HHHHHejia)。
 
 </details>
