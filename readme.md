@@ -8,20 +8,21 @@
 
 # 🌍 OpenScientist
 
-*"Wer nicht von dreitausend Jahren sich weiß Rechenschaft zu geben,*
-*bleibt im Dunkeln unerfahren, mag von Tag zu Tage leben."*
-
-不能汲取三千年历史经验的人，没有未来可言。
-
-*He who cannot draw on three thousand years of history is living hand to mouth.*
-
-— **Johann Wolfgang von Goethe**
+> *"Wer nicht von dreitausend Jahren sich weiß Rechenschaft zu geben,*
+> *bleibt im Dunkeln unerfahren, mag von Tag zu Tage leben."*
+>
+> 不能汲取三千年历史经验的人，没有未来可言。
+>
+> *He who cannot draw on three thousand years of history is living hand to mouth.*
+>
+> — **Johann Wolfgang von Goethe**
 
 <br>
 
-**Our mission:** Unite the knowledge of the world's top experts across every domain — to accelerate AI-driven scientific discovery.
-
-### Share your research expertise. Together, we create the AI-era Einstein, Da Vinci, and Kant.
+> [!IMPORTANT]
+> **Our mission:** Unite the knowledge of the world's top experts across every domain — to accelerate AI-driven scientific discovery.
+>
+> **Call for action:** Share your research expertise. Together, we create the AI-era Einstein, Da Vinci, and Kant.
 
 <p align="center">
   <img src="assets/knowledge-tree.png" alt="Knowledge Tree" width="100%">
@@ -29,7 +30,7 @@
 
 ---
 
-## 1. About OpenScientist
+<h2 align="center">1. About OpenScientist</h2>
 
 </div>
 
@@ -67,7 +68,7 @@ Turning your know-how into AI-reusable knowledge means:
 
 ---
 
-## 2. How It Works
+<h2 align="center">2. How It Works</h2>
 
 Each skill is a single `.md` file. Install it once, invoke it any time in Claude Code:
 
@@ -116,7 +117,7 @@ Every pull request touching a skill file triggers CI (`tools/validate.py`) that 
 
 ---
 
-## 3. How to Contribute
+<h2 align="center">3. How to Contribute</h2>
 
 We welcome contributions from domain experts. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
@@ -148,7 +149,7 @@ A domain maintainer listed in [CODEOWNERS](CODEOWNERS) will be automatically ass
 
 ---
 
-## 4. Domains
+<h2 align="center">4. Domains</h2>
 
 
 | Domain              | Skills | Maintainer(s)        |
@@ -202,17 +203,14 @@ MIT
 <details>
 <summary><h2 id="中文版本">🇨🇳 中文版本</h2></summary>
 
-<div align="center">
-
-**我们的使命：** 汇集全人类各领域顶尖专家的知识，加速 AI 驱动的科学进步。
-
-**共享你的研究知识，创造 AI 时代的爱因斯坦、达芬奇与康德。**
-
-</div>
+> [!IMPORTANT]
+> **我们的使命：** 汇集全人类各领域顶尖专家的知识，加速 AI 驱动的科学进步。
+>
+> **行动号召：** 共享你的研究知识，创造 AI 时代的爱因斯坦、达芬奇与康德。
 
 ---
 
-## 1. 这是什么？
+<h2 align="center">1. 这是什么？</h2>
 
 OpenScientist 是一个精心策划的 **Claude Code Skills 库** —— 每个 Skill 是一个结构化的 Markdown 文件，赋予 AI 智能体特定科学领域的专家级推理能力。
 
@@ -228,7 +226,7 @@ OpenScientist 是一个精心策划的 **Claude Code Skills 库** —— 每个 
 
 ---
 
-## 2. 如何运作
+<h2 align="center">2. 如何运作</h2>
 
 每个 Skill 是一个 `.md` 文件，安装一次，在 Claude Code 中随时调用：
 
@@ -277,7 +275,7 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 
 ---
 
-## 3. 如何贡献
+<h2 align="center">3. 如何贡献</h2>
 
 我们欢迎各领域专家贡献知识。请参阅 [CONTRIBUTING.md](CONTRIBUTING.md) 了解完整流程。
 
@@ -309,7 +307,7 @@ cp OpenScientist/skills/physics/quantum-mechanics.md ~/.claude/skills/
 
 ---
 
-## 4. 领域列表
+<h2 align="center">4. 领域列表</h2>
 
 
 | 领域                       | Skills 数量 | 维护者   |
