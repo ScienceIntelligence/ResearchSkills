@@ -197,6 +197,10 @@
     <a href="https://arxiv.org/category_taxonomy" target="_blank">arXiv category taxonomy</a>.
     Click any domain to expand.
   </p>
+  <div style="margin-top:20px; text-align:center;">
+    <input type="text" id="searchInput" placeholder="Search skills (e.g. quantum)..." style="padding: 12px 20px; width: 100%; max-width: 400px; border-radius: 8px; border: 1px solid rgba(74, 144, 217, 0.4); background: rgba(0,0,0,0.2); color: white; font-size: 1rem; outline: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: box-shadow 0.2s;">
+  </div>
+  <div id="searchResults" style="margin-top: 15px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;"></div>
 </header>
 
 <div class="tree" id="tree"></div>
@@ -481,6 +485,82 @@ DATA.forEach(group => {
   const children = el.querySelector('.children');
   const arrow = el.querySelector('.arrow');
   if (children) { children.classList.add('open'); arrow.classList.add('open'); }
+});
+
+// -- Search Engine Logic --
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const API_URL = 'https://api.github.com/repos/HHHHHejia/OpenScientist/git/trees/main?recursive=1';
+let availableSkills = [];
+
+// Fetch skills from GitHub on load
+fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+    if(data && data.tree) {
+      availableSkills = data.tree.filter(f => 
+        f.path.startsWith('skills/') && 
+        f.path.endsWith('.md') && 
+        !f.path.includes('_template') && 
+        !f.path.endsWith('README.md')
+      );
+    }
+  }).catch(err => console.error("Failed to fetch skills", err));
+
+searchInput.addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+  
+  // 1. Filter the domain tree
+  const allNodes = document.querySelectorAll('.node');
+  allNodes.forEach(node => {
+     const label = node.querySelector('.name');
+     if (!label) return;
+     if (term === '') {
+       node.style.display = '';
+     } else {
+       if (label.textContent.toLowerCase().includes(term)) {
+         node.style.display = '';
+         // expand parents
+         let parent = node.parentElement;
+         while(parent && parent.classList.contains('children')) {
+           parent.classList.add('open');
+           if (parent.previousElementSibling && parent.previousElementSibling.querySelector('.arrow')) {
+             parent.previousElementSibling.querySelector('.arrow').classList.add('open');
+           }
+           parent.parentElement.style.display = '';
+           parent = parent.parentElement.parentElement;
+         }
+       } else {
+         node.style.display = 'none';
+       }
+     }
+  });
+
+  // 2. Filter actual skill files & show CLI install command
+  if (term.length < 2) {
+    searchResults.innerHTML = '';
+    return;
+  }
+
+  const matches = availableSkills.filter(s => s.path.toLowerCase().includes(term));
+  if (matches.length > 0) {
+    searchResults.innerHTML = matches.map(m => `
+      <div style="background: rgba(74, 144, 217, 0.1); border: 1px solid rgba(74, 144, 217, 0.2); padding: 12px; margin-bottom: 8px; border-radius: 8px;">
+        <h4 style="color:#dce2f0; margin-bottom: 6px; display:flex; justify-content:space-between;">
+          <span>📄 ${m.path.replace('skills/', '')}</span>
+          <a href="https://github.com/HHHHHejia/OpenScientist/blob/main/${m.path}" target="_blank" style="color:#5a9cf5; font-size:0.8rem; text-decoration:none;">View Source ↗</a>
+        </h4>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <input readonly value="npx @openscientist/cli install ${m.path}" 
+                 style="font-size: 0.8rem; background:#111; padding:6px 10px; border-radius:4px; color:#5a9cf5; border:1px solid #333; width:75%; outline:none;" />
+          <button style="background: #34d399; color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight:bold; transition: background 0.2s;" 
+                  onclick="navigator.clipboard.writeText('npx @openscientist/cli install ${m.path}'); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000);">Copy</button>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    searchResults.innerHTML = '<div style="color: #7888a8; text-align:center; padding: 10px;">No specific skills found for this keyword yet. <a href="https://github.com/HHHHHejia/OpenScientist/discussions" style="color:#5a9cf5;">Request one!</a></div>';
+  }
 });
 </script>
 

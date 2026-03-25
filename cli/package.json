@@ -1,0 +1,13 @@
+{
+  "name": "@openscientist/cli",
+  "version": "1.0.0",
+  "description": "CLI to search and install Claude Code Skills from OpenScientist",
+  "main": "index.js",
+  "bin": {
+    "openscientist": "./index.js",
+    "oscd": "./index.js"
+  },
+  "keywords": ["claude", "skills", "openscientist", "ai", "mcp"],
+  "author": "OpenScientist",
+  "license": "MIT"
+}
