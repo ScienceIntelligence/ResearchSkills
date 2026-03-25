@@ -157,6 +157,10 @@ A domain reviewer listed in CODEOWNERS will be automatically assigned to review 
 
 - [**Propose a new area →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=propose-new-area.md)
 
+### 4.4 Need a skill but can't write it yourself?
+
+- [**Request a skill →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=skill-request.yml)
+
 ---
 
 <h2 align="center">5. Reviewers</h2>
@@ -342,6 +346,10 @@ CODEOWNERS 中的领域审稿人会自动收到 review 请求，负责审核科�
 ### 4.3 没有你的研究方向？
 
 - [**提议新领域 →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=propose-new-area.md)
+
+### 4.4 需要某个 Skill 但自己写不了？
+
+- [**请求 Skill →**](https://github.com/HHHHHejia/OpenScientist/issues/new?template=skill-request.yml)
 
 ---
 
