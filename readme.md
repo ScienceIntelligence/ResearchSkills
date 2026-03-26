@@ -444,4 +444,22 @@ CODEOWNERS 中的领域审稿人会自动收到 review 请求，负责审核科�
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HHHHHejia/OpenScientist&type=Date)](https://star-history.com/#HHHHHejia/OpenScientist&Date)
 
+---
+
+## Organizer
+
+<a href="https://www.tapntell.ai"><img src="utils/assets/organzier/1_tapntellai.jpg" alt="TapNTell AI" height="80"></a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://haven-intelligence.com"><img src="utils/assets/organzier/2_haven.svg" alt="Haven Intelligence" height="80"></a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://claw4s.github.io/"><img src="utils/assets/organzier/3_ai4sci.png" alt="AI4Sci" height="80"></a>
+
+---
+
+## Sponsor
+
+<a href="https://www.tapntell.ai"><img src="utils/assets/sponsor/1_tapntellai.jpg" alt="TapNTell AI" height="80"></a>
+
+*Interested in sponsoring OpenScientist? Contact us: **hejia@tapntell.ai***
+
 </div>
