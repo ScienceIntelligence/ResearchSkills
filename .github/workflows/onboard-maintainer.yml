@@ -333,7 +333,7 @@ jobs:
             git push
           fi
 
-      - name: Invite user to organization
+      - name: Add user as repo collaborator with write access
         uses: actions/github-script@v7
         env:
           USERNAME: ${{ steps.parse.outputs.github_username }}
@@ -341,26 +341,18 @@ jobs:
           github-token: ${{ secrets.PAT_TOKEN }}
           script: |
             const username = process.env.USERNAME;
-            const org = context.repo.owner;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
             try {
-              // Check if already a member
-              const { status } = await github.rest.orgs.checkMembershipForUser({ org, username });
-              if (status === 204) {
-                console.log(`@${username} is already a member of ${org}`);
-                return;
-              }
-            } catch (e) {
-              // 404 means not a member, proceed to invite
-            }
-            try {
-              await github.rest.orgs.createInvitation({
-                org,
-                invitee_id: (await github.rest.users.getByUsername({ username })).data.id,
-                role: 'direct_member',
+              await github.rest.repos.addCollaborator({
+                owner,
+                repo,
+                username,
+                permission: 'push',
               });
-              console.log(`Invited @${username} to ${org} as member`);
+              console.log(`Added @${username} as collaborator with write access`);
             } catch (e) {
-              console.log(`Failed to invite @${username}: ${e.message}`);
+              console.log(`Failed to add @${username} as collaborator: ${e.message}`);
             }
 
       - name: Close issue with comment
