@@ -50,23 +50,38 @@ jobs:
               return match[1].trim();
             }
 
+            // Extract checked checkboxes from "### Subdomain" section
+            function extractCheckedSubdomains() {
+              const sectionRegex = /### Subdomain\s*\n\n([\s\S]*?)(?=\n### |\n*$)/i;
+              const sectionMatch = body.match(sectionRegex);
+              if (!sectionMatch) {
+                core.setFailed('Could not find Subdomain section');
+                return [];
+              }
+              const lines = sectionMatch[1].split('\n');
+              const checked = [];
+              for (const line of lines) {
+                const m = line.match(/^- \[x\]\s*(.+)/i);
+                if (m) checked.push(m[1].trim());
+              }
+              return checked;
+            }
+
             const englishName = extractField('English Name');
             const chineseNameRaw = extractField('Chinese Name');
             const chineseName = (chineseNameRaw && chineseNameRaw !== '_No response_') ? chineseNameRaw : englishName;
-            // Use the issue author's GitHub username (more secure than self-reported)
             const githubUsername = context.payload.issue.user.login;
             const affiliation = extractField('Affiliation');
             const shortAffiliation = extractField('Short Affiliation');
             const role = extractField('Role');
             let homepage = extractField('Homepage');
-            const subdomainRaw = extractField('Subdomain');
 
-            // Extract domain from subdomain (format: "Domain / Subdomain")
-            if (!subdomainRaw.includes(' / ')) {
-              core.setFailed(`Invalid subdomain format (expected "Domain / Subdomain"): ${subdomainRaw}`);
+            // Parse checked subdomains (checkbox format)
+            const checkedSubdomains = extractCheckedSubdomains();
+            if (checkedSubdomains.length === 0) {
+              core.setFailed('No subdomain selected (no checkboxes checked)');
               return;
             }
-            const domain = subdomainRaw.split(' / ')[0];
 
             // Validate free-text fields against JS/HTML injection characters
             const fieldsToValidate = {
@@ -87,7 +102,7 @@ jobs:
               homepage = 'https://' + homepage;
             }
 
-            // Validate homepage: must be an https URL if provided
+            // Validate homepage
             if (homepage && homepage !== '_No response_') {
               if (!/^https:\/\/[^\s"\\]+$/.test(homepage)) {
                 core.setFailed(`Invalid homepage URL (must start with https:// and contain no spaces, quotes, or backslashes): ${homepage}`);
@@ -95,20 +110,6 @@ jobs:
               }
             }
 
-            // Subdomain dropdown value is "Domain / Display Name"
-            const subdomainDisplay = subdomainRaw.includes(' / ')
-              ? subdomainRaw.split(' / ').slice(1).join(' / ')
-              : subdomainRaw;
-
-            // Convert display name to folder name: lowercase, spaces to hyphens, remove special chars
-            const subdomainFolder = subdomainDisplay
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, '')
-              .replace(/\s+/g, '-')
-              .replace(/-+/g, '-')
-              .replace(/^-|-$/g, '');
-
-            // Map domain to folder name
             const folderMap = {
               'Physics': 'physics',
               'Mathematics': 'mathematics',
@@ -120,13 +121,28 @@ jobs:
               'Quantitative Finance': 'quantitative-finance',
             };
 
-            // Validate domain
-            if (!folderMap[domain]) {
-              core.setFailed(`Invalid domain: ${domain}`);
-              return;
+            // Build array of subdomain entries
+            const subdomains = [];
+            for (const raw of checkedSubdomains) {
+              if (!raw.includes(' / ')) {
+                core.setFailed(`Invalid subdomain format (expected "Domain / Subdomain"): ${raw}`);
+                return;
+              }
+              const domain = raw.split(' / ')[0];
+              const subdomainDisplay = raw.split(' / ').slice(1).join(' / ');
+              if (!folderMap[domain]) {
+                core.setFailed(`Invalid domain: ${domain}`);
+                return;
+              }
+              const domainFolder = folderMap[domain];
+              const subdomainFolder = subdomainDisplay
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+              subdomains.push({ domain, domainFolder, subdomainDisplay, subdomainFolder });
             }
-
-            const domainFolder = folderMap[domain];
 
             core.setOutput('english_name', englishName);
             core.setOutput('chinese_name', chineseName);
@@ -135,38 +151,36 @@ jobs:
             core.setOutput('short_affiliation', shortAffiliation);
             core.setOutput('role', role);
             core.setOutput('homepage', homepage);
-            core.setOutput('domain', domain);
-            core.setOutput('domain_folder', domainFolder);
-            core.setOutput('subdomain_display', subdomainDisplay);
-            core.setOutput('subdomain_folder', subdomainFolder);
+            core.setOutput('subdomains_json', JSON.stringify(subdomains));
 
             console.log(`Parsed: ${englishName} (${chineseName}), @${githubUsername}`);
             console.log(`Role: ${role}, Affiliation: ${affiliation}`);
-            console.log(`Domain: ${domain} (${domainFolder}), Subdomain: ${subdomainDisplay} (${subdomainFolder})`);
+            console.log(`Subdomains (${subdomains.length}):`, subdomains.map(s => `${s.domain}/${s.subdomainDisplay}`).join(', '));
 
       - name: Update CODEOWNERS
         env:
-          DOMAIN_FOLDER: ${{ steps.parse.outputs.domain_folder }}
-          SUBDOMAIN_FOLDER: ${{ steps.parse.outputs.subdomain_folder }}
+          SUBDOMAINS_JSON: ${{ steps.parse.outputs.subdomains_json }}
           USERNAME: ${{ steps.parse.outputs.github_username }}
         run: |
           CODEOWNERS_PATH=".github/CODEOWNERS"
-          NEW_LINE="skills/${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER}/  @${USERNAME} @HHHHHejia"
 
-          # Check if this subdomain line already exists
-          if grep -q "^skills/${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER}/" "$CODEOWNERS_PATH"; then
-            echo "CODEOWNERS entry for ${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER} already exists, updating..."
-            sed -i "s|^skills/${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER}/.*|${NEW_LINE}|" "$CODEOWNERS_PATH"
-          else
-            # Insert after the domain-level line
-            DOMAIN_LINE=$(grep -n "^skills/${DOMAIN_FOLDER}/ " "$CODEOWNERS_PATH" | head -1 | cut -d: -f1)
-            if [ -n "$DOMAIN_LINE" ]; then
-              sed -i "${DOMAIN_LINE}a\\${NEW_LINE}" "$CODEOWNERS_PATH"
+          for row in $(echo "$SUBDOMAINS_JSON" | jq -r '.[] | @base64'); do
+            DOMAIN_FOLDER=$(echo "$row" | base64 -d | jq -r '.domainFolder')
+            SUBDOMAIN_FOLDER=$(echo "$row" | base64 -d | jq -r '.subdomainFolder')
+            NEW_LINE="skills/${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER}/  @${USERNAME} @HHHHHejia"
+
+            if grep -q "^skills/${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER}/" "$CODEOWNERS_PATH"; then
+              echo "CODEOWNERS entry for ${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER} already exists, updating..."
+              sed -i "s|^skills/${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER}/.*|${NEW_LINE}|" "$CODEOWNERS_PATH"
             else
-              # If no domain-level line found, append to end
-              echo "$NEW_LINE" >> "$CODEOWNERS_PATH"
+              DOMAIN_LINE=$(grep -n "^skills/${DOMAIN_FOLDER}/ " "$CODEOWNERS_PATH" | head -1 | cut -d: -f1)
+              if [ -n "$DOMAIN_LINE" ]; then
+                sed -i "${DOMAIN_LINE}a\\${NEW_LINE}" "$CODEOWNERS_PATH"
+              else
+                echo "$NEW_LINE" >> "$CODEOWNERS_PATH"
+              fi
             fi
-          fi
+          done
 
           echo "Updated CODEOWNERS:"
           cat "$CODEOWNERS_PATH"
@@ -174,7 +188,7 @@ jobs:
       - name: Update docs/index.html
         uses: actions/github-script@v7
         env:
-          SUBDOMAIN_DISPLAY: ${{ steps.parse.outputs.subdomain_display }}
+          SUBDOMAINS_JSON: ${{ steps.parse.outputs.subdomains_json }}
           ENGLISH_NAME: ${{ steps.parse.outputs.english_name }}
           CHINESE_NAME: ${{ steps.parse.outputs.chinese_name }}
           USERNAME: ${{ steps.parse.outputs.github_username }}
@@ -187,7 +201,7 @@ jobs:
             const filePath = 'docs/index.html';
             let content = fs.readFileSync(filePath, 'utf8');
 
-            const subdomainDisplay = process.env.SUBDOMAIN_DISPLAY;
+            const subdomains = JSON.parse(process.env.SUBDOMAINS_JSON);
             const englishName = process.env.ENGLISH_NAME;
             const chineseName = process.env.CHINESE_NAME;
             const username = process.env.USERNAME;
@@ -195,52 +209,49 @@ jobs:
             const role = process.env.ROLE;
             const homepage = process.env.HOMEPAGE || '';
 
-            // Escape special chars for safe JS string literal insertion
             function escapeJS(s) { return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"'); }
 
-            // Build structured maintainer object as JS literal
             let maintainerObj = `{ name: "${escapeJS(chineseName)}", nameEn: "${escapeJS(englishName)}", github: "${username}", affiliation: "${escapeJS(shortAffiliation)}", role: "${escapeJS(role)}"`;
             if (homepage && homepage !== '_No response_') {
               maintainerObj += `, homepage: "${escapeJS(homepage)}"`;
             }
             maintainerObj += ' }';
 
-            const lines = content.split('\n');
-            let modified = false;
+            for (const sub of subdomains) {
+              const subdomainDisplay = sub.subdomainDisplay;
+              const lines = content.split('\n');
+              let modified = false;
 
-            for (let i = 0; i < lines.length; i++) {
-              if (lines[i].includes(`name: "${subdomainDisplay}"`) && !modified) {
-                const line = lines[i];
+              for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes(`name: "${subdomainDisplay}"`) && !modified) {
+                  const line = lines[i];
 
-                // Skip if this reviewer already exists on this node
-                if (line.includes(`github: "${username}"`)) {
-                  console.log(`Reviewer @${username} already exists on "${subdomainDisplay}", skipping`);
-                  modified = true;
-                  break;
-                }
+                  if (line.includes(`github: "${username}"`)) {
+                    console.log(`Reviewer @${username} already exists on "${subdomainDisplay}", skipping`);
+                    modified = true;
+                    break;
+                  }
 
-                if (line.includes('maintainer: [')) {
-                  // Maintainer array exists — append to it
-                  lines[i] = line.replace(/maintainer: \[/, `maintainer: [${maintainerObj}, `);
-                  modified = true;
-                } else if (line.includes('children:')) {
-                  // Parent node, no maintainer yet — add array before children
-                  lines[i] = line.replace(/, children:/, `, maintainer: [${maintainerObj}], children:`);
-                  modified = true;
-                } else if (line.match(/\}\s*,?\s*$/)) {
-                  // Leaf node, no maintainer yet — add array before closing }
-                  lines[i] = line.replace(/(\s*)\}\s*(,?)\s*$/, `, maintainer: [${maintainerObj}] $1}$2`);
-                  lines[i] = lines[i].replace(/\s+\}/, ' }');
-                  modified = true;
+                  if (line.includes('maintainer: [')) {
+                    lines[i] = line.replace(/maintainer: \[/, `maintainer: [${maintainerObj}, `);
+                    modified = true;
+                  } else if (line.includes('children:')) {
+                    lines[i] = line.replace(/, children:/, `, maintainer: [${maintainerObj}], children:`);
+                    modified = true;
+                  } else if (line.match(/\}\s*,?\s*$/)) {
+                    lines[i] = line.replace(/(\s*)\}\s*(,?)\s*$/, `, maintainer: [${maintainerObj}] $1}$2`);
+                    lines[i] = lines[i].replace(/\s+\}/, ' }');
+                    modified = true;
+                  }
                 }
               }
-            }
 
-            if (modified) {
-              content = lines.join('\n');
-              console.log(`Added maintainer for "${subdomainDisplay}"`);
-            } else {
-              console.log(`WARNING: Could not find node for "${subdomainDisplay}" in index.html`);
+              if (modified) {
+                content = lines.join('\n');
+                console.log(`Added maintainer for "${subdomainDisplay}"`);
+              } else {
+                console.log(`WARNING: Could not find node for "${subdomainDisplay}" in index.html`);
+              }
             }
 
             fs.writeFileSync(filePath, content);
@@ -248,33 +259,29 @@ jobs:
       - name: Update docs/reviewers.html
         uses: actions/github-script@v7
         env:
+          SUBDOMAINS_JSON: ${{ steps.parse.outputs.subdomains_json }}
           ENGLISH_NAME: ${{ steps.parse.outputs.english_name }}
           CHINESE_NAME: ${{ steps.parse.outputs.chinese_name }}
           USERNAME: ${{ steps.parse.outputs.github_username }}
           SHORT_AFFILIATION: ${{ steps.parse.outputs.short_affiliation }}
           ROLE: ${{ steps.parse.outputs.role }}
           HOMEPAGE: ${{ steps.parse.outputs.homepage }}
-          DOMAIN: ${{ steps.parse.outputs.domain }}
-          SUBDOMAIN_DISPLAY: ${{ steps.parse.outputs.subdomain_display }}
         with:
           script: |
             const fs = require('fs');
             const filePath = 'docs/reviewers.html';
             let content = fs.readFileSync(filePath, 'utf8');
 
+            const subdomains = JSON.parse(process.env.SUBDOMAINS_JSON);
             const englishName = process.env.ENGLISH_NAME;
             const chineseName = process.env.CHINESE_NAME;
             const username = process.env.USERNAME;
             const shortAffiliation = process.env.SHORT_AFFILIATION;
             const role = process.env.ROLE;
             const homepage = process.env.HOMEPAGE || '';
-            const domain = process.env.DOMAIN;
-            const subdomainDisplay = process.env.SUBDOMAIN_DISPLAY;
 
-            // Escape special chars for safe JS string literal insertion
             function escapeJS(s) { return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"'); }
 
-            // Domain color map (matches docs/index.html)
             const colorMap = {
               'Physics': '#f87171',
               'Quantitative Biology': '#fb923c',
@@ -285,51 +292,56 @@ jobs:
               'Economics': '#818cf8',
               'Quantitative Finance': '#c084fc',
             };
-            const color = colorMap[domain] || '#5a9cf5';
 
-            // Check if this reviewer already exists
-            if (content.includes(`github: "${username}"`)) {
-              console.log(`Reviewer @${username} already exists in reviewers.html, skipping`);
-              return;
+            for (const sub of subdomains) {
+              const domain = sub.domain;
+              const subdomainDisplay = sub.subdomainDisplay;
+              const color = colorMap[domain] || '#5a9cf5';
+              const fullSubdomain = domain + ' / ' + subdomainDisplay;
+
+              // Check if this reviewer already exists for this subdomain
+              if (content.includes(`github: "${username}"`) && content.includes(`subdomain: "${escapeJS(fullSubdomain)}"`)) {
+                console.log(`Reviewer @${username} already exists for "${fullSubdomain}" in reviewers.html, skipping`);
+                continue;
+              }
+
+              let entry = `  {\n`;
+              entry += `    name: "${escapeJS(englishName)}",\n`;
+              entry += `    nameCn: "${escapeJS(chineseName)}",\n`;
+              entry += `    role: "${escapeJS(role)}",\n`;
+              entry += `    affiliation: "${escapeJS(shortAffiliation)}",\n`;
+              entry += `    subdomain: "${escapeJS(fullSubdomain)}",\n`;
+              entry += `    github: "${username}",\n`;
+              if (homepage && homepage !== '_No response_') {
+                entry += `    homepage: "${escapeJS(homepage)}",\n`;
+              }
+              entry += `    color: "${color}"\n`;
+              entry += `  }`;
+
+              content = content.replace(
+                /(\n)\];/,
+                `,\n${entry}\n];`
+              );
+              console.log(`Added ${englishName} as ${fullSubdomain} reviewer to reviewers.html`);
             }
-
-            // Build new reviewer entry
-            const fullSubdomain = domain + ' / ' + subdomainDisplay;
-            let entry = `  {\n`;
-            entry += `    name: "${escapeJS(englishName)}",\n`;
-            entry += `    nameCn: "${escapeJS(chineseName)}",\n`;
-            entry += `    role: "${escapeJS(role)}",\n`;
-            entry += `    affiliation: "${escapeJS(shortAffiliation)}",\n`;
-            entry += `    subdomain: "${escapeJS(fullSubdomain)}",\n`;
-            entry += `    github: "${username}",\n`;
-            if (homepage && homepage !== '_No response_') {
-              entry += `    homepage: "${escapeJS(homepage)}",\n`;
-            }
-            entry += `    color: "${color}"\n`;
-            entry += `  }`;
-
-            // Insert before the closing "];" of the REVIEWERS array
-            content = content.replace(
-              /(\n)\];/,
-              `,\n${entry}\n];`
-            );
 
             fs.writeFileSync(filePath, content);
-            console.log(`Added ${englishName} to reviewers.html`);
 
       - name: Commit and push
         env:
           USERNAME: ${{ steps.parse.outputs.github_username }}
-          DOMAIN_FOLDER: ${{ steps.parse.outputs.domain_folder }}
-          SUBDOMAIN_FOLDER: ${{ steps.parse.outputs.subdomain_folder }}
+          SUBDOMAINS_JSON: ${{ steps.parse.outputs.subdomains_json }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .github/CODEOWNERS docs/index.html docs/reviewers.html
+
+          SUBDOMAIN_SUMMARY=$(echo "$SUBDOMAINS_JSON" | jq -r '[.[] | "\(.domainFolder)/\(.subdomainFolder)"] | join(", ")')
+
           if git diff --cached --quiet; then
             echo "No changes to commit (reviewer may already exist)"
           else
-            git commit -m "chore: onboard @${USERNAME} as ${DOMAIN_FOLDER}/${SUBDOMAIN_FOLDER} reviewer"
+            git commit -m "chore: onboard @${USERNAME} as ${SUBDOMAIN_SUMMARY} reviewer"
             git push
           fi
 
@@ -359,15 +371,13 @@ jobs:
         uses: actions/github-script@v7
         env:
           MAINTAINER_USERNAME: ${{ steps.parse.outputs.github_username }}
-          MAINTAINER_DOMAIN: ${{ steps.parse.outputs.domain }}
-          MAINTAINER_SUBDOMAIN: ${{ steps.parse.outputs.subdomain_display }}
+          SUBDOMAINS_JSON: ${{ steps.parse.outputs.subdomains_json }}
         with:
           script: |
             const username = process.env.MAINTAINER_USERNAME;
-            const domain = process.env.MAINTAINER_DOMAIN;
-            const subdomain = process.env.MAINTAINER_SUBDOMAIN;
+            const subdomains = JSON.parse(process.env.SUBDOMAINS_JSON);
+            const subdomainList = subdomains.map(s => `**${s.domain} / ${s.subdomainDisplay}**`).join(', ');
 
-            // Unlock issue so we can comment and close
             await github.rest.issues.unlock({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -381,10 +391,10 @@ jobs:
               body: [
                 `Welcome aboard, @${username}!`,
                 ``,
-                `You have been onboarded as the **${domain} / ${subdomain}** reviewer.`,
+                `You have been onboarded as a reviewer for: ${subdomainList}.`,
                 ``,
                 `**What was updated:**`,
-                `- \`.github/CODEOWNERS\` — PRs touching your subdomain will now request your review`,
+                `- \`.github/CODEOWNERS\` — PRs touching your subdomain(s) will now request your review`,
                 `- \`docs/index.html\` — your name appears on the interactive knowledge tree`,
                 `- \`docs/reviewers.html\` — your profile is listed on the reviewers page`,
                 ``,
