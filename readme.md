@@ -35,6 +35,8 @@
 
 OpenScientist is a curated library of **AI agent skills** (compatible with **Claude Code** and **Codex CLI**) — structured Markdown files that give AI agents deep, expert-level reasoning capabilities in specific scientific domains.
 
+Our mission is to unite the world's top experts across every domain, turning their knowledge into AI-reusable skills that accelerate scientific discovery. Share your research expertise — together, we create the AI-era Einstein, Da Vinci, and Kant.
+
 ### 1.2 How it works
 
 Each skill encodes the knowledge, tools, reasoning protocols, and common pitfalls of a scientific field. Skills can be written by domain experts or **auto-extracted from your research conversations** using `/extract-knowhow`. Point your AI agent at a skill, and it reasons like a domain expert.
