@@ -10,11 +10,11 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/OpenScientists/OpenScientist?style=social)](https://github.com/OpenScientists/OpenScientist/stargazers) [![GitHub forks](https://img.shields.io/github/forks/OpenScientists/OpenScientist?style=social)](https://github.com/OpenScientists/OpenScientist/fork) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-> *2015 年：5,154 位科学家联名发表了一篇希格斯玻色子论文。*
->
-> *今天：我们正在开启人类有史以来最大规模的学术合作*
->
-> *— 🏛️ 为 AGI 建一座亚历山大图书馆，加速自动化科学发现。*
+2015 年：5,154 位科学家联名发表了一篇希格斯玻色子论文。
+
+今天：我们正在开启人类有史以来最大规模的学术合作 
+
+**— 🏛️ 为 AGI 建一座亚历山大图书馆，加速自动化科学发现。**
 
 <p align="center">
   <a href="https://openscientists.github.io/OpenScientist/">
