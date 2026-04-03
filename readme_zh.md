@@ -115,11 +115,11 @@ Skill 还按**科研活动类型**分类 —— 10 个跨领域的类别：
 npm install -g @openscientist/extract-knowhow
 ```
 
-然后在 **Claude Code** 或 **Codex CLI** 中运行：
+然后运行：
 
-```
-/extract-knowhow
-```
+**Claude Code:** `/extract-knowhow`
+
+**Codex CLI:** `$extract-knowhow`
 
 该命令会：
 1. 自动扫描你的对话历史

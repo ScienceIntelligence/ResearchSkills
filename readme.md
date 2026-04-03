@@ -115,11 +115,11 @@ Let AI analyze your conversation history and automatically generate skill files 
 npm install -g @openscientist/extract-knowhow
 ```
 
-Then run in **Claude Code** or **Codex CLI**:
+Then run:
 
-```
-/extract-knowhow
-```
+**Claude Code:** `/extract-knowhow`
+
+**Codex CLI:** `$extract-knowhow`
 
 The command will:
 1. Scan your conversation history automatically
