@@ -32,7 +32,7 @@ Today: We're launching the largest academic collaboration in human history
 
 </div>
 
-**Science is the last important problem left for AI to solve.** Code, law, design — AI already handles these. But real scientific breakthroughs require something no model has: the hard-won intuition of researchers who've spent years at the frontier.
+**Science is the last important problem left for AI to solve.** Real scientific breakthroughs require something no model has: the hard-won intuition of researchers who've spent years at the frontier.
 
 This intuition lives in your head — the know-how, the heuristics, the reasoning patterns, the "I just know this won't work" instinct. It never makes it into papers. It dies when you retire.
 
