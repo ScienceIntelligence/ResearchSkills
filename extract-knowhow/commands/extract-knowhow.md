@@ -99,6 +99,8 @@ Report: "Mapped N research projects to domains."
 
 For each project, extract ALL know-how automatically.
 
+**Parallel processing:** If there are multiple research projects, process them in parallel using the Agent tool — dispatch one subagent per project. Each subagent receives the project's session file paths and the extraction instructions below, and returns the extracted know-how items as JSON. This significantly speeds up extraction when the user has many research projects.
+
 **Caching:** Check if `~/.openscientist/cache/knowhow/<session_id>.json` exists for each session in the project. If ALL sessions in a project have cached know-how AND no session files have changed, load from cache and skip extraction. Otherwise, re-extract for that project only.
 
 **Incremental limit:** Process at most 50 new (uncached) sessions per run. If more remain, report: "Processed 50 sessions. Run /extract-knowhow again to analyze the remaining N sessions."
