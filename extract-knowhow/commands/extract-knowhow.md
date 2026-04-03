@@ -123,9 +123,45 @@ Read full `.jsonl` files. For sessions > 30,000 chars, split into 25,000-char se
 | `09-paper-writing` | Writing structure, figures, claims |
 | `10-review-and-rebuttal` | Self-critique, reviewer responses, revision |
 
-**DO extract:** specific parameters, decision criteria, debugging patterns, tool rationale, domain conventions, methodological insights.
+### Generalization Principle
 
-**DO NOT extract:** generic programming, AI tool usage, personal preferences, textbook basics.
+**The goal is to extract tacit knowledge — the hard-won intuition, thinking frameworks, and principles that experts carry in their heads but never write down.** Skills should be useful to ANY researcher in the same subdomain, not just the original author.
+
+When extracting from a specific project, always ask: "Would this help a new PhD student entering this field?" If yes, extract it. If it only makes sense in the context of this particular project, generalize it or skip it.
+
+**Generalize:** "For our LiFePO4 simulation, AMIX=0.05 worked" → "For GGA+U calculations on any transition metal oxide with localized d-electrons, reduce AMIX to 0.05"
+
+**Don't just copy:** "In /Users/jane/project-x/run3, I set ENCUT=520" → Extract the principle: "For transition metal oxides, converge ENCUT by testing 400-600 eV in 50 eV steps; most systems converge around 500-550 eV"
+
+### Privacy & De-identification
+
+**All generated skills must be fully de-identified.** Strip out:
+- File paths, directory names, usernames (e.g. `/Users/jane/project/`)
+- Project-specific names, dataset names, or internal identifiers
+- Email addresses, URLs to private resources
+- Names of collaborators or lab members
+- Any information that could identify the researcher (except the author field, which is intentionally public)
+
+Replace specific references with generic descriptions: "our internal dataset" → "a domain-specific dataset", "/home/user/exp3/results.csv" → "the results file"
+
+### What to extract
+
+**DO extract** — generalizable tacit knowledge:
+- Decision-making principles ("always do X before Y because...")
+- Diagnostic reasoning ("when you see symptom A, check B first, not C")
+- Parameter selection heuristics with scientific justification
+- Tool selection rationale applicable to the broader field
+- Domain conventions that newcomers wouldn't know
+- Methodological insights that transfer across projects in the subdomain
+- Thinking frameworks for approaching common problems in the field
+
+**DO NOT extract:**
+- Project-specific implementation details with no transferable value
+- Generic programming knowledge (git, for loops, package installation)
+- AI tool usage patterns (how to prompt Claude, how to use Codex)
+- Personal preferences with no scientific basis
+- Standard textbook knowledge with no novel application
+- Any personally identifiable information
 
 ### Output per item
 ```json
