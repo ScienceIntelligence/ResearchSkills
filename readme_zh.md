@@ -197,7 +197,7 @@ Step 3: [具体步骤]
 
 **你的职责：** 审核提交的 Skill 的科学准确性和完整性。为贡献者提供建设性反馈。验证通过后将 Skill 状态从 `draft` 提升为 `reviewed`。
 
-**你的权限：** 对所属子领域的提交进行审批或提出修改意见。可以自审自批、合并自己的贡献。通过 CODEOWNERS 自动分配为审稿人。
+**你的权限：** 对所属子领域的提交进行审批或提出修改意见。
 
 [**申请成为审稿人 →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=03-maintainer-application.yml)
 
