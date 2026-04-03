@@ -22,6 +22,27 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: role
+    attributes:
+      label: Role
+      description: Your current academic or professional role
+      options:
+        - "Undergraduate Student"
+        - "Master's Student"
+        - "PhD Candidate"
+        - "Postdoctoral Researcher"
+        - "Research Scientist"
+        - "Research Engineer"
+        - "Assistant Professor"
+        - "Associate Professor"
+        - "Professor"
+        - "Principal Investigator (PI)"
+        - "Industry Researcher"
+        - "Independent Researcher"
+    validations:
+      required: true
+
   - type: input
     id: affiliation
     attributes:
