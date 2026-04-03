@@ -223,8 +223,10 @@ Step 3: [specific step]
 
 Rules:
 - Extract EVERY piece of research know-how, no matter how small
-- Preserve my exact words and specific parameter values where possible
-- DO NOT extract generic programming knowledge or textbook basics
+- GENERALIZE from project-specific details to subdomain-universal principles. Ask: "Would this help any researcher in this field, not just me?" For example: "AMIX=0.05 worked for our LiFePO4 run" → "For GGA+U on transition metal oxides with localized d-electrons, reduce AMIX to 0.05"
+- DE-IDENTIFY all output: remove file paths, usernames, project names, private URLs, collaborator names. Replace with generic descriptions. The only real name allowed is the author field.
+- Focus on tacit knowledge: thinking frameworks, decision-making principles, diagnostic reasoning, heuristics — the kind of intuition that never makes it into papers
+- DO NOT extract generic programming knowledge, AI tool usage patterns, or textbook basics
 - DO NOT summarize or group multiple items — one skill file per know-how item
 - After the code block, confirm whether that is the complete set or if any remain
 ```
