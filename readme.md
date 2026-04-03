@@ -11,14 +11,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/OpenScientists/OpenScientist?style=social)](https://github.com/OpenScientists/OpenScientist/stargazers) [![GitHub forks](https://img.shields.io/github/forks/OpenScientists/OpenScientist?style=social)](https://github.com/OpenScientists/OpenScientist/fork) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 > *2015: 5,154 scientists co-authored one paper on the Higgs boson.*
+>
 > *Today: We're launching the largest academic collaboration in human history —*
 > 🏛️ *Building the Library of Alexandria for AGI, Accelerating Automated Scientific Discovery.*
-
-<br>
-
-**Our mission:** Unite the knowledge of the world's top experts across every domain — to accelerate AI-driven scientific discovery.
-
-**Call for action:** Share your research expertise. Together, we create the AI-era Einstein, Da Vinci, and Kant.
 
 <p align="center">
   <a href="https://openscientists.github.io/OpenScientist/">

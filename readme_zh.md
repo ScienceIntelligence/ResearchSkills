@@ -11,14 +11,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/OpenScientists/OpenScientist?style=social)](https://github.com/OpenScientists/OpenScientist/stargazers) [![GitHub forks](https://img.shields.io/github/forks/OpenScientists/OpenScientist?style=social)](https://github.com/OpenScientists/OpenScientist/fork) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 > *2015 年：5,154 位科学家联名发表了一篇希格斯玻色子论文。*
+>
 > *今天：我们正在开启人类有史以来最大规模的学术合作 —*
 > 🏛️ **为 AGI 建一座亚历山大图书馆，加速自动化科学发现。**
-
-<br>
-
-**我们的使命：** 汇集全人类各领域顶尖专家的知识，加速 AI 驱动的科学进步。
-
-**行动号召：** 共享你的研究知识，创造 AI 时代的爱因斯坦、达芬奇与康德。
 
 <p align="center">
   <a href="https://openscientists.github.io/OpenScientist/">
