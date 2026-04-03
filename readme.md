@@ -139,7 +139,33 @@ We welcome contributions from domain experts. See [CONTRIBUTING.md](utils/CONTRI
 - **Real-name identity** — Contributors must use their real name and institutional affiliation in the `author` field (e.g., `"Dr. Albert Einstein (ETH Zürich Physics)"`)
 - **Domain expertise** — You may only contribute skills within your area of professional expertise
 
-### 4.2 Five Steps
+### 4.2 Method A: Auto-Extract with `/extract-knowhow` (Recommended)
+
+Let AI analyze your Claude Code conversation history and automatically generate skill files from your research know-how:
+
+```bash
+# Option 1: Install via npm
+npm install -g @openscientist/extract-knowhow
+
+# Option 2: Install without npm (just copy one file)
+git clone https://github.com/OpenScientists/OpenScientist.git
+cp OpenScientist/extract-knowhow/commands/extract-knowhow.md ~/.claude/commands/
+```
+
+Then in Claude Code:
+```
+/extract-knowhow
+```
+
+The command will:
+1. Scan your conversation history
+2. Filter to research-related sessions only
+3. Cluster by project and map to scientific domains
+4. Extract reusable know-how across 10 categories (literature survey, ideation, formalization, experiment design, data collection, implementation, analysis, tool development, writing, peer review)
+5. Present a report for your review
+6. Generate skill files ready to PR
+
+### 4.3 Method B: Write Manually
 
 - **Fork** this repo
 - **Copy the template** into the right domain folder:
@@ -155,11 +181,11 @@ We welcome contributions from domain experts. See [CONTRIBUTING.md](utils/CONTRI
 
 A domain reviewer listed in CODEOWNERS will be automatically assigned to review your PR for scientific accuracy.
 
-### 4.3 Don't see your field?
+### 4.4 Don't see your field?
 
 - [**Propose a new area →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=propose-new-area.md)
 
-### 4.4 Need a skill but can't write it yourself?
+### 4.5 Need a skill but can't write it yourself?
 
 - [**Request a skill →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=skill-request.yml)
 
@@ -353,7 +379,33 @@ cp OpenScientist/skills/physics/quantum-physics/quantum-entanglement.md ~/.claud
 - **实名认证** — 贡献者必须在 `author` 字段使用真实姓名和所属机构（如 `"Dr. Albert Einstein (ETH Zürich Physics)"`)
 - **领域专长** — 只能在自己的专业领域内贡献 Skill
 
-### 4.2 五个步骤
+### 4.2 方式 A：用 `/extract-knowhow` 自动提取（推荐）
+
+让 AI 分析你的 Claude Code 对话历史，自动从中提取科研 know-how 并生成 Skill 文件：
+
+```bash
+# 方式 1：通过 npm 安装
+npm install -g @openscientist/extract-knowhow
+
+# 方式 2：不用 npm（复制一个文件即可）
+git clone https://github.com/OpenScientists/OpenScientist.git
+cp OpenScientist/extract-knowhow/commands/extract-knowhow.md ~/.claude/commands/
+```
+
+然后在 Claude Code 中输入：
+```
+/extract-knowhow
+```
+
+该命令会：
+1. 扫描你的对话历史
+2. 过滤出与科研相关的会话
+3. 按项目聚类并映射到科学领域
+4. 从 10 个类别中提取可复用的 know-how（文献调研、提出想法、形式化、实验设计、数据采集、代码实现、结果分析、工具开发、论文写作、同行评审）
+5. 展示报告供你确认
+6. 生成可直接 PR 提交的 Skill 文件
+
+### 4.3 方式 B：手动撰写
 
 - **Fork** 本仓库
 - **复制模板** 到对应领域文件夹：
@@ -363,17 +415,17 @@ cp OpenScientist/skills/physics/quantum-physics/quantum-entanglement.md ~/.claud
 - **填写每个章节** —— Purpose、Domain Knowledge、Reasoning Protocol、Tools、Common Pitfalls
 - **本地验证**（推荐）：
   ```bash
-  python tools/validate.py skills/<领域>/<子领域>/<你的skill名称>.md
+  python utils/tools/validate.py skills/<领域>/<子领域>/<你的skill名称>.md
   ```
 - **提交 Pull Request** —— 标题格式：`[physics/quantum-physics] Add quantum-entanglement skill`
 
 CODEOWNERS 中的领域审稿人会自动收到 review 请求，负责审核科学内容的准确性。
 
-### 4.3 没有你的研究方向？
+### 4.4 没有你的研究方向？
 
 - [**提议新领域 →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=propose-new-area.md)
 
-### 4.4 需要某个 Skill 但自己写不了？
+### 4.5 需要某个 Skill 但自己写不了？
 
 - [**请求 Skill →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=skill-request.yml)
 
