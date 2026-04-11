@@ -6,6 +6,17 @@ You are a research decision tree extraction agent for **OpenScientist**. Analyze
 
 **Caching:** All intermediate results are cached to `~/.openscientist/cache/`. Re-running `/extract-knowhow` only processes new or modified sessions, saving significant time and tokens.
 
+---
+
+## Arguments
+
+The user may append arguments after the command:
+
+- `--test` (alias: `test`): **Test mode.** Relax the research-only filter so that engineering, tooling, and general software sessions are also treated as valid input. Useful for users who don't yet have scientific research history on their machine but want to exercise the full extraction → upload → review pipeline end-to-end. Every uploaded tree in this mode MUST be tagged as test data (see Stage 3 and Stage 6 for specifics).
+- No argument: **Production mode.** Only research sessions proceed (default behavior).
+
+Detect the mode at the very start of your run and set an internal flag `TEST_MODE = true|false`. Announce the mode in your first progress message, e.g. `"Running in TEST MODE — engineering sessions will also be accepted."`.
+
 At the start, create the cache directory:
 ```bash
 mkdir -p ~/.openscientist/cache/meta ~/.openscientist/cache/trees
@@ -70,11 +81,14 @@ Classification rules:
 
 **other:** casual, setup, unrelated
 
-For research sessions, also record `research_topic` (1-2 sentences).
+For research sessions, also record `research_topic` (1-2 sentences). For sessions that are accepted in test mode but classified as engineering/other, record a `topic` field instead (1-2 sentences describing what the session was about).
 
-Only research sessions proceed. Report: "Identified N research sessions out of M total."
+**Filtering rule depends on mode:**
 
-If zero research sessions: report and stop.
+- **Production mode** (default): only `research` sessions proceed. Report: `"Identified N research sessions out of M total."` If zero research sessions: report and stop.
+- **Test mode** (`--test`): sessions classified as `research` OR `engineering` proceed. `other` (casual / setup / unrelated) are still dropped. Report: `"TEST MODE: accepted N sessions (R research + E engineering) out of M total."` If zero accepted: report and stop.
+
+Regardless of mode, preserve the classification on each session's cached metadata so that a future production-mode re-run can correctly filter.
 
 ---
 
@@ -88,7 +102,9 @@ If zero research sessions: report and stop.
    - **domain:** physics | mathematics | computer-science | quantitative-biology | statistics | eess | economics | quantitative-finance
    - **subdomain:** arXiv-aligned (e.g. machine-learning, quantum-physics)
 
-Report: "Mapped N research projects to domains."
+**Test mode only:** Engineering projects that have no natural scientific domain should be mapped to `domain: "computer-science"` and `subdomain: "test-data"`. Do not try to force-fit them into scientific subdomains.
+
+Report: "Mapped N projects to domains."
 
 ---
 
@@ -207,7 +223,7 @@ Report: "Extracted N action nodes across all projects (X from cache, Y newly ext
 
 ---
 
-## Stage 6: HTML Report Generation
+## Stage 6: Upload & Open Review
 
 ### Step 6.1: Collect Author (automatic)
 
@@ -220,51 +236,68 @@ If unavailable, use "Anonymous Contributor".
 
 ### Step 6.2: Build Data Object
 
-Assemble all results into a single JSON object:
+For each project, assemble the decision tree JSON:
 ```json
 {
-  "author": "git user.name",
-  "email": "git user.email",
-  "total_sessions": 47,
-  "date": "2026-04-10",
-  "projects": [
-    {
-      "name": "Project Name",
-      "domain": "physics",
-      "subdomain": "computational-physics",
-      "session_count": 5,
-      "tree": { ...decision tree JSON from Stage 5... }
-    }
-  ]
+  "version": "2.0.0",
+  "anchor": { "type": "project", "project_name": "...", "project_description": "..." },
+  "contributor": "git user.name",
+  "extracted_at": "2026-04-10",
+  "domain": "physics",
+  "subdomain": "computational-physics",
+  "conversations_analyzed": 5,
+  "nodes": [ ...array of action nodes from Stage 5... ],
+  "joins": [ ...cross-conversation joins... ]
 }
 ```
 
-### Step 6.3: Generate HTML
+**Test mode only:** Add a top-level `"is_test": true` flag and prefix `project_name` with `[TEST] `. This makes test uploads trivially identifiable on the server and in the dashboard so they can be filtered out or cleaned up later:
 
-Create directory: `mkdir -p ~/.openscientist`
+```json
+{
+  "version": "2.0.0",
+  "is_test": true,
+  "anchor": {
+    "type": "project",
+    "project_name": "[TEST] My Engineering Project",
+    "project_description": "Test data — auto-extracted engineering session"
+  },
+  "domain": "computer-science",
+  "subdomain": "test-data",
+  "...": "..."
+}
+```
 
-Read the HTML template from the npm package at `templates/report.html` (installed alongside this command). The template contains all CSS, JS, and the interactive UI. Replace the `__REPORT_DATA__` placeholder in the template with the actual JSON data object from Step 6.2.
+### Step 6.3: Upload to researchskills.ai
 
-If the template file is not found, fall back to writing a minimal HTML page that embeds the JSON data and displays it.
-
-Write the result to `~/.openscientist/report.html`.
-
-The HTML template provides:
-1. Tree visualization of the research trajectory per project
-2. Node-by-node review: edit summary, reasoning, action type, initiator
-3. Status indicators: active / abandoned / paused branches
-4. De-identification review: highlighted stripped content
-5. Join confirmation: accept/correct cross-conversation connections
-6. Anchor binding: attach paper URL/DOI or project description
-7. **"Submit to GitHub"** button — opens a new browser tab with the `02-submit-decision-tree.yml` issue template pre-filled
-8. No terminal commands needed — submission is entirely browser-based
-
-### Step 6.4: Open Report
+For each project's decision tree, write the JSON to a temp file first and POST
+via `--data-binary @file`. Inline `-d '...'` breaks on large trees due to shell
+argument length and single-quote escaping.
 
 ```bash
-open ~/.openscientist/report.html  # macOS
-# or: xdg-open ~/.openscientist/report.html  # Linux
+TREE_FILE=$(mktemp -t openscientist-tree.XXXXXX.json)
+# ... write tree JSON to $TREE_FILE ...
+curl -s -X POST https://researchskills.ai/api/trees \
+  -H 'Content-Type: application/json' \
+  --data-binary @"$TREE_FILE"
+rm -f "$TREE_FILE"
 ```
+
+The server returns:
+```json
+{ "id": "abc123", "reviewUrl": "https://researchskills.ai/review/abc123" }
+```
+
+**Fallback:** If the POST fails (no internet, server down), save the tree JSON to `~/.openscientist/tree-<project-name>.json` and instruct the user to upload manually later.
+
+### Step 6.4: Open Review Page
+
+```bash
+open <reviewUrl>  # macOS
+# or: xdg-open <reviewUrl>  # Linux
+```
+
+If multiple projects produced trees, open one tab per project.
 
 ### Step 6.5: Terminal Summary
 
@@ -275,11 +308,27 @@ open ~/.openscientist/report.html  # macOS
 
 Extracted N action nodes from M research projects.
 
-Report saved to: ~/.openscientist/report.html
+Review your decision trees:
+  → https://researchskills.ai/review/abc123
+  → https://researchskills.ai/review/def456
 
-In the report you can:
-  ✓ Review the research decision tree for each project
-  ✓ Edit nodes, verify de-identification, confirm cross-session joins
-  ✓ Bind your tree to a paper (arXiv/DOI) or project
-  ✓ Submit directly to OpenScientist via GitHub (one click)
+Sign in with GitHub, review your tree, and submit with one click.
+```
+
+**Test mode summary** (when `--test` was used): add a warning banner so the user never mistakes test data for a real submission:
+
+```
+═══════════════════════════════════════════════════════
+  /extract-knowhow Complete! [TEST MODE]
+═══════════════════════════════════════════════════════
+
+⚠ TEST MODE — uploaded trees are marked is_test=true and prefixed [TEST].
+  Do NOT click "Submit to OpenScientist" unless you want this counted
+  as real data. Use these trees only to verify the pipeline end-to-end.
+
+Extracted N action nodes from M projects (R research + E engineering).
+
+Review your test trees:
+  → https://researchskills.ai/review/abc123
+  → https://researchskills.ai/review/def456
 ```

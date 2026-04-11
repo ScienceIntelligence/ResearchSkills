@@ -1,3 +1,6 @@
 .DS_Store
 insight/
 docs/superpowers/
+webserver/
+webserver/node_modules/
+webserver/.env
