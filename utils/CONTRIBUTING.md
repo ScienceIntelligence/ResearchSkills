@@ -2,12 +2,12 @@
 
 Thank you for contributing your expertise! There are two ways to contribute:
 
-1. **Decision Trees (recommended):** Use `/extract-knowhow` to automatically extract your research trajectory from AI conversation history. This is the primary contribution method.
+1. **Research Skills (recommended):** Use `/extract-knowhow` to automatically extract research skills from AI conversation history. This is the primary contribution method.
 2. **Skills (manual):** Write a skill file by hand following the template.
 
 ---
 
-## 1. Submit a Decision Tree (Recommended)
+## 1. Submit Research Skills (Recommended)
 
 ### Via Claude Code / Codex CLI
 
@@ -18,11 +18,11 @@ npm install -g @openscientist/extract-knowhow
 Then in Claude Code: `/extract-knowhow`
 Or in Codex CLI: `$extract-knowhow`
 
-The tool scans your conversation history, reconstructs your research as a decision tree, and opens a browser review page. After reviewing, submit via GitHub.
+The tool scans your conversation history, extracts research skills (procedural, semantic, and episodic), and opens a browser review page. After reviewing, submit via GitHub.
 
 ### Via Web (ChatGPT / Claude / Gemini)
 
-Use the one-click prompt from the [README](https://github.com/OpenScientists/OpenScientist#method-b-one-click-prompt-for-web-users-chatgpt--claude--gemini), then submit via [**Submit a Decision Tree →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=02-submit-decision-tree.yml)
+Use the one-click prompt from the [README](https://github.com/OpenScientists/OpenScientist#method-b-one-click-prompt-for-web-users-chatgpt--claude--gemini), then submit via [**Submit a Skill →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml)
 
 ---
 
@@ -106,12 +106,12 @@ Open a GitHub Discussion or reach out to the core team via issues.
 
 感谢你贡献专业知识！有两种贡献方式：
 
-1. **决策树（推荐）：** 使用 `/extract-knowhow` 从 AI 对话历史中自动提取你的科研轨迹。这是主要的贡献方式。
+1. **科研技能（推荐）：** 使用 `/extract-knowhow` 从 AI 对话历史中自动提取科研技能。这是主要的贡献方式。
 2. **Skill（手动）：** 参照模板手动撰写 Skill 文件。
 
 ---
 
-## 1. 提交决策树（推荐）
+## 1. 提交科研技能（推荐）
 
 ### 通过 Claude Code / Codex CLI
 
@@ -122,11 +122,11 @@ npm install -g @openscientist/extract-knowhow
 在 Claude Code 中运行: `/extract-knowhow`
 在 Codex CLI 中运行: `$extract-knowhow`
 
-工具会扫描你的对话历史，将科研过程重建为决策树，并在浏览器中打开审阅页面。审阅后通过 GitHub 提交。
+工具会扫描你的对话历史，提取科研技能（程序性、语义性和情景性），并在浏览器中打开审阅页面。审阅后通过 GitHub 提交。
 
 ### 通过网页版（ChatGPT / Claude / Gemini）
 
-使用 [README](https://github.com/OpenScientists/OpenScientist#方式-b网页版用户一键提取chatgpt--claude--gemini) 中的一键 prompt，然后通过 [**提交决策树 →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=02-submit-decision-tree.yml) 提交。
+使用 [README](https://github.com/OpenScientists/OpenScientist#方式-b网页版用户一键提取chatgpt--claude--gemini) 中的一键 prompt，然后通过 [**提交 Skill →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml) 提交。
 
 ---
 

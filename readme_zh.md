@@ -38,7 +38,7 @@
 
 **OpenScientist 在它消失之前把它留住。** 我们把全世界顶尖研究者的隐性知识 — 他们的技能、思维框架和原则 — 变成可复用的 AI agent 技能（兼容 **Claude Code** 和 **Codex CLI**）。每一份贡献，都让现在和未来的每一个 AI 科学家变得更聪明，永久地。
 
-每个 Skill 编码了领域知识、工具、推理协议和常见陷阱。Skill 可以由领域专家手动撰写，也可以通过 `/extract-knowhow` **从你的科研对话中自动提取**。该命令会将你的科研过程重建为一棵**决策树** — 你的每一步行动、每一条放弃的路径、每一个判断 — 再从中提炼出可复用的 Skill。让 AI 调用一个 Skill，就能像领域专家一样思考。
+每个 Skill 编码了领域知识、工具、推理协议和常见陷阱。Skill 可以由领域专家手动撰写，也可以通过 `/extract-knowhow` **从你的科研对话中自动提取**。该命令从你的科研会话中提取三种认知记忆 — **程序性记忆**（应对科研困境的 IF-THEN 规则）、**语义记忆**（LLM 不知道的领域事实）和**情景记忆**（具体的科研经历）— 并将它们打包为可复用的 Skill。让 AI 调用一个 Skill，就能像领域专家一样思考。
 
 ---
 
@@ -60,9 +60,13 @@ npm install -g @openscientist/extract-knowhow
 $extract-knowhow
 ```
 
-该命令会扫描你的对话历史，将你的科研过程重建为一棵**决策树** — 记录你的每一步行动、每一个成功或失败、每一条放弃的路径及其原因。每个节点被映射为 20 种原子科研动作之一（如 `formulate_hypothesis`、`diagnose_failure`、`pivot`、`validate`），同时记录每一步是谁发起的（你还是 AI）以及背后的推理。
+该命令会扫描你的对话历史，提取按认知记忆类型组织的**科研技能**：
 
-浏览器交互页面让你审核决策树、检查脱敏处理、绑定论文（arXiv/DOI）或项目。提交你的决策树到 OpenScientist，它将成为真实科研轨迹数据集的一部分 — 构建更强 AI 科学家技能的原材料。
+- **程序性记忆：** 应对科研困境的 IF-THEN 规则（如"IF 梯度爆炸 THEN 先检查学习率再改架构"）
+- **语义记忆：** LLM 不可靠掌握的领域事实（如校准常数、未记录的工具行为、方法局限性）
+- **情景记忆：** 具体的科研经历，记录尝试了什么、失败了什么、学到了什么
+
+浏览器交互页面让你审核提取的技能、检查脱敏处理、绑定论文（arXiv/DOI）或项目。提交你的技能到 OpenScientist，它将成为构建更强 AI 科学家的知识库的一部分。
 
 ### 方式 B：网页版用户一键提取（ChatGPT / Claude / Gemini）
 
@@ -80,62 +84,37 @@ $extract-knowhow
 <summary><b>点击展开完整 prompt</b></summary>
 
 ```
-回顾我们所有的历史对话，将我的科研过程重建为一棵决策树。只关注科研活动，忽略通用编程、环境配置或闲聊内容。
+回顾我们所有的历史对话，按认知记忆类型提取科研技能。只关注科研活动，忽略通用编程、环境配置或闲聊内容。
 
-对每一个有意义的科研动作，创建一个节点，包含以下字段：
+提取三种科研知识：
 
-- action: 以下 20 种类型之一：
-  探索类: search_literature, formulate_hypothesis, survey_methods
-  设计类: design_experiment, select_tool, prepare_data
-  执行类: implement, run_experiment, debug
-  观察类: observe_result, analyze_result, validate
-  决策类: compare_alternatives, pivot, abandon, diagnose_failure, plan_next_step
-  输出类: write_paper, make_figure, respond_to_review
-  （如果都不合适，使用: other: "自由描述"）
-- summary: 一句话描述做了什么
-- outcome: success | failure | uncertain + 简短说明
-- reasoning: 为什么做这一步（动机、依据、直觉）
-- tools_used: 涉及的工具、模型或库（没有则为空列表）
-- confidence: high | medium | low
-- initiator: ai | human | collaborative（谁发起了这个动作？）
-- status: active | abandoned | paused
+1. **程序性记忆** — 应对科研困境的 IF-THEN 规则：
+   - 格式："IF [情境] THEN [行动] BECAUSE [原因]"
+   - 重点关注：决策点、失败恢复、方法选择启发式
+   - 示例："IF 模型损失在 50 轮后停滞 THEN 先尝试将学习率降低 10 倍再改架构 BECAUSE 架构变更代价高昂，学习率是最常见的原因"
 
-将完整的决策树输出为一个 JSON 代码块，使用以下格式：
+2. **语义记忆** — LLM 不可靠掌握的领域事实：
+   - 校准常数、未记录的工具行为、方法局限性
+   - 示例："库 X 的默认分词器会静默截断超过 512 个 token 的输入，不会发出警告"
 
-{
-  "anchor": {
-    "type": "paper 或 project",
-    "paper_url": "arXiv/DOI 链接（如有）",
-    "project_name": "项目名（如无论文）",
-    "project_description": "一句话描述"
-  },
-  "contributor": "我的姓名 (我的机构)",
-  "extracted_at": "[今天日期]",
-  "nodes": [
-    {
-      "id": "001",
-      "action": "search_literature",
-      "summary": "调研了 X 领域的最新方法",
-      "outcome": "success: 找到 3 种可行方案",
-      "reasoning": "在设计实验前需要了解 SOTA",
-      "tools_used": ["Google Scholar"],
-      "parent_id": null,
-      "confidence": "high",
-      "initiator": "human",
-      "status": "active"
-    }
-  ]
-}
+3. **情景记忆** — 具体的科研经历：
+   - 尝试了什么、失败了什么、学到了什么
+   - 包含死胡同和被放弃的方向 — 这些是最有价值的
+
+对每个技能，包含：
+- 科研上下文（在解决什么问题）
+- 领域/子领域（如 physics/quantum-physics）
+- 置信度：high | medium | low
+
+输出为 markdown 文档，按记忆类型分节。
 
 规则：
-- 重建完整的科研轨迹，包括死胡同和被放弃的方向
-- 用 parent_id 构建树结构：子动作从触发它的父动作分支出来
-- 被放弃的路径标记为 status: "abandoned" — 这些死胡同是最有价值的数据
+- 提取完整的科研轨迹，包括死胡同和被放弃的方向
 - 脱敏处理：去除文件路径、用户名、项目名、私有 URL、合作者姓名。保留科学内容（材料、参数、方法）
 - 重点捕捉每个动作背后的推理和判断 — 那些永远不会写进论文的直觉
 - 不要跳过失败的尝试或放弃的方向 — 它们蕴含隐性知识
 - 不要提取通用编程知识、AI 工具使用技巧或教科书基础内容
-- JSON 代码块之后，询问是否有遗漏的科研对话
+- 输出之后，询问是否有遗漏的科研对话
 ```
 
 </details>

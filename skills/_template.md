@@ -19,7 +19,7 @@ status: draft                                # leave as draft; reviewer will upd
   4. Run `python utils/tools/validate.py skills/<domain>/<subdomain>/<your-skill>.md` before opening a PR.
   5. See utils/SKILL_SCHEMA.md for full field documentation.
 
-  NOTE: The primary contribution method is now decision trees via /extract-knowhow.
+  NOTE: The primary contribution method is now skills via /extract-knowhow.
   This template is for manually written skills only.
 -->
 

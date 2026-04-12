@@ -1,12 +1,16 @@
 # @openscientist/extract-knowhow
 
-> Automatically extract your research trajectory as a **decision tree** from Claude Code / Codex CLI conversation history and submit it to [OpenScientist](https://github.com/OpenScientists/OpenScientist).
+> Automatically extract **research skills** from Claude Code / Codex CLI conversation history and submit them to [OpenScientist](https://github.com/OpenScientists/OpenScientist).
 
 ## What It Does
 
 When you use Claude Code for scientific research — data analysis, paper writing, experiment design, theoretical derivation — your conversations contain valuable tacit knowledge: judgment calls, abandoned approaches, tool choices, and reasoning patterns.
 
-`/extract-knowhow` reconstructs your research as a **decision tree** — a structured trace of every action you took, what worked, what you abandoned, and why. Each node is mapped to one of 20 atomic research action types, capturing who initiated each step (you or the AI) and the reasoning behind it.
+`/extract-knowhow` extracts three types of cognitive memory from your research sessions:
+
+- **Procedural memory:** IF-THEN rules for navigating research impasses (e.g., "IF gradient explodes THEN check learning rate before architecture")
+- **Semantic memory:** Domain facts that LLMs don't reliably know (e.g., calibration constants, undocumented tool behaviors)
+- **Episodic memory:** Concrete research episodes capturing what was tried, what failed, and what was learned
 
 ## Install
 
@@ -32,46 +36,40 @@ $extract-knowhow
 
 The command will:
 
-1. **Discover** all your Claude Code / Codex sessions
-2. **Filter** to only research-related sessions (ignoring engineering/casual conversations)
-3. **Cluster** sessions by research project and map to scientific domains
-4. **Extract** a decision tree of atomic research actions:
-   - 20 action types: `search_literature`, `formulate_hypothesis`, `design_experiment`, `implement`, `debug`, `observe_result`, `diagnose_failure`, `pivot`, `abandon`, `validate`, and more
-   - Each node captures: what was done, why, what the outcome was, who initiated it (you or AI), and confidence level
-   - Tree structure preserves branching, dead ends, and pivots
-5. **Present** an interactive browser report for review
-6. **Submit** your decision tree to OpenScientist via GitHub
+1. **Scan** all your Claude Code / Codex sessions
+2. **Format** research-related sessions (ignoring engineering/casual conversations)
+3. **Extract** research skills using AI, organized by cognitive memory type:
+   - Procedural rules for research decision-making
+   - Semantic facts missing from LLM training data
+   - Episodic traces of concrete research attempts and outcomes
+4. **Validate** extracted skills for completeness and de-identification
+5. **Upload** your skills to OpenScientist via GitHub
 
 ## Output
 
-A JSON decision tree following the [OpenScientist decision tree format](https://github.com/OpenScientists/OpenScientist/blob/main/docs/decision-tree-v2-design.md):
+A markdown skill file organized by cognitive memory type:
 
-```json
-{
-  "version": "2.0.0",
-  "anchor": { "type": "paper", "paper_url": "https://arxiv.org/abs/..." },
-  "nodes": [
-    {
-      "id": "001",
-      "action": "formulate_hypothesis",
-      "summary": "Hypothesized that method A would outperform baseline",
-      "outcome": "uncertain",
-      "reasoning": "Method A showed strong results on similar tasks",
-      "tools_used": [],
-      "parent_id": null,
-      "confidence": "medium",
-      "initiator": "collaborative",
-      "status": "active"
-    }
-  ]
-}
+```markdown
+## Procedural Memory
+- IF model loss plateaus after 50 epochs THEN try reducing learning rate
+  by 10x before changing architecture BECAUSE architecture changes are
+  expensive and LR is the most common culprit
+
+## Semantic Memory
+- Library X's default tokenizer silently truncates inputs over 512 tokens
+  without warning
+
+## Episodic Memory
+- Attempted approach A for protein folding prediction; failed due to
+  insufficient training data. Pivoted to approach B with data augmentation,
+  which achieved 15% improvement over baseline.
 ```
 
 ## Contributing Back
 
-After reviewing your decision tree in the browser:
+After reviewing your extracted skills:
 
-- [**Submit via GitHub Issue →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=02-submit-decision-tree.yml) (paste the JSON — no git required!)
+- [**Submit via GitHub Issue →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml) (paste the markdown — no git required!)
 - Or open a PR if you prefer git
 
 ## Uninstall

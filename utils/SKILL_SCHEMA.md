@@ -2,7 +2,7 @@
 
 This document defines the specification for OpenScientist skill files (manually written skills).
 
-> **Decision trees** are now the primary contribution format. See [Decision Tree Schema](../docs/decision-tree-v2-design.md) for the full specification. This document covers only the manual skill file format.
+> **Skills extracted via /extract-knowhow** are now the primary contribution format. See [Skill Schema Design](../docs/superpowers/specs/2026-04-11-skill-schema-design.md) for the current schema. This document covers only the manual skill file format.
 
 ---
 
@@ -78,8 +78,8 @@ Key papers, textbooks, or resources.
 
 ---
 
-## 4. Decision Tree Schema
+## 4. Extracted Skills Schema
 
-The primary contribution format is now a **research decision tree** — a structured trace of atomic research actions extracted from AI conversation history. Decision trees capture the full research trajectory including dead ends, pivots, and abandoned paths.
+The primary contribution format is now **research skills** — cognitive memory extracted from AI conversation history, organized into procedural (IF-THEN rules), semantic (domain facts), and episodic (research episodes) types.
 
-For the full decision tree specification, see [docs/decision-tree-v2-design.md](../docs/decision-tree-v2-design.md).
+For the full skill schema specification, see [docs/superpowers/specs/2026-04-11-skill-schema-design.md](../docs/superpowers/specs/2026-04-11-skill-schema-design.md).

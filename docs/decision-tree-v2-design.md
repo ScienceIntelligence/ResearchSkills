@@ -1,3 +1,5 @@
+> **Deprecated:** This document describes the Phase 1 decision tree format, which has been replaced by the cognitive memory-type skill system. See [Skill Schema Design](superpowers/specs/2026-04-11-skill-schema-design.md) for the current design.
+
 # /extract-knowhow v2 — Research Decision Tree Collection
 
 ## Context
