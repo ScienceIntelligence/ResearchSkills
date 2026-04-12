@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — researchskills.ai</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">researchskills.ai</a>
+    <div id="user-info"></div>
+  </header>
+
+  <main>
+    <div id="loading">Loading...</div>
+
+    <div id="dashboard" style="display:none">
+      <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+          <h1>Dashboard</h1>
+          <nav class="tabs">
+            <button class="tab active" data-tab="profile">Profile</button>
+            <button class="tab" data-tab="trees">Research Skills</button>
+          </nav>
+        </aside>
+
+        <div class="dashboard-main">
+
+      <!-- Profile Tab -->
+      <div id="tab-profile" class="tab-content active">
+        <section class="panel">
+          <h2>Your Profile</h2>
+          <form id="profile-form">
+            <label>Full Name (English) <span class="required">*</span>
+              <input type="text" id="prof-name" required>
+            </label>
+            <label>Affiliation <span class="required">*</span>
+              <input type="text" id="prof-affiliation" required>
+            </label>
+            <label>Role <span class="required">*</span>
+              <select id="prof-role" required>
+                <option value="Undergraduate Student">Undergraduate Student</option>
+                <option value="Master's Student">Master's Student</option>
+                <option value="PhD Candidate">PhD Candidate</option>
+                <option value="Postdoctoral Researcher">Postdoctoral Researcher</option>
+                <option value="Research Scientist">Research Scientist</option>
+                <option value="Research Engineer">Research Engineer</option>
+                <option value="Assistant Professor">Assistant Professor</option>
+                <option value="Associate Professor">Associate Professor</option>
+                <option value="Professor">Professor</option>
+                <option value="Principal Investigator">Principal Investigator</option>
+                <option value="Industry Researcher">Industry Researcher</option>
+                <option value="Independent Researcher">Independent Researcher</option>
+              </select>
+            </label>
+            <label>Homepage URL <span class="required">*</span>
+              <input type="url" id="prof-homepage" required>
+            </label>
+            <div id="profile-message" class="form-message" style="display:none"></div>
+            <button type="submit" class="btn btn-primary">Save Profile</button>
+          </form>
+        </section>
+      </div>
+
+      <!-- Research Skills Tab -->
+      <div id="tab-trees" class="tab-content">
+        <section class="panel">
+          <h2>Your Research Skills</h2>
+          <p class="tab-description">Research skills you've submitted, grouped by domain.</p>
+          <div id="projects-list"></div>
+          <div id="no-trees" style="display:none">
+            <p>No research skills yet. Run <code>/extract-knowhow</code> in Claude Code or Codex CLI to get started.</p>
+          </div>
+        </section>
+      </div>
+        </div><!-- /.dashboard-main -->
+      </div><!-- /.dashboard-layout -->
+    </div>
+  </main>
+
+  <script src="/js/auth-header.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
