@@ -1,0 +1,32 @@
+{
+  "name": "researchskills-server",
+  "version": "1.0.0",
+  "description": "Web server for researchskills.ai — decision tree review and submission",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm run build && node server.js",
+    "dev:server": "node --watch server.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0",
+    "swr": "^2.4.1"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.2.2",
+    "vite": "^8.0.8"
+  }
+}
