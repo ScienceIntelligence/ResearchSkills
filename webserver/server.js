@@ -477,6 +477,10 @@ app.get('/onboarding', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/onboarding.html'));
 });
 
+app.get('/review/skill/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'review-skill.html'));
+});
+
 app.get('/review/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/review.html'));
 });
