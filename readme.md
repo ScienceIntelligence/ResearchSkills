@@ -38,7 +38,7 @@ This intuition lives in your head — the know-how, the heuristics, the reasonin
 
 **OpenScientist captures it before it's lost.** We turn the tacit knowledge of the world's top researchers — their skills, thinking frameworks, and principles — into reusable AI agent skills (compatible with **Claude Code** and **Codex CLI**). Every contribution makes every AI scientist — now and in the future — smarter, permanently.
 
-Each skill encodes the knowledge, tools, reasoning protocols, and common pitfalls of a scientific field. Skills can be written by domain experts or **auto-extracted from your research conversations** using `/extract-knowhow`. The command reconstructs your research trajectory as a **decision tree** — every action you took, every path you abandoned, every judgment call you made — then derives reusable skills from it. Point your AI agent at a skill, and it reasons like a domain expert.
+Each skill encodes the knowledge, tools, reasoning protocols, and common pitfalls of a scientific field. Skills can be written by domain experts or **auto-extracted from your research conversations** using `/extract-knowhow`. The command extracts three types of cognitive memory from your research sessions — **procedural** (IF-THEN rules for research impasses), **semantic** (facts LLMs don't know), and **episodic** (concrete research episodes) — then packages them as reusable skills. Point your AI agent at a skill, and it reasons like a domain expert.
 
 ---
 
@@ -60,9 +60,13 @@ npm install -g @openscientist/extract-knowhow
 $extract-knowhow
 ```
 
-The command scans your conversation history and reconstructs your research as a **decision tree** — a structured trace of every action you took, what worked, what you abandoned, and why. Each node is mapped to one of 20 atomic research action types (e.g., `formulate_hypothesis`, `diagnose_failure`, `pivot`, `validate`), capturing who initiated each step (you or the AI) and the reasoning behind it.
+The command scans your conversation history and extracts **research skills** organized by cognitive memory type:
 
-An interactive browser review page lets you verify the tree, check de-identification, and bind it to your paper (arXiv/DOI) or project. Submit your tree to OpenScientist, where it becomes part of a growing dataset of real research trajectories — the raw material for building better AI scientist skills.
+- **Procedural memory:** IF-THEN rules for navigating research impasses (e.g., "IF gradient explodes THEN check learning rate before architecture")
+- **Semantic memory:** Domain facts that LLMs don't reliably know (e.g., calibration constants, method limitations, undocumented tool behaviors)
+- **Episodic memory:** Concrete research episodes capturing what was tried, what failed, and what the researcher learned
+
+An interactive browser review page lets you verify the extracted skills, check de-identification, and bind them to your paper (arXiv/DOI) or project. Submit your skills to OpenScientist, where they become part of a growing knowledge base for building better AI scientists.
 
 ### Method B: One-Click Prompt for Web Users (ChatGPT / Claude / Gemini)
 
@@ -80,62 +84,37 @@ Then paste this prompt into a **new conversation**:
 <summary><b>Click to expand the full prompt</b></summary>
 
 ```
-Review all our past conversations and reconstruct my research process as a decision tree. Focus exclusively on research activities — ignore general programming, setup, or casual conversations.
+Review all our past conversations and extract research skills organized by cognitive memory type. Focus exclusively on research activities — ignore general programming, setup, or casual conversations.
 
-For each meaningful research action you find, create a node with the following fields:
+Extract three types of research knowledge:
 
-- action: one of these 20 types:
-  Exploration: search_literature, formulate_hypothesis, survey_methods
-  Design: design_experiment, select_tool, prepare_data
-  Execution: implement, run_experiment, debug
-  Observation: observe_result, analyze_result, validate
-  Decision: compare_alternatives, pivot, abandon, diagnose_failure, plan_next_step
-  Output: write_paper, make_figure, respond_to_review
-  (If none fit, use: other: "free text description")
-- summary: one sentence describing what was done
-- outcome: success | failure | uncertain + short explanation
-- reasoning: why this step was taken (motivation, evidence, intuition)
-- tools_used: tools, models, or libraries involved (empty list if none)
-- confidence: high | medium | low
-- initiator: ai | human | collaborative (who proposed this action?)
-- status: active | abandoned | paused
+1. **Procedural memory** — IF-THEN rules for navigating research impasses:
+   - Format: "IF [situation] THEN [action] BECAUSE [reasoning]"
+   - Focus on: decision points, failure recovery, method selection heuristics
+   - Example: "IF model loss plateaus after 50 epochs THEN try reducing learning rate by 10x before changing architecture BECAUSE architecture changes are expensive and LR is the most common culprit"
 
-Output the full tree as a SINGLE JSON code block using this format:
+2. **Semantic memory** — Domain facts that LLMs don't reliably know:
+   - Calibration constants, undocumented tool behaviors, method limitations
+   - Example: "Library X's default tokenizer silently truncates inputs over 512 tokens without warning"
 
-{
-  "anchor": {
-    "type": "paper or project",
-    "paper_url": "arXiv/DOI URL if available",
-    "project_name": "project name if no paper",
-    "project_description": "one sentence"
-  },
-  "contributor": "My Name (My Institution)",
-  "extracted_at": "[today's date]",
-  "nodes": [
-    {
-      "id": "001",
-      "action": "search_literature",
-      "summary": "Surveyed recent methods for X",
-      "outcome": "success: identified 3 approaches",
-      "reasoning": "Needed to understand SOTA before designing experiment",
-      "tools_used": ["Google Scholar"],
-      "parent_id": null,
-      "confidence": "high",
-      "initiator": "human",
-      "status": "active"
-    }
-  ]
-}
+3. **Episodic memory** — Concrete research episodes:
+   - What was tried, what failed, what was learned
+   - Include dead ends and abandoned approaches — these are the most valuable
+
+For each skill, include:
+- The research context (what problem was being solved)
+- The domain/subdomain (e.g., physics/quantum-physics)
+- Confidence level: high | medium | low
+
+Output as a markdown document with sections for each memory type.
 
 Rules:
-- Reconstruct the FULL research trajectory, including dead ends and abandoned paths
-- Use parent_id to build tree structure: child actions branch from the action that led to them
-- Mark abandoned paths with status: "abandoned" — these dead ends are the most valuable data
+- Extract the FULL research trajectory, including dead ends and abandoned paths
 - DE-IDENTIFY all output: remove file paths, usernames, project names, private URLs, collaborator names. Keep scientific content (materials, parameters, methods)
 - Focus on capturing the reasoning and judgment behind each action — the kind of intuition that never makes it into papers
 - DO NOT skip failed attempts or abandoned directions — they reveal tacit knowledge
 - DO NOT extract generic programming knowledge, AI tool usage patterns, or textbook basics
-- After the JSON block, ask if there are research conversations that were missed
+- After the output, ask if there are research conversations that were missed
 ```
 
 </details>
