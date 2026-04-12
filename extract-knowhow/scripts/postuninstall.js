@@ -8,6 +8,7 @@ const os = require("os");
 const HELPER_SCRIPTS = [
   "scan-sessions.js",
   "format-session.js",
+  "extract-skills.js",
   "validate-skills.js",
   "upload-skills.js",
   "finalize.js",
