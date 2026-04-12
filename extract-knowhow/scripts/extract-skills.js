@@ -33,6 +33,17 @@ const UTILS_DIR = path.join(os.homedir(), '.claude', 'utils');
 const FORMAT_SCRIPT = path.join(UTILS_DIR, 'format-session.js');
 const VALIDATE_SCRIPT = path.join(UTILS_DIR, 'validate-skills.js');
 
+// Pre-filter: skip sessions too short to contain meaningful research content
+const MIN_FORMATTED_CHARS = 2000;
+
+// Skip sessions whose first_prompt matches these patterns (case-insensitive)
+const SKIP_PROMPT_PATTERNS = [
+  /^(hi|hello|hey|test|help)\s*[.!?]?\s*$/i,
+  /^\/\w+/,                           // slash command invocations
+  /^(git|npm|pip|brew|docker)\s/i,    // pure tool commands
+  /^(fix|install|update|upgrade)\s+(the\s+)?(lint|build|ci|deps|dependencies)/i,
+];
+
 // ---------------------------------------------------------------------------
 // CLI argument parsing
 // ---------------------------------------------------------------------------
@@ -316,7 +327,7 @@ function main() {
   console.log(`Processing batch of ${batch.length} sessions...\n`);
 
   // Tally
-  const totals = { episodic: 0, semantic: 0, procedural: 0, errors: 0 };
+  const totals = { episodic: 0, semantic: 0, procedural: 0, errors: 0, skipped: 0 };
   const results = [];
 
   for (let i = 0; i < batch.length; i++) {
@@ -326,7 +337,15 @@ function main() {
 
     process.stdout.write(`${progress} ${sid} ... `);
 
-    // 1. Format
+    // 1. Pre-filter by first_prompt
+    const fp = (session.first_prompt || '').trim();
+    if (fp && SKIP_PROMPT_PATTERNS.some(p => p.test(fp))) {
+      console.log('SKIP (trivial prompt)');
+      totals.skipped++;
+      continue;
+    }
+
+    // 2. Format
     const outPath = path.join(os.tmpdir(), `session-${sid}.txt`);
     const meta = formatSession(session.file_path, outPath);
     if (!meta) {
@@ -337,7 +356,19 @@ function main() {
 
     const formattedFiles = meta.output_files || [outPath];
 
-    // 2. Build prompt and call claude CLI
+    // 3. Pre-filter by formatted text size
+    let totalChars = 0;
+    for (const f of formattedFiles) {
+      try { totalChars += fs.statSync(f).size; } catch {}
+    }
+    if (totalChars < MIN_FORMATTED_CHARS) {
+      console.log(`SKIP (${totalChars} chars < ${MIN_FORMATTED_CHARS} min)`);
+      for (const f of formattedFiles) { try { fs.unlinkSync(f); } catch {} }
+      totals.skipped++;
+      continue;
+    }
+
+    // 5. Build prompt and call claude CLI
     const prompt = buildPrompt(session, formattedFiles, opts);
 
     let output = '';
@@ -357,7 +388,7 @@ function main() {
       continue;
     }
 
-    // 3. Parse result
+    // 6. Parse result
     const match = output.match(/SKILLS_EXTRACTED:\s*(\d+)\s*\(E:(\d+)\s+S:(\d+)\s+P:(\d+)\)/);
     if (match) {
       const [, total, e, s, p] = match.map(Number);
@@ -379,7 +410,7 @@ function main() {
       }
     }
 
-    // 4. Clean up formatted text
+    // 7. Clean up formatted text
     for (const f of formattedFiles) {
       try { fs.unlinkSync(f); } catch {}
     }
@@ -396,6 +427,7 @@ function main() {
     Episodic:   ${totals.episodic}
     Semantic:   ${totals.semantic}
     Procedural: ${totals.procedural}
+  Skipped:      ${totals.skipped} (trivial/too short)
   Errors:       ${totals.errors}
 ${remaining > 0 ? `  Remaining:    ${remaining} (run again to continue)` : ''}
 ═══════════════════════════════════════════════`);
