@@ -458,23 +458,22 @@ async function main() {
 
   const uncached = sessions.filter(s => !isCached(s.session_id));
   const cached = sessions.length - uncached.length;
-  const batch = uncached.slice(0, opts.batchSize);
-  const remaining = uncached.length - batch.length;
 
-  console.log(`\nSessions: ${sessions.length} total, ${cached} cached, ${batch.length} to process`);
+  console.log(`\nSessions: ${sessions.length} total, ${cached} cached, ${uncached.length} uncached`);
   console.log(`Concurrency: ${opts.concurrency} parallel Haiku calls\n`);
 
-  if (batch.length === 0) {
+  if (uncached.length === 0) {
     console.log('All sessions already cached. Nothing to do.');
     process.exit(0);
   }
 
-  // Phase 1: Pre-filter and format all sessions (fast, serial)
+  // Phase 1: Pre-filter and format ALL uncached sessions (fast, serial)
+  // batch-size is applied AFTER pre-filtering so trivial sessions don't waste slots
   console.log('Phase 1: Pre-filtering and formatting...');
   const prepared = [];
   const totals = { episodic: 0, semantic: 0, procedural: 0, errors: 0, skipped: 0 };
 
-  for (const session of batch) {
+  for (const session of uncached) {
     const result = prepareSession(session, opts);
     if (result.skip) {
       console.log(`  ${result.sid} → SKIP (${result.skip})`);
@@ -484,8 +483,11 @@ async function main() {
       totals.errors++;
     } else {
       prepared.push(result);
+      if (prepared.length >= opts.batchSize) break; // batch limit on real sessions only
     }
   }
+
+  const batch = uncached; // for summary stats
 
   console.log(`  ${prepared.length} sessions ready, ${totals.skipped} skipped, ${totals.errors} errors\n`);
 
