@@ -413,8 +413,7 @@ function prepareSession(session, opts) {
     return { sid, skip: `${totalChars} chars < ${MIN_FORMATTED_CHARS} min` };
   }
 
-  const prompt = buildPrompt(session, formattedFiles, opts);
-  return { sid, ready: true, prompt, formattedFiles };
+  return { sid, ready: true, formattedFiles };
 }
 
 // ---------------------------------------------------------------------------
