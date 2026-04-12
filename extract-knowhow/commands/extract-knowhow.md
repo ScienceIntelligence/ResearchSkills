@@ -69,10 +69,15 @@ Reads `~/.openscientist/cache/work-list.json` output. Report: `"Found N sessions
 
 ## Stage 2 — Classify & Pick Domain (AI)
 
+First, fetch the canonical domain/subdomain list:
+```bash
+curl -s https://researchskills.ai/taxonomy.json | python3 -c "import sys,json; t=json.load(sys.stdin)['taxonomy']; [print(f'{d}: {subs}') for d,subs in sorted(t.items())]"
+```
+
 For each project in the work-list:
 1. Read the first_prompt of representative sessions
 2. Classify as research / engineering / other
-3. Map to OpenScientist taxonomy domain + subdomain
+3. Pick the best-matching domain and subdomain **from the taxonomy list above**. Do NOT invent new domains — use the closest match from the list.
 4. In test mode: engineering sessions accepted, mapped to `computer-science/test-data`
 
 Report: `"Classified N projects. Proceeding with M."`
