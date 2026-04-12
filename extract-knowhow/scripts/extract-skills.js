@@ -37,9 +37,6 @@ const VALIDATE_SCRIPT = path.join(UTILS_DIR, 'validate-skills.js');
 // Pre-filter: skip sessions too short to contain meaningful research content
 const MIN_FORMATTED_CHARS = 2000;
 
-// Cap segments per session — ultra-long sessions get sampled evenly
-const MAX_SEGMENTS_PER_SESSION = 15;
-
 // Skip sessions whose first_prompt matches these patterns (case-insensitive)
 const SKIP_PROMPT_PATTERNS = [
   /^(hi|hello|hey|test|help)\s*[.!?]?\s*$/i,
@@ -503,34 +500,12 @@ async function main() {
 
   // Phase 2: Build work units (one per segment, not per session)
   // Multi-segment sessions produce multiple work units, all processed in parallel
-  // Ultra-long sessions are sampled evenly to cap total Haiku calls
   const workUnits = [];
   for (const { sid, formattedFiles } of prepared) {
     const totalSegs = formattedFiles.length;
-    let selectedIndices;
-    if (totalSegs <= MAX_SEGMENTS_PER_SESSION) {
-      selectedIndices = Array.from({ length: totalSegs }, (_, i) => i);
-    } else {
-      // Sample evenly: always include first and last, spread the rest
-      selectedIndices = [0];
-      const step = (totalSegs - 1) / (MAX_SEGMENTS_PER_SESSION - 1);
-      for (let j = 1; j < MAX_SEGMENTS_PER_SESSION - 1; j++) {
-        selectedIndices.push(Math.round(j * step));
-      }
-      selectedIndices.push(totalSegs - 1);
-      // Deduplicate (rounding might produce duplicates)
-      selectedIndices = [...new Set(selectedIndices)];
-      console.log(`  ${sid}: ${totalSegs} segments → sampled ${selectedIndices.length} (cap ${MAX_SEGMENTS_PER_SESSION})`);
-      // Clean up unselected segment files
-      for (let si = 0; si < totalSegs; si++) {
-        if (!selectedIndices.includes(si)) {
-          try { fs.unlinkSync(formattedFiles[si]); } catch {}
-        }
-      }
-    }
-
-    for (const si of selectedIndices) {
+    for (let si = 0; si < totalSegs; si++) {
       const segInfo = totalSegs > 1 ? { index: si + 1, total: totalSegs } : null;
+      // Find the original session object to pass to buildPrompt
       const session = batch.find(s => s.session_id === sid);
       const prompt = buildPrompt(session, formattedFiles[si], segInfo, opts);
       workUnits.push({ sid, prompt, segFile: formattedFiles[si], segInfo });
@@ -551,7 +526,7 @@ async function main() {
     const promises = chunk.map(async ({ sid, prompt, segFile, segInfo }) => {
       const segLabel = segInfo ? ` seg${segInfo.index}/${segInfo.total}` : '';
       const startTime = Date.now();
-      const { ok, output, error } = await runClaudeAsync(prompt, 120_000);
+      const { ok, output, error } = await runClaudeAsync(prompt, 300_000);
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
       // Clean up segment file
