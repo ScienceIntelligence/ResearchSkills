@@ -1,6 +1,9 @@
 .DS_Store
+node_modules/
+package-lock.json
+.superpowers/
+*.work/
 insight/
 docs/superpowers/
 webserver/
-webserver/node_modules/
 webserver/.env
