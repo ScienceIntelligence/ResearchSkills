@@ -118,40 +118,27 @@ function formatSession(filePath, outputPath) {
 // Extraction prompt builder
 // ---------------------------------------------------------------------------
 
-function buildPrompt(session, formattedFiles, opts) {
+function buildPrompt(session, segmentFile, segmentInfo, opts) {
   const date = new Date().toISOString().split('T')[0];
   const domain = opts.domain || 'computer-science';
   const subdomain = opts.subdomain || 'test-data';
   const contributor = opts.contributor || 'anonymous';
   const sessionId = session.session_id;
 
-  // Read formatted text content directly — no tool access needed
-  // Cap at 50K chars total to keep Haiku prompt manageable
-  const MAX_PROMPT_TEXT = 50000;
-  const textParts = [];
-  let charCount = 0;
-  for (const f of formattedFiles) {
-    if (charCount >= MAX_PROMPT_TEXT) break;
-    try {
-      const content = fs.readFileSync(f, 'utf-8');
-      textParts.push(content);
-      charCount += content.length;
-    } catch {}
-  }
-  let sessionText = textParts.join('\n\n--- SEGMENT BREAK ---\n\n');
-  if (sessionText.length > MAX_PROMPT_TEXT) {
-    sessionText = sessionText.substring(0, MAX_PROMPT_TEXT) + '\n\n[…truncated — session too long]';
-  }
+  // Read formatted text — will be called once per segment for multi-segment sessions
+  const sessionText = fs.readFileSync(segmentFile, 'utf-8');
+
+  const segLabel = segmentInfo ? ` (segment ${segmentInfo.index}/${segmentInfo.total})` : '';
 
   return `You are a research skill extractor for OpenScientist.
 
 ## Your Task
 
-Analyze the session text below. Identify research impasse moments and knowledge gaps, then output skill markdown blocks.
+Analyze the session text below${segLabel}. Identify research impasse moments and knowledge gaps, then output skill markdown blocks.
 
 ## Input
 
-Session ID: ${sessionId}
+Session ID: ${sessionId}${segLabel}
 Domain: ${domain}
 Subdomain: ${subdomain}
 Contributor: ${contributor}
@@ -329,7 +316,6 @@ function runClaudeAsync(prompt, timeoutMs = 180_000) {
       '-p',
       '--model', 'haiku',
       '--no-session-persistence',
-      '--max-budget-usd', '0.50',
     ], { stdio: ['pipe', 'pipe', 'pipe'] });
 
     // Write prompt to stdin then close
@@ -509,29 +495,42 @@ async function main() {
     process.exit(0);
   }
 
-  // Phase 2: Parallel Haiku extraction in batches of concurrency
-  console.log(`Phase 2: Extracting skills (${prepared.length} sessions, ${opts.concurrency} at a time)...`);
+  // Phase 2: Build work units (one per segment, not per session)
+  // Multi-segment sessions produce multiple work units, all processed in parallel
+  const workUnits = [];
+  for (const { sid, formattedFiles } of prepared) {
+    const totalSegs = formattedFiles.length;
+    for (let si = 0; si < totalSegs; si++) {
+      const segInfo = totalSegs > 1 ? { index: si + 1, total: totalSegs } : null;
+      // Find the original session object to pass to buildPrompt
+      const session = batch.find(s => s.session_id === sid);
+      const prompt = buildPrompt(session, formattedFiles[si], segInfo, opts);
+      workUnits.push({ sid, prompt, segFile: formattedFiles[si], segInfo });
+    }
+  }
+
+  console.log(`Phase 2: Extracting skills (${prepared.length} sessions → ${workUnits.length} Haiku calls, ${opts.concurrency} at a time)...`);
   const results = [];
   let completed = 0;
 
-  for (let i = 0; i < prepared.length; i += opts.concurrency) {
-    const chunk = prepared.slice(i, i + opts.concurrency);
+  for (let i = 0; i < workUnits.length; i += opts.concurrency) {
+    const chunk = workUnits.slice(i, i + opts.concurrency);
     const batchNum = Math.floor(i / opts.concurrency) + 1;
-    const totalBatches = Math.ceil(prepared.length / opts.concurrency);
+    const totalBatches = Math.ceil(workUnits.length / opts.concurrency);
 
-    console.log(`\n  Batch ${batchNum}/${totalBatches} (${chunk.length} sessions):`);
+    console.log(`\n  Batch ${batchNum}/${totalBatches} (${chunk.length} calls):`);
 
-    // Launch all in this chunk in parallel
-    const promises = chunk.map(async ({ sid, prompt, formattedFiles }) => {
+    const promises = chunk.map(async ({ sid, prompt, segFile, segInfo }) => {
+      const segLabel = segInfo ? ` seg${segInfo.index}/${segInfo.total}` : '';
       const startTime = Date.now();
       const { ok, output, error } = await runClaudeAsync(prompt, 300_000);
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
-      // Clean up formatted files
-      for (const f of formattedFiles) { try { fs.unlinkSync(f); } catch {} }
+      // Clean up segment file
+      try { fs.unlinkSync(segFile); } catch {}
 
       if (!ok) {
-        console.log(`    ${sid} → ERROR (${error}) [${elapsed}s]`);
+        console.log(`    ${sid}${segLabel} → ERROR (${error}) [${elapsed}s]`);
         totals.errors++;
         return null;
       }
@@ -539,19 +538,18 @@ async function main() {
       // Parse skill-md blocks from output → write files → validate
       const written = writeAndValidateSkills(sid, output);
 
-      // Also try to parse the SKILLS_EXTRACTED line for counts
       const result = parseResult(sid, output, opts.verbose);
       if (result) {
         totals.episodic += result.episodic;
         totals.semantic += result.semantic;
         totals.procedural += result.procedural;
-        console.log(`    ${sid} → ${result.total} skills (E:${result.episodic} S:${result.semantic} P:${result.procedural}) [${elapsed}s]`);
+        console.log(`    ${sid}${segLabel} → ${result.total} skills (E:${result.episodic} S:${result.semantic} P:${result.procedural}) [${elapsed}s]`);
         return result;
       } else if (written > 0) {
-        console.log(`    ${sid} → ${written} skills written [${elapsed}s]`);
+        console.log(`    ${sid}${segLabel} → ${written} skills written [${elapsed}s]`);
         return { sid, total: written, episodic: 0, semantic: 0, procedural: 0 };
       } else {
-        console.log(`    ${sid} → 0 skills [${elapsed}s]`);
+        console.log(`    ${sid}${segLabel} → 0 skills [${elapsed}s]`);
         return null;
       }
     });
@@ -559,7 +557,12 @@ async function main() {
     const chunkResults = await Promise.all(promises);
     results.push(...chunkResults.filter(Boolean));
     completed += chunk.length;
-    console.log(`  Progress: ${completed}/${prepared.length}`);
+    console.log(`  Progress: ${completed}/${workUnits.length}`);
+  }
+
+  // Clean up any remaining formatted files
+  for (const { formattedFiles } of prepared) {
+    for (const f of formattedFiles) { try { fs.unlinkSync(f); } catch {} }
   }
 
   // Summary
