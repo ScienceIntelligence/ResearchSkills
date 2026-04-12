@@ -17,13 +17,13 @@ Everything else — discovery, formatting, validation, upload — is done by hel
 
 ```
 scan-sessions.js   ─┐
-                    ├─ deterministic (you just call them)
+                    ├─ deterministic scripts (you call them)
 format-session.js  ─┤
 validate-skills.js ─┤
-upload-skills.js   ─┤
 finalize.js        ─┘
 
-Read + your judgment  ← the only AI step
+Agent(model: "haiku")  ← one per session, reads + extracts + validates
+You (main agent)       ← orchestrate: format, dispatch, finalize
 ```
 
 Helper scripts (installed at `~/.claude/utils/`):
@@ -82,47 +82,74 @@ Report: `"Classified N projects. Proceeding with M."`
 
 ---
 
-## Stage 3 — Extract Skills Per Session (AI, the real work)
+## Stage 3 — Extract Skills Per Session (Haiku subagents)
 
-### 3a. Format
+**Architecture:** You (the main agent) orchestrate. For each session, you format the text, then dispatch a **Haiku subagent** via the Agent tool. The subagent reads the formatted text, extracts skills, writes `.md` files, and validates them — all in its own isolated context. Your context never sees the session content.
 
-For each session, call format-session.js:
+### 3a. Caching check
+
+Before processing each session, check cache:
+```bash
+node ~/.claude/utils/validate-skills.js is-cached <session_id>
+# exit 0 = skip, exit 1 = process
+```
+
+Process at most **50 new (uncached) sessions** per run. If more remain: `"Processed 50 sessions. Run /extract-knowhow again for remaining N."`
+
+### 3b. Format (you do this)
+
+For each uncached session:
 ```bash
 node ~/.claude/utils/format-session.js <path/to/session.jsonl> /tmp/session-<session_id>.txt
 ```
-
 Parse stdout JSON for `start_timestamp` and `output_files`.
 
-### 3b. Read (mandatory — Rule 1)
+### 3c. Dispatch Haiku subagent (one per session)
 
-Use the Read tool on each formatted text file. For segmented sessions, read each segment.
+For each formatted session, dispatch a subagent. **Do NOT read the formatted text yourself** — the subagent reads it.
 
-### 3c. Identify impasse moments
+```javascript
+Agent({
+  model: "haiku",
+  description: "Extract skills from session <session_id>",
+  prompt: `You are a research skill extractor for OpenScientist.
 
-Scan the conversation chronologically. Look for **research impasse moments** — places where the researcher:
-- Had to choose between alternatives (→ **Tie**)
-- Got stuck and didn't know what to do next (→ **No-change**)
-- Discovered an assumption didn't hold (→ **Constraint Failure**)
-- Tried something and it failed technically (→ **Operator Fail**)
+## Your Task
 
-Also look for:
-- Facts the human provided that an LLM wouldn't know (→ **Semantic**)
-- Notable episodes worth remembering (→ **Episodic**)
+Read the formatted session text, identify research impasse moments and knowledge gaps, and extract skills as markdown files.
 
-### 3d. Extract in difficulty order
+## Input
 
-**Step 1: Episodic (easiest)**
+Session ID: <session_id>
+Domain: <domain>
+Subdomain: <subdomain>
+Contributor: <contributor>
+Date: <today>
+Formatted text file(s): <output_files from 3b>
 
-For each notable episode, write a skill file:
+## Step 1: Read the formatted text
 
-```markdown
+Use the Read tool on each file listed above. For segmented sessions, read all segments in order.
+
+## Step 2: Identify what to extract
+
+Scan chronologically for:
+- **Impasse moments** — where the researcher got stuck, had to choose, discovered assumptions failed, or execution broke
+- **Knowledge gaps** — facts the human provided that an LLM wouldn't know
+- **Notable episodes** — failures, workarounds, or surprising findings worth remembering
+
+## Step 3: Extract skills (in difficulty order)
+
+**Episodic (easiest)** — For each notable episode, write to /tmp/skill-<session_id>-E<N>.md:
+
+\`\`\`markdown
 ---
 name: "<slug>"
 memory_type: episodic
 subtype: failure | adaptation | anomalous
 domain: <domain>
 subdomain: <subdomain>
-contributor: <git user.name>
+contributor: <contributor>
 source:
   type: session
   session_id: "<session_id>"
@@ -146,21 +173,18 @@ tags: [<relevant>, <tags>]
 
 ## Retrieval Cues
 - [When should an agent recall this episode?]
-- [What situation pattern triggers it?]
-```
+\`\`\`
 
-**Step 2: Semantic (medium)**
+**Semantic (medium)** — For each knowledge gap, write to /tmp/skill-<session_id>-S<N>.md:
 
-For each knowledge gap identified:
-
-```markdown
+\`\`\`markdown
 ---
 name: "<slug>"
 memory_type: semantic
 subtype: frontier | non-public | correction
 domain: <domain>
 subdomain: <subdomain>
-contributor: <git user.name>
+contributor: <contributor>
 source:
   type: session
   session_id: "<session_id>"
@@ -182,20 +206,18 @@ tags: [<relevant>, <tags>]
 
 ## Expiry Signal
 [When this fact might become outdated]
-```
+\`\`\`
 
-**Step 3: Procedural (hardest)**
+**Procedural (hardest)** — For each impasse with a clear resolution pattern, write to /tmp/skill-<session_id>-P<N>.md:
 
-For each impasse with a clear resolution pattern:
-
-```markdown
+\`\`\`markdown
 ---
 name: "<slug>"
 memory_type: procedural
 subtype: tie | no-change | constraint-failure | operator-fail
 domain: <domain>
 subdomain: <subdomain>
-contributor: <git user.name>
+contributor: <contributor>
 source:
   type: session
   session_id: "<session_id>"
@@ -230,31 +252,40 @@ tags: [<relevant>, <tags>]
 
 ## Anti-exemplars
 - [Situation where this skill would be harmful]
+\`\`\`
+
+## Step 4: Validate and cache
+
+After writing all skill files, validate and cache them:
+\`\`\`bash
+node ~/.claude/utils/validate-skills.js save <session_id> /tmp/skill-<session_id>-*.md
+\`\`\`
+
+On validation failure, fix the markdown and retry.
+
+## Rules
+
+1. **Use the Read tool** on formatted text. Never grep raw .jsonl.
+2. **Timestamps** come from [ISO-timestamp] prefix in formatted text. Never fabricate.
+3. **Skills must be specific** to what happened in the conversation. No generic advice.
+4. **De-identify** all skills: strip file paths, usernames, project names, private URLs, collaborator names. Keep scientific content.
+5. If the session has no meaningful impasse or knowledge gap, it is OK to extract zero skills. Report "0 skills" and exit.
+
+## Report format
+
+End your response with exactly this line:
+SKILLS_EXTRACTED: <N> (E:<episodic_count> S:<semantic_count> P:<procedural_count>)
+`
+})
 ```
 
-### 3e. Save via validate-skills.js
+### 3d. Collect results
 
-Write each skill to `/tmp/skill-<session_id>-<N>.md`, then validate and cache:
+After each subagent returns, parse the `SKILLS_EXTRACTED:` line from its response. Tally the counts.
 
-```bash
-node ~/.claude/utils/validate-skills.js save \
-  <session_id> \
-  /tmp/skill-<session_id>-001.md \
-  /tmp/skill-<session_id>-002.md
-```
+If a subagent fails or reports 0 skills, that's fine — move to the next session.
 
-On validation failure, fix the skill markdown and retry.
-
-Report: `"Extracted N skills from session X (E episodic, S semantic, P procedural)."`
-
-### 3f. Caching and limits
-
-Before processing each session, check cache:
-```bash
-node ~/.claude/utils/validate-skills.js is-cached <session_id>
-```
-
-Process at most 50 new sessions per run. If more remain: `"Processed 50 sessions. Run /extract-knowhow again for remaining N."`
+Report per-session: `"Session <id>: N skills extracted (E episodic, S semantic, P procedural)."`
 
 ---
 
