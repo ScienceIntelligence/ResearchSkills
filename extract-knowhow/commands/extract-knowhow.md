@@ -1,13 +1,13 @@
 # /extract-knowhow
 
-Extract research skills from the user's Claude Code + Codex CLI session history for **OpenScientist**.
+Extract research skills from the user's Claude Code session history for **OpenScientist**.
 
 **Run fully automatically with ZERO user interaction.** Do not pause or ask questions. Report progress at each milestone.
 
 You extract three types of cognitive memory from research conversations:
-- **Procedural** — IF-THEN rules for research impasses (hardest to extract, most valuable)
-- **Semantic** — Facts the LLM doesn't know (frontier, non-public, correction)
-- **Episodic** — Concrete research episodes (failure, adaptation, anomalous cases)
+- **Procedural** — IF-THEN rules for **scientific research** decisions: methodology choices, data interpretation strategies, research direction pivots. NOT engineering workflows.
+- **Semantic** — **Frontier scientific knowledge** the LLM doesn't have: domain-specific constraints, unpublished findings, corrections to scientific misconceptions. NOT tool/API behaviors.
+- **Episodic** — **Research cognitive turning points**: hypothesis overturned, methodology abandoned for scientific reasons, unexpected findings that changed direction. NOT debugging episodes.
 
 Everything else — discovery, formatting, validation, upload — is done by helper scripts. Do not reimplement their work.
 
@@ -166,15 +166,26 @@ Preserve: Scientific content — materials, compounds, parameters, methods, tool
 
 ## What to Extract vs What to Skip
 
-**DO extract:**
-- Research impasse moments and their resolutions
-- Knowledge the human provided that LLMs wouldn't know
-- Notable episodes (failures, adaptations, anomalies)
-- The reasoning behind decisions (where tacit knowledge surfaces)
+**DO extract (scientific research skills only):**
+- Research impasse moments where the researcher's **scientific understanding** changed
+- Hypothesis formation, testing, revision, or abandonment and the reasoning behind it
+- Methodology/experiment design trade-offs (why method A over method B)
+- Domain expertise the human provided that LLMs wouldn't know (frontier science, field norms)
+- Data interpretation judgment calls (what counts as significant, when to redo)
+- Cross-disciplinary knowledge transfer (applying one field's methods to another)
+- Research direction strategy (why pursue A not B, when to pivot, how to scope)
+- Meta-research methodology (how to extract tacit knowledge, organize skill taxonomies)
 - Anti-exemplars and exclusions (as important as the skill itself)
 
-**DO NOT extract:**
-- Generic programming tasks (git, npm, environment setup)
+**DO NOT extract (engineering/tooling — regardless of difficulty):**
+- Git/GitHub operations (CI, PR, branch, permissions, Actions, CODEOWNERS)
+- Deployment, DNS, TLS, CDN, hosting, network debugging
+- UI/CSS/frontend styling, responsive design
+- Package management, build tools, version compatibility
+- Documentation formatting, markdown, bilingual content, emoji
+- Database config, OAuth, authentication flows
+- IDE/CLI tool usage, agent timeouts, model selection
+- Generic programming (even if the debugging was clever)
 - Textbook-level knowledge (LLMs already know this)
 - Small talk, casual conversation
 - The same impasse repeated across sessions (deduplicate)

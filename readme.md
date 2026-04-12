@@ -36,7 +36,7 @@ Today: We're launching the largest academic collaboration in human history
 
 This intuition lives in your head — the know-how, the heuristics, the reasoning patterns, the "I just know this won't work" instinct. It never makes it into papers. It dies when you retire.
 
-**OpenScientist captures it before it's lost.** We turn the tacit knowledge of the world's top researchers — their skills, thinking frameworks, and principles — into reusable AI agent skills (compatible with **Claude Code** and **Codex CLI**). Every contribution makes every AI scientist — now and in the future — smarter, permanently.
+**OpenScientist captures it before it's lost.** We turn the tacit knowledge of the world's top researchers — their skills, thinking frameworks, and principles — into reusable AI agent skills (compatible with **Claude Code**). Every contribution makes every AI scientist — now and in the future — smarter, permanently.
 
 Each skill encodes the knowledge, tools, reasoning protocols, and common pitfalls of a scientific field. Skills can be written by domain experts or **auto-extracted from your research conversations** using `/extract-knowhow`. The command extracts three types of cognitive memory from your research sessions — **procedural** (IF-THEN rules for research impasses), **semantic** (facts LLMs don't know), and **episodic** (concrete research episodes) — then packages them as reusable skills. Point your AI agent at a skill, and it reasons like a domain expert.
 
@@ -53,11 +53,6 @@ npm install -g @openscientist/extract-knowhow
 **Claude Code:**
 ```
 /extract-knowhow
-```
-
-**Codex CLI:**
-```
-$extract-knowhow
 ```
 
 The command scans your conversation history and extracts **research skills** organized by cognitive memory type:

@@ -6,7 +6,6 @@ const path = require("path");
 const os = require("os");
 
 const SOURCE_COMMAND = path.join(__dirname, "..", "commands", "extract-knowhow.md");
-const TEMPLATE_SOURCE = path.join(__dirname, "..", "templates", "skill-template.md");
 
 // Helper scripts that must be available at runtime
 const HELPER_SCRIPTS = [
@@ -43,46 +42,6 @@ try {
   console.error("⚠ Claude Code: could not install —", err.message);
 }
 
-// --- Codex CLI ---
-const CODEX_DIR = path.join(os.homedir(), ".codex", "skills", "extract-knowhow");
-const CODEX_COMMAND_TARGET = path.join(CODEX_DIR, "SKILL.md");
-const CODEX_REF_DIR = path.join(CODEX_DIR, "references");
-const CODEX_REF_TARGET = path.join(CODEX_REF_DIR, "skill-template.md");
-const CODEX_UTILS_DIR = path.join(CODEX_DIR, "scripts");
-
-try {
-  fs.mkdirSync(CODEX_DIR, { recursive: true });
-  fs.mkdirSync(CODEX_REF_DIR, { recursive: true });
-  fs.mkdirSync(CODEX_UTILS_DIR, { recursive: true });
-
-  // Codex SKILL.md needs YAML frontmatter for discovery
-  const CODEX_FRONTMATTER = [
-    "---",
-    'name: "extract-knowhow"',
-    'description: "Analyze your conversation history and extract reusable scientific research know-how into OpenScientist skill files. Use when you want to turn your research conversations into structured, shareable skills."',
-    "---",
-    "",
-  ].join("\n");
-  const sourceContent = fs.readFileSync(SOURCE_COMMAND, "utf-8");
-  fs.writeFileSync(CODEX_COMMAND_TARGET, CODEX_FRONTMATTER + sourceContent);
-
-  if (fs.existsSync(TEMPLATE_SOURCE)) {
-    fs.copyFileSync(TEMPLATE_SOURCE, CODEX_REF_TARGET);
-  }
-
-  for (const script of HELPER_SCRIPTS) {
-    const src = path.join(__dirname, script);
-    const dst = path.join(CODEX_UTILS_DIR, script);
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, dst);
-    }
-  }
-
-  console.log("✓ Codex CLI:   $extract-knowhow installed to ~/.codex/skills/");
-} catch (err) {
-  console.error("⚠ Codex CLI: could not install —", err.message);
-}
-
 // --- Cache directory ---
 const CACHE_DIR = path.join(os.homedir(), ".openscientist", "cache");
 try {
@@ -94,4 +53,4 @@ try {
   console.error("⚠ Cache: could not prepare —", err.message);
 }
 
-console.log("\n  Usage: /extract-knowhow (Claude Code) or $extract-knowhow (Codex CLI)");
+console.log("\n  Usage: /extract-knowhow");

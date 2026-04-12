@@ -1,6 +1,6 @@
 # @openscientist/extract-knowhow
 
-> Automatically extract **research skills** from Claude Code / Codex CLI conversation history and submit them to [OpenScientist](https://github.com/OpenScientists/OpenScientist).
+> Automatically extract **research skills** from Claude Code conversation history and submit them to [OpenScientist](https://github.com/OpenScientists/OpenScientist).
 
 ## What It Does
 
@@ -18,25 +18,18 @@ When you use Claude Code for scientific research — data analysis, paper writin
 npm install -g @openscientist/extract-knowhow
 ```
 
-This installs the command into both environments automatically:
+This installs the command automatically:
 - **Claude Code** → `~/.claude/commands/extract-knowhow.md`
-- **Codex CLI** → `~/.codex/skills/extract-knowhow/SKILL.md`
 
 ## Usage
 
-**Claude Code:**
 ```
 /extract-knowhow
 ```
 
-**Codex CLI:**
-```
-$extract-knowhow
-```
-
 The command will:
 
-1. **Scan** all your Claude Code / Codex sessions
+1. **Scan** all your Claude Code sessions
 2. **Format** research-related sessions (ignoring engineering/casual conversations)
 3. **Extract** research skills using AI, organized by cognitive memory type:
    - Procedural rules for research decision-making

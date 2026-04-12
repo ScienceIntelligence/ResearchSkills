@@ -4,7 +4,7 @@
  *
  * Stage 1 + 2 of /extract-knowhow, as a single deterministic script.
  *
- * Discovers Claude Code and Codex CLI session files, extracts per-session
+ * Discovers Claude Code session files, extracts per-session
  * metadata, filters out garbage (too-small, too-short, sub-agent, duplicate),
  * groups by project path, and emits a work list that the AI phase iterates
  * over.
@@ -67,25 +67,8 @@ function discoverClaude() {
   );
 }
 
-function discoverCodex() {
-  const archived = walk(
-    path.join(os.homedir(), '.codex', 'archived_sessions'),
-    (p) => /rollout-.*\.jsonl$/.test(p)
-  );
-  const sessions = walk(
-    path.join(os.homedir(), '.codex', 'sessions'),
-    (p) => p.endsWith('.jsonl')
-  );
-  return [...archived, ...sessions];
-}
-
-function extractSessionId(filePath, source) {
-  const base = path.basename(filePath, '.jsonl');
-  if (source === 'codex') {
-    const m = base.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/);
-    if (m) return m[1];
-  }
-  return base;
+function extractSessionId(filePath) {
+  return path.basename(filePath, '.jsonl');
 }
 
 function claudeProjectDirName(filePath) {
@@ -117,8 +100,7 @@ const BOILERPLATE_PREFIXES = [
 
 function firstPromptText(entry) {
   // Claude Code: { type, message: { role, content } }
-  // Codex CLI:   { type: "response_item", payload: { type: "message", role, content } }
-  const msg = entry.message || entry.payload || entry;
+  const msg = entry.message || entry;
   const role =
     msg.role ||
     entry.role ||
@@ -144,7 +126,7 @@ function firstPromptText(entry) {
 }
 
 function timestampOf(entry) {
-  const msg = entry.message || entry.payload || {};
+  const msg = entry.message || {};
   return entry.timestamp || entry.ts || msg.timestamp || null;
 }
 
@@ -170,7 +152,6 @@ function extractMeta(filePath) {
     if (!cwd) {
       cwd =
         entry.cwd ||
-        (entry.payload && entry.payload.cwd) ||
         (entry.message && entry.message.cwd) ||
         null;
     }
@@ -246,10 +227,7 @@ function saveCachedMeta(sessionId, meta) {
 }
 
 function scan() {
-  const candidates = [
-    ...discoverClaude().map((f) => ({ file: f, source: 'claude' })),
-    ...discoverCodex().map((f) => ({ file: f, source: 'codex' })),
-  ];
+  const candidates = discoverClaude();
 
   const skipped = {
     tooSmall: 0,
@@ -261,7 +239,7 @@ function scan() {
   const accepted = [];
   const byFingerprint = new Map();
 
-  for (const { file, source } of candidates) {
+  for (const file of candidates) {
     let stats;
     try {
       stats = fs.statSync(file);
@@ -274,7 +252,7 @@ function scan() {
       continue;
     }
 
-    const sessionId = extractSessionId(file, source);
+    const sessionId = extractSessionId(file);
     let meta = loadCachedMeta(sessionId, stats.size);
     if (!meta) {
       try {
@@ -284,7 +262,7 @@ function scan() {
         continue;
       }
       meta.session_id = sessionId;
-      meta.source = source;
+      meta.source = 'claude';
       meta.file_path = file;
       saveCachedMeta(sessionId, meta);
     }
@@ -302,17 +280,13 @@ function scan() {
       continue;
     }
 
-    // Prefer cwd from the jsonl (authoritative for both sources). Only fall
-    // back to the on-disk directory name when cwd is missing.
-    const projectPath =
-      meta.cwd ||
-      (source === 'claude'
-        ? claudeProjectDirName(file)
-        : path.basename(path.dirname(file)));
+    // Prefer cwd from the jsonl. Only fall back to the on-disk directory
+    // name when cwd is missing.
+    const projectPath = meta.cwd || claudeProjectDirName(file);
 
     const record = {
       session_id: sessionId,
-      source,
+      source: 'claude',
       file_path: file,
       file_size: meta.file_size,
       project_path: projectPath,

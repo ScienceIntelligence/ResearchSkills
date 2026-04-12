@@ -2,7 +2,7 @@
 /**
  * format-session.js
  *
- * Preprocess a raw Claude Code / Codex CLI .jsonl session file into
+ * Preprocess a raw Claude Code .jsonl session file into
  * compact text optimized for research skill extraction.
  *
  * Design principle: We're extracting HUMAN tacit knowledge. The human's

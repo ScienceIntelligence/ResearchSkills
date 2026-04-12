@@ -34,16 +34,5 @@ try {
   // ignore
 }
 
-// --- Codex CLI ---
-const CODEX_DIR = path.join(os.homedir(), ".codex", "skills", "extract-knowhow");
-try {
-  if (fs.existsSync(CODEX_DIR)) {
-    fs.rmSync(CODEX_DIR, { recursive: true });
-    console.log("✓ Codex CLI:   $extract-knowhow removed");
-  }
-} catch (err) {
-  // ignore
-}
-
 // Note: cache directory ~/.openscientist/cache/ is intentionally preserved,
 // so reinstalling retains previously extracted subtrees.
