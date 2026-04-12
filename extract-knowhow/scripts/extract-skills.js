@@ -16,7 +16,7 @@
  *   --domain <domain>          Domain for all skills (e.g. computer-science)
  *   --subdomain <subdomain>    Subdomain for all skills (e.g. machine-learning)
  *   --contributor <name>       Contributor name (git user.name)
- *   --batch-size <n>           Max sessions to process (default: 50)
+ *   --batch-size <n>           Max sessions to process (default: unlimited)
  *   --session-ids <csv>        Only process these session IDs (comma-separated)
  *   --test                     Mark as test data
  *   --verbose                  Print detailed progress
@@ -44,7 +44,7 @@ function parseArgs() {
     domain: null,
     subdomain: null,
     contributor: null,
-    batchSize: 50,
+    batchSize: Infinity,
     sessionIds: null,
     test: false,
     verbose: false,

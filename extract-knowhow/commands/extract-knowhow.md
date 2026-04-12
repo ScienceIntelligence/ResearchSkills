@@ -89,11 +89,10 @@ Report: `"Classified N projects. Proceeding with M."`
 node ~/.claude/utils/extract-skills.js ~/.openscientist/cache/work-list.json \
   --domain <domain> \
   --subdomain <subdomain> \
-  --contributor "$(git config user.name)" \
-  --batch-size 50
+  --contributor "$(git config user.name)"
 ```
 
-For test mode, add `--test`. To process specific sessions only, use `--session-ids <csv>`.
+For test mode, add `--test`. To process specific sessions only, use `--session-ids <csv>`. To limit batch size, use `--batch-size <n>`.
 
 The script:
 1. Reads work-list.json, skips cached sessions
