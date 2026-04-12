@@ -19,12 +19,6 @@ REQUIRED_FIELDS = {
     "status": str,
 }
 
-VALID_DOMAINS = {
-    "physics", "mathematics", "computer-science",
-    "quantitative-biology", "statistics", "eess",
-    "economics", "quantitative-finance",
-}
-
 VALID_EXPERTISE_LEVELS = {"beginner", "intermediate", "advanced"}
 VALID_STATUSES = {"draft", "reviewed", "verified"}
 
@@ -37,6 +31,9 @@ REQUIRED_SECTIONS = [
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SKILLS_DIR = REPO_ROOT / "skills"
+
+# Derive valid domains from directory structure (single source of truth)
+VALID_DOMAINS = {p.name for p in SKILLS_DIR.iterdir() if p.is_dir() and not p.name.startswith('.')} if SKILLS_DIR.is_dir() else set()
 
 
 def validate_path(path: Path) -> list[str]:

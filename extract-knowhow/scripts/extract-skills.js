@@ -16,6 +16,8 @@
  *   --domain <domain>          Domain for all skills (e.g. computer-science)
  *   --subdomain <subdomain>    Subdomain for all skills (e.g. machine-learning)
  *   --contributor <name>       Contributor name (git user.name)
+ *   --project-name <name>     Project name (default: derived from session project_path)
+ *   --project-slug <slug>     Project slug (default: derived from project-name)
  *   --batch-size <n>           Max sessions to process (default: unlimited)
  *   --concurrency <n>          Parallel claude -p calls per batch (default: 5)
  *   --session-ids <csv>        Only process these session IDs (comma-separated)
@@ -56,6 +58,8 @@ function parseArgs() {
     domain: null,
     subdomain: null,
     contributor: null,
+    projectName: null,
+    projectSlug: null,
     batchSize: Infinity,
     concurrency: 10,
     sessionIds: null,
@@ -65,14 +69,16 @@ function parseArgs() {
 
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
-      case '--domain':       opts.domain = args[++i]; break;
-      case '--subdomain':    opts.subdomain = args[++i]; break;
-      case '--contributor':  opts.contributor = args[++i]; break;
-      case '--batch-size':   opts.batchSize = parseInt(args[++i], 10); break;
-      case '--concurrency':  opts.concurrency = parseInt(args[++i], 10); break;
-      case '--session-ids':  opts.sessionIds = args[++i].split(','); break;
-      case '--test':         opts.test = true; break;
-      case '--verbose':      opts.verbose = true; break;
+      case '--domain':        opts.domain = args[++i]; break;
+      case '--subdomain':     opts.subdomain = args[++i]; break;
+      case '--contributor':   opts.contributor = args[++i]; break;
+      case '--project-name':  opts.projectName = args[++i]; break;
+      case '--project-slug':  opts.projectSlug = args[++i]; break;
+      case '--batch-size':    opts.batchSize = parseInt(args[++i], 10); break;
+      case '--concurrency':   opts.concurrency = parseInt(args[++i], 10); break;
+      case '--session-ids':   opts.sessionIds = args[++i].split(','); break;
+      case '--test':          opts.test = true; break;
+      case '--verbose':       opts.verbose = true; break;
       default:
         if (!args[i].startsWith('-') && !opts.workListPath) {
           opts.workListPath = args[i];
@@ -118,12 +124,31 @@ function formatSession(filePath, outputPath) {
 // Extraction prompt builder
 // ---------------------------------------------------------------------------
 
+function deriveProjectName(session, opts) {
+  if (opts.projectName) return opts.projectName;
+  // Derive from project_path (the cwd or CC project directory)
+  const pp = session.project_path;
+  if (!pp) return null;
+  // Use the last path component as project name
+  return path.basename(pp);
+}
+
+function slugify(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .substring(0, 60);
+}
+
 function buildPrompt(session, segmentFile, segmentInfo, opts) {
   const date = new Date().toISOString().split('T')[0];
   const domain = opts.domain || 'computer-science';
-  const subdomain = opts.subdomain || 'test-data';
+  const subdomain = opts.subdomain || 'general';
   const contributor = opts.contributor || 'anonymous';
   const sessionId = session.session_id;
+  const projectName = deriveProjectName(session, opts) || 'unknown';
+  const projectSlug = opts.projectSlug || slugify(projectName) || 'unknown';
 
   // Read formatted text — will be called once per segment for multi-segment sessions
   const sessionText = fs.readFileSync(segmentFile, 'utf-8');
@@ -139,6 +164,7 @@ Analyze the session text below${segLabel}. Identify research impasse moments and
 ## Input
 
 Session ID: ${sessionId}${segLabel}
+Project: ${projectName}
 Domain: ${domain}
 Subdomain: ${subdomain}
 Contributor: ${contributor}
@@ -169,6 +195,8 @@ subtype: failure | adaptation | anomalous
 domain: ${domain}
 subdomain: ${subdomain}
 contributor: ${contributor}
+project_name: "${projectName}"
+project_slug: "${projectSlug}"
 source:
   type: session
   session_id: "${sessionId}"
@@ -204,6 +232,8 @@ subtype: frontier | non-public | correction
 domain: ${domain}
 subdomain: ${subdomain}
 contributor: ${contributor}
+project_name: "${projectName}"
+project_slug: "${projectSlug}"
 source:
   type: session
   session_id: "${sessionId}"
@@ -237,6 +267,8 @@ subtype: tie | no-change | constraint-failure | operator-fail
 domain: ${domain}
 subdomain: ${subdomain}
 contributor: ${contributor}
+project_name: "${projectName}"
+project_slug: "${projectSlug}"
 source:
   type: session
   session_id: "${sessionId}"
