@@ -117,6 +117,25 @@ function isCached(sessionId) {
   } catch { return false; }
 }
 
+function isSegmentCached(sessionId, segInfo) {
+  if (!isCached(sessionId)) return false;
+  if (!segInfo) {
+    // Single-segment session: cached if any non-segment-prefixed skill exists
+    const dir = path.join(os.homedir(), '.openscientist', 'cache', 'skills', sessionId);
+    try {
+      const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+      return files.some(f => !/-s\d+-/.test(f));
+    } catch { return false; }
+  }
+  // Multi-segment: check if any skill file with this segment prefix exists
+  const dir = path.join(os.homedir(), '.openscientist', 'cache', 'skills', sessionId);
+  try {
+    const prefix = `-s${segInfo.index}-`;
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.md') && f.includes(prefix));
+    return files.length > 0;
+  } catch { return false; }
+}
+
 function formatSession(filePath, outputPath) {
   const stdout = run('node', [FORMAT_SCRIPT, filePath, outputPath]);
   try { return JSON.parse(stdout); } catch { return null; }
@@ -256,7 +275,7 @@ function injectProjectMeta(content, projectMeta) {
   return lines.join('\n');
 }
 
-function writeAndValidateSkills(sessionId, output, projectMeta) {
+function writeAndValidateSkills(sessionId, output, projectMeta, segInfo) {
   const blocks = [];
   const regex = /```skill-md\n([\s\S]*?)```/g;
   let m;
@@ -266,10 +285,11 @@ function writeAndValidateSkills(sessionId, output, projectMeta) {
 
   if (blocks.length === 0) return 0;
 
+  const segPrefix = segInfo ? `s${segInfo.index}-` : '';
   const skillFiles = [];
   for (let i = 0; i < blocks.length; i++) {
     const content = injectProjectMeta(blocks[i], projectMeta);
-    const filePath = path.join(os.tmpdir(), `skill-${sessionId}-${i + 1}.md`);
+    const filePath = path.join(os.tmpdir(), `skill-${sessionId}-${segPrefix}${i + 1}.md`);
     fs.writeFileSync(filePath, content + '\n');
     skillFiles.push(filePath);
   }
@@ -295,7 +315,7 @@ function writeAndValidateSkills(sessionId, output, projectMeta) {
 // Returns { skip, error, ready, sid, prompt, formattedFiles }
 // ---------------------------------------------------------------------------
 
-function prepareSession(session, opts) {
+function prepareSession(session) {
   const sid = session.session_id;
 
   // Pre-filter by first_prompt
@@ -366,25 +386,17 @@ async function main() {
     sessions = sessions.filter(s => idSet.has(s.session_id));
   }
 
-  const uncached = sessions.filter(s => !isCached(s.session_id));
-  const cached = sessions.length - uncached.length;
-
-  console.log(`\nSessions: ${sessions.length} total, ${cached} cached, ${uncached.length} uncached`);
+  console.log(`\nSessions: ${sessions.length} total`);
   console.log(`Concurrency: ${opts.concurrency} parallel Haiku calls\n`);
 
-  if (uncached.length === 0) {
-    console.log('All sessions already cached. Nothing to do.');
-    process.exit(0);
-  }
-
-  // Phase 1: Pre-filter and format ALL uncached sessions (fast, serial)
-  // batch-size is applied AFTER pre-filtering so trivial sessions don't waste slots
+  // Phase 1: Pre-filter and format all sessions (fast, serial)
+  // Segment-level caching is checked later in Phase 2
   console.log('Phase 1: Pre-filtering and formatting...');
   const prepared = [];
   const totals = { episodic: 0, semantic: 0, procedural: 0, errors: 0, skipped: 0 };
 
-  for (const session of uncached) {
-    const result = prepareSession(session, opts);
+  for (const session of sessions) {
+    const result = prepareSession(session);
     if (result.skip) {
       console.log(`  ${result.sid} → SKIP (${result.skip})`);
       totals.skipped++;
@@ -397,9 +409,9 @@ async function main() {
     }
   }
 
-  const batch = uncached;
+  const batch = sessions;
   // Sessions that passed pre-filter but didn't fit in batch-size
-  const remaining = uncached.length - totals.skipped - totals.errors - prepared.length;
+  const remaining = sessions.length - totals.skipped - totals.errors - prepared.length;
 
   console.log(`  ${prepared.length} sessions ready, ${totals.skipped} skipped, ${totals.errors} errors\n`);
 
@@ -410,11 +422,19 @@ async function main() {
 
   // Phase 2: Build work units (one per segment, not per session)
   // Multi-segment sessions produce multiple work units, all processed in parallel
+  // Segment-level caching: skip segments that already have cached skills
   const workUnits = [];
+  let segmentsCached = 0;
   for (const { sid, formattedFiles } of prepared) {
     const totalSegs = formattedFiles.length;
     for (let si = 0; si < totalSegs; si++) {
       const segInfo = totalSegs > 1 ? { index: si + 1, total: totalSegs } : null;
+      if (isSegmentCached(sid, segInfo)) {
+        segmentsCached++;
+        // Clean up formatted file for cached segment
+        try { fs.unlinkSync(formattedFiles[si]); } catch {}
+        continue;
+      }
       // Find the original session object to pass to buildPrompt
       const session = batch.find(s => s.session_id === sid);
       const prompt = buildPrompt(formattedFiles[si]);
@@ -432,7 +452,16 @@ async function main() {
     }
   }
 
-  console.log(`Phase 2: Extracting skills (${prepared.length} sessions → ${workUnits.length} Haiku calls, ${opts.concurrency} at a time)...`);
+  if (segmentsCached > 0) {
+    console.log(`  ${segmentsCached} segments already cached, skipped`);
+  }
+
+  if (workUnits.length === 0) {
+    console.log('All segments already cached. Nothing to do.');
+    process.exit(0);
+  }
+
+  console.log(`\nPhase 2: Extracting skills (${prepared.length} sessions → ${workUnits.length} Haiku calls, ${opts.concurrency} at a time)...`);
   const results = [];
   let completed = 0;
 
@@ -459,7 +488,7 @@ async function main() {
       }
 
       // Parse skill-md blocks from output → inject project metadata → write files → validate
-      const written = writeAndValidateSkills(sid, output, projectMeta);
+      const written = writeAndValidateSkills(sid, output, projectMeta, segInfo);
 
       const result = parseResult(sid, output, opts.verbose);
       if (result) {
@@ -494,26 +523,45 @@ async function main() {
     for (const f of formattedFiles) { try { fs.unlinkSync(f); } catch {} }
   }
 
-  // Summary
-  const totalSkills = totals.episodic + totals.semantic + totals.procedural;
+  // Count actual cached skills by reading cache directories
+  const cachedCounts = { total: 0, episodic: 0, semantic: 0, procedural: 0 };
+  const processedSids = new Set(prepared.map(p => p.sid));
+  for (const sid of processedSids) {
+    const cacheDir = path.join(os.homedir(), '.openscientist', 'cache', 'skills', sid);
+    try {
+      const files = fs.readdirSync(cacheDir).filter(f => f.endsWith('.md'));
+      for (const file of files) {
+        const content = fs.readFileSync(path.join(cacheDir, file), 'utf-8');
+        const typeMatch = content.match(/memory_type:\s*(\w+)/);
+        const memType = typeMatch ? typeMatch[1] : null;
+        cachedCounts.total++;
+        if (memType === 'episodic') cachedCounts.episodic++;
+        else if (memType === 'semantic') cachedCounts.semantic++;
+        else if (memType === 'procedural') cachedCounts.procedural++;
+      }
+    } catch {}
+  }
+
+  // Haiku-reported totals (what Haiku claimed to extract)
+  const haikuTotal = totals.episodic + totals.semantic + totals.procedural;
+
   console.log(`
 ═══════════════════════════════════════════════
   Extraction Complete
 ═══════════════════════════════════════════════
-  Sessions processed: ${batch.length}
-  Skills extracted:   ${totalSkills}
-    Episodic:   ${totals.episodic}
-    Semantic:   ${totals.semantic}
-    Procedural: ${totals.procedural}
-  Skipped:      ${totals.skipped} (trivial/too short)
-  Errors:       ${totals.errors}
-${remaining > 0 ? `  Remaining:    ${remaining} (run again to continue)` : ''}
+  Sessions processed: ${prepared.length}
+  Haiku reported:     ${haikuTotal} skills (E:${totals.episodic} S:${totals.semantic} P:${totals.procedural})
+  Actually cached:    ${cachedCounts.total} skills (E:${cachedCounts.episodic} S:${cachedCounts.semantic} P:${cachedCounts.procedural})
+  Skipped:            ${totals.skipped} (trivial/too short)
+  Errors:             ${totals.errors}
+${remaining > 0 ? `  Remaining:          ${remaining} (run again to continue)` : ''}
 ═══════════════════════════════════════════════`);
 
   const summaryPath = path.join(os.tmpdir(), 'extract-skills-summary.json');
   fs.writeFileSync(summaryPath, JSON.stringify({
-    batch_size: batch.length,
-    total_skills: totalSkills,
+    batch_size: prepared.length,
+    haiku_reported: haikuTotal,
+    cached: cachedCounts,
     totals,
     remaining,
     results,

@@ -219,20 +219,56 @@ function collectSkills(outputDir, filterIds) {
   const sessions = listCachedSessions();
   const filter = filterIds && filterIds.length > 0 ? new Set(filterIds) : null;
   let count = 0;
+  let duplicates = 0;
 
   fs.mkdirSync(outputDir, { recursive: true });
+
+  // Deduplicate by skill name across segments/sessions.
+  // For same-name skills, keep the one with longer body content.
+  const seenNames = new Map(); // name → { file, srcPath, bodyLen }
 
   for (const sid of sessions) {
     if (filter && !filter.has(sid)) continue;
     const srcDir = sessionCacheDir(sid);
     const files = fs.readdirSync(srcDir).filter((f) => f.endsWith('.md'));
     for (const file of files) {
-      fs.copyFileSync(
-        path.join(srcDir, file),
-        path.join(outputDir, file)
-      );
-      count++;
+      const srcPath = path.join(srcDir, file);
+      const content = fs.readFileSync(srcPath, 'utf-8');
+      const parsed = parseFrontmatter(content);
+      const name = parsed && parsed.frontmatter && parsed.frontmatter.name
+        ? String(parsed.frontmatter.name).trim().toLowerCase()
+        : null;
+
+      if (name && seenNames.has(name)) {
+        // Duplicate — keep the longer one
+        const existing = seenNames.get(name);
+        const bodyLen = parsed.body ? parsed.body.length : 0;
+        if (bodyLen > existing.bodyLen) {
+          seenNames.set(name, { file, srcPath, bodyLen });
+        }
+        duplicates++;
+        continue;
+      }
+
+      const bodyLen = parsed && parsed.body ? parsed.body.length : 0;
+      if (name) {
+        seenNames.set(name, { file, srcPath, bodyLen });
+      } else {
+        // No parseable name — copy directly (don't deduplicate)
+        fs.copyFileSync(srcPath, path.join(outputDir, file));
+        count++;
+      }
     }
+  }
+
+  // Copy deduplicated skills
+  for (const { file, srcPath } of seenNames.values()) {
+    fs.copyFileSync(srcPath, path.join(outputDir, file));
+    count++;
+  }
+
+  if (duplicates > 0) {
+    console.log(`  Deduplicated: ${duplicates} duplicate skills removed`);
   }
   return count;
 }

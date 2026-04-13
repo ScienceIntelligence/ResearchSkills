@@ -491,9 +491,22 @@ function formatSession(jsonlPath) {
 
 function splitIntoSegments(text) {
   if (text.length <= SEGMENT_THRESHOLD) return [text];
+  const lines = text.split('\n');
   const segments = [];
-  for (let i = 0; i < text.length; i += SEGMENT_SIZE) {
-    segments.push(text.substring(i, i + SEGMENT_SIZE));
+  let current = '';
+
+  for (const line of lines) {
+    // If adding this line would exceed the segment size AND we already have content,
+    // start a new segment. Always add at least one line to avoid empty segments.
+    if (current.length > 0 && current.length + line.length + 1 > SEGMENT_SIZE) {
+      segments.push(current);
+      current = line;
+    } else {
+      current += (current.length > 0 ? '\n' : '') + line;
+    }
+  }
+  if (current.length > 0) {
+    segments.push(current);
   }
   return segments;
 }
