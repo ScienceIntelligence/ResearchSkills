@@ -9,7 +9,7 @@ body:
         Submit your research decision tree here! Paste the full JSON output below.
 
         **How to generate a decision tree:**
-        - **Claude Code / Codex CLI:** Install `npm install -g @openscientist/extract-knowhow`, then run `/extract-knowhow`
+        - **Claude Code / Codex:** Install `npm install -g @openscientist/extract-knowhow`, then run `/extract-knowhow`
         - **Web (ChatGPT / Claude / Gemini):** Use the one-click prompt from the [README](https://github.com/OpenScientists/OpenScientist#method-b-one-click-prompt-for-web-users-chatgpt--claude--gemini)
 
   - type: input

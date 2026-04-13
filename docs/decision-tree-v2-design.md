@@ -93,7 +93,7 @@ Actions interleave freely — the phase grouping is for human readability, not a
 
 ### Step 1: Local Extraction
 
-User runs `/extract-knowhow` in Claude Code or Codex CLI. The system:
+User runs `/extract-knowhow` in Claude Code or Codex. The system:
 
 1. Reads local conversation history.
 2. For each conversation, the LLM:

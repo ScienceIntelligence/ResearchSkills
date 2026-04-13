@@ -2,10 +2,10 @@
 /**
  * format-session.js
  *
- * Preprocess a raw Claude Code or Codex CLI .jsonl session file into
+ * Preprocess a raw Claude Code or Codex .jsonl session file into
  * compact text optimized for research skill extraction.
  *
- * Supports both Claude Code and Codex CLI JSONL formats.
+ * Supports both Claude Code and Codex JSONL formats.
  *
  * Design principle: We're extracting HUMAN tacit knowledge. The human's
  * inputs, corrections, and decisions are the signal. AI outputs and tool
@@ -140,7 +140,7 @@ function extractMessageClaude(entry) {
 }
 
 // ---------------------------------------------------------------------------
-// Codex CLI message extractor
+// Codex message extractor
 // ---------------------------------------------------------------------------
 
 // Parse Codex exec_command output: strip metadata prefix, extract exit code

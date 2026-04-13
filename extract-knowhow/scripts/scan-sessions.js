@@ -4,7 +4,7 @@
  *
  * Stage 1 + 2 of /extract-knowhow, as a single deterministic script.
  *
- * Discovers Claude Code and Codex CLI session files, extracts per-session
+ * Discovers Claude Code and Codex session files, extracts per-session
  * metadata, filters out garbage (too-small, too-short, sub-agent, duplicate),
  * groups by project path, and emits a work list that the AI phase iterates
  * over.
@@ -116,7 +116,7 @@ const IDE_CONTEXT_RE = /^# Context from my IDE.*?\n(?:(?:##[^\n]*|  ?- [^\n]*|-[
 
 function firstPromptText(entry) {
   // Claude Code: { type, message: { role, content } }
-  // Codex CLI:   { type: "event_msg", payload: { type: "user_message", message } }
+  // Codex:   { type: "event_msg", payload: { type: "user_message", message } }
   const msg = entry.message || entry.payload || entry;
   const role =
     msg.role ||

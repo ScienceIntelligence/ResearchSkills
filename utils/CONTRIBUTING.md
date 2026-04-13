@@ -9,14 +9,14 @@ Thank you for contributing your expertise! There are two ways to contribute:
 
 ## 1. Submit Research Skills (Recommended)
 
-### Via Claude Code / Codex CLI
+### Via Claude Code / Codex
 
 ```bash
 npm install -g @openscientist/extract-knowhow
 ```
 
 Then in Claude Code: `/extract-knowhow`
-Or in Codex CLI: `$extract-knowhow`
+Or in Codex: `$extract-knowhow`
 
 The tool scans your conversation history, extracts research skills (procedural, semantic, and episodic), and opens a browser review page. After reviewing, submit via GitHub.
 
@@ -113,14 +113,14 @@ Open a GitHub Discussion or reach out to the core team via issues.
 
 ## 1. 提交科研技能（推荐）
 
-### 通过 Claude Code / Codex CLI
+### 通过 Claude Code / Codex
 
 ```bash
 npm install -g @openscientist/extract-knowhow
 ```
 
 在 Claude Code 中运行: `/extract-knowhow`
-在 Codex CLI 中运行: `$extract-knowhow`
+在 Codex 中运行: `$extract-knowhow`
 
 工具会扫描你的对话历史，提取科研技能（程序性、语义性和情景性），并在浏览器中打开审阅页面。审阅后通过 GitHub 提交。
 
