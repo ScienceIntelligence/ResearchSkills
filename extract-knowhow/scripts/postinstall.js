@@ -73,12 +73,46 @@ try {
 }
 
 // --- Cache directory ---
+// Any version change wipes all caches (skills + meta + sessions).
+// Reason: both extraction prompts AND raw-conversation preprocessing can change
+// between versions, so nothing is safe to reuse.
 const CACHE_DIR = path.join(os.homedir(), ".openscientist", "cache");
+const VERSION_FILE = path.join(CACHE_DIR, ".version");
+const CURRENT_VERSION = require(path.join(__dirname, "..", "package.json")).version;
+
+function rmrf(p) {
+  if (!fs.existsSync(p)) return;
+  for (const entry of fs.readdirSync(p)) {
+    const full = path.join(p, entry);
+    if (fs.statSync(full).isDirectory()) rmrf(full);
+    else fs.unlinkSync(full);
+  }
+  fs.rmdirSync(p);
+}
+
 try {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+
+  const previousVersion = fs.existsSync(VERSION_FILE)
+    ? fs.readFileSync(VERSION_FILE, "utf-8").trim()
+    : null;
+
+  if (previousVersion && previousVersion !== CURRENT_VERSION) {
+    // Version changed — wipe all processed caches (keep nothing)
+    rmrf(path.join(CACHE_DIR, "skills"));
+    rmrf(path.join(CACHE_DIR, "meta"));
+    rmrf(path.join(CACHE_DIR, "sessions"));
+    console.log(`✓ Cache:       version ${previousVersion} → ${CURRENT_VERSION}, previous cache cleared`);
+  } else if (!previousVersion) {
+    console.log(`✓ Cache:       initialized at version ${CURRENT_VERSION}`);
+  } else {
+    console.log(`✓ Cache:       version ${CURRENT_VERSION} (reusing existing cache)`);
+  }
+
   fs.mkdirSync(path.join(CACHE_DIR, "meta"), { recursive: true });
   fs.mkdirSync(path.join(CACHE_DIR, "skills"), { recursive: true });
   fs.mkdirSync(path.join(CACHE_DIR, "sessions"), { recursive: true });
-  console.log("✓ Cache:       ~/.openscientist/cache/ ready");
+  fs.writeFileSync(VERSION_FILE, CURRENT_VERSION);
 } catch (err) {
   console.error("⚠ Cache: could not prepare —", err.message);
 }

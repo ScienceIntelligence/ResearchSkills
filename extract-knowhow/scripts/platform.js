@@ -3,7 +3,7 @@
  * platform.js
  *
  * Adapter module for spawning AI CLI processes across platforms.
- * Supports Claude Code (`--cc`) and Codex CLI (`--codex`).
+ * Supports Claude Code (`--cc`) and Codex (`--codex`).
  *
  * Usage:
  *   const { parsePlatformFlag, createRunner } = require('./platform');
@@ -103,7 +103,7 @@ function createCCRunner() {
 }
 
 // ---------------------------------------------------------------------------
-// Codex CLI runners
+// Codex runners
 // ---------------------------------------------------------------------------
 
 function spawnCodex(args, prompt, verbose, timeoutMs) {
