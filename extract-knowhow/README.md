@@ -27,43 +27,58 @@ This installs the command automatically:
 /extract-knowhow
 ```
 
-The command will:
+The command runs a 7-stage pipeline:
 
-1. **Scan** all your Claude Code sessions
-2. **Format** research-related sessions (ignoring engineering/casual conversations)
-3. **Extract** research skills using AI, organized by cognitive memory type:
-   - Procedural rules for research decision-making
-   - Semantic facts missing from LLM training data
-   - Episodic traces of concrete research attempts and outcomes
-4. **Validate** extracted skills for completeness and de-identification
-5. **Upload** your skills to OpenScientist via GitHub
+1. **Scan** — discover all Claude Code sessions
+2. **Classify** — identify research vs. engineering projects (Sonnet)
+3. **Extract** — extract research skills per session (Sonnet), organized by cognitive memory type
+4. **Clean** — review extracted skills with Opus: reject engineering content, fix PII, merge duplicates
+5. **Score** — assess each skill's value on 3 dimensions with Opus (procedural / semantic / episodic, 0-5)
+6. **Finalize** — upload cleaned, scored skills to [researchskills.ai](https://researchskills.ai)
+7. **Summary** — report results with review statistics
 
 ## Output
 
-A markdown skill file organized by cognitive memory type:
+Each skill is a markdown file with YAML frontmatter, including three review scores:
 
-```markdown
-## Procedural Memory
-- IF model loss plateaus after 50 epochs THEN try reducing learning rate
-  by 10x before changing architecture BECAUSE architecture changes are
-  expensive and LR is the most common culprit
+```yaml
+---
+name: gradient-explosion-diagnosis
+memory_type: procedural
+subtype: operator-fail
+llm_score: 4
+review_scores:
+  procedural: 4   # decision frameworks AI doesn't know
+  semantic: 2      # facts/beliefs AI doesn't have
+  episodic: 3      # concrete research experiences
+tags: [gradient-descent, debugging, neural-networks]
+domain: computer-science
+subdomain: machine-learning
+contributor: anon-7f3b42c9
+---
 
-## Semantic Memory
-- Library X's default tokenizer silently truncates inputs over 512 tokens
-  without warning
+## When
+Using Adam or SGD with deep networks; loss spikes unpredictably.
 
-## Episodic Memory
-- Attempted approach A for protein folding prediction; failed due to
-  insufficient training data. Pivoted to approach B with data augmentation,
-  which achieved 15% improvement over baseline.
+## Decision
+Check learning rate first (most common cause), not architecture.
+
+## Local Verifiers
+- nan_count in gradients > threshold
+- loss jump > 10x in single step
+
+## Failure Handling
+If gradient norm clipping doesn't fix: check batch normalization placement
 ```
 
 ## Contributing Back
 
-After reviewing your extracted skills:
+After extraction, an interactive review page opens at `researchskills.ai/review/batch/<id>` where you can:
 
-- [**Submit via GitHub Issue →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml) (paste the markdown — no git required!)
-- Or open a PR if you prefer git
+- Review and edit skill content
+- See the 3-dimension review scores
+- Assign domain/subdomain taxonomy
+- Submit to OpenScientist
 
 ## Uninstall
 

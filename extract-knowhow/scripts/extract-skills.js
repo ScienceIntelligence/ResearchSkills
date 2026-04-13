@@ -118,21 +118,21 @@ function isCached(sessionId) {
 }
 
 function isSegmentCached(sessionId, segInfo) {
-  if (!isCached(sessionId)) return false;
+  const dir = path.join(os.homedir(), '.openscientist', 'cache', 'skills', sessionId);
   if (!segInfo) {
-    // Single-segment session: cached if any non-segment-prefixed skill exists
-    const dir = path.join(os.homedir(), '.openscientist', 'cache', 'skills', sessionId);
+    // Single-segment session: cached if skills exist OR .done marker present
     try {
-      const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
-      return files.some(f => !/-s\d+-/.test(f));
+      const entries = fs.readdirSync(dir);
+      if (entries.includes('.done')) return true;
+      return entries.filter(f => f.endsWith('.md')).some(f => !/-s\d+-/.test(f));
     } catch { return false; }
   }
-  // Multi-segment: check if any skill file with this segment prefix exists
-  const dir = path.join(os.homedir(), '.openscientist', 'cache', 'skills', sessionId);
+  // Multi-segment: check for segment-specific .done marker or skill files
   try {
+    const entries = fs.readdirSync(dir);
+    if (entries.includes(`.done-s${segInfo.index}`)) return true;
     const prefix = `-s${segInfo.index}-`;
-    const files = fs.readdirSync(dir).filter(f => f.endsWith('.md') && f.includes(prefix));
-    return files.length > 0;
+    return entries.filter(f => f.endsWith('.md') && f.includes(prefix)).length > 0;
   } catch { return false; }
 }
 
@@ -172,6 +172,24 @@ function buildPrompt(segmentFile) {
 1. **Non-obvious** — would a domain expert find this surprising?
 2. **Session-specific** — grounded in a concrete event here, not generic advice?
 3. **Research-only** — about scientific methodology, reasoning, or knowledge? Reject all engineering (UI, DevOps, database, build tools, git, auth, package management, visualization) even if the project is research-related.
+
+## Boundary examples — same project, different verdicts
+
+A research project contains BOTH research and engineering work. Extract only the research.
+
+❌ REJECT (engineering):
+- "Supabase onAuthStateChange callback deadlocks on re-entry" → auth/infra debugging
+- "GitHub Rulesets vs Branch Protection Rules show different UI warnings" → platform ops
+- "Static PNG unreadable at 130+ nodes, switch to interactive HTML/JS tree" → UI/visualization choice
+- "Repository transfer converts collaborators to Outside Collaborators" → GitHub admin
+- "README tables don't scale beyond 10 contributors" → UI/UX layout
+
+✅ EXTRACT (research):
+- "Claim-level diffing between paper and chat logs reveals unpublished research decisions" → methodology for tacit knowledge capture
+- "LLMs fail at research due to task structure mismatch (long horizon + no verifier), not reasoning deficits" → frontier knowledge about AI capabilities
+- "Predefined 20-action vocabulary with escape hatch balances structure vs flexibility for research ontology" → schema design for knowledge representation
+
+When in doubt, ask: "Is this about HOW to do science, or HOW to build software?" Only the former qualifies.
 
 ## Skill types
 
@@ -276,6 +294,13 @@ function injectProjectMeta(content, projectMeta) {
   return lines.join('\n');
 }
 
+function markSegmentDone(sessionId, segInfo) {
+  const dir = path.join(os.homedir(), '.openscientist', 'cache', 'skills', sessionId);
+  fs.mkdirSync(dir, { recursive: true });
+  const marker = segInfo ? `.done-s${segInfo.index}` : '.done';
+  fs.writeFileSync(path.join(dir, marker), '');
+}
+
 function writeAndValidateSkills(sessionId, output, projectMeta, segInfo) {
   const blocks = [];
   const regex = /```skill-md\n([\s\S]*?)```/g;
@@ -284,7 +309,10 @@ function writeAndValidateSkills(sessionId, output, projectMeta, segInfo) {
     blocks.push(m[1].trim());
   }
 
-  if (blocks.length === 0) return 0;
+  if (blocks.length === 0) {
+    markSegmentDone(sessionId, segInfo);
+    return 0;
+  }
 
   const segPrefix = segInfo ? `s${segInfo.index}-` : '';
   const skillFiles = [];

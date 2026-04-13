@@ -263,8 +263,9 @@ function saveSkill(sessionId, filePath) {
 function isCached(sessionId) {
   const dir = sessionCacheDir(sessionId);
   if (!fs.existsSync(dir)) return false;
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md'));
-  return files.length > 0;
+  const entries = fs.readdirSync(dir);
+  // Cached if skills exist OR .done marker present (segment produced 0 skills)
+  return entries.some((f) => f.endsWith('.md') || f.startsWith('.done'));
 }
 
 function listCachedSessions() {

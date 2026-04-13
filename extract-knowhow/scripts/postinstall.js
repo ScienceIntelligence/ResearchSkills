@@ -14,6 +14,8 @@ const HELPER_SCRIPTS = [
   "format-session.js",
   "extract-skills.js",
   "validate-skills.js",
+  "clean-skills.js",
+  "score-skills.js",
   "upload-skills.js",
   "finalize.js",
 ];

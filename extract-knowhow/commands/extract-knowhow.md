@@ -17,9 +17,11 @@ Everything else — discovery, formatting, validation, upload — is done by hel
 
 ```
 scan-sessions.js       ─┐
-classify-projects.js   ─┤  deterministic scripts (you call them)
-extract-skills.js      ─┤
-  └─ claude -p          │  ← Sonnet CLI call per session, inside the script
+classify-projects.js   ─┤
+extract-skills.js      ─┤  deterministic scripts (you call them)
+  └─ claude -p sonnet   │  ← Sonnet CLI call per session, inside the script
+clean-skills.js        ─┤  ← Opus reviews: reject/fix/merge
+score-skills.js        ─┤  ← Opus scores: 3-dim value assessment
 finalize.js            ─┘
 
 You (main agent)       ← call scripts, read summaries, report
@@ -33,6 +35,8 @@ Helper scripts (installed at `~/.claude/utils/`):
 | `classify-projects.js` | Classify projects as research/engineering via Sonnet, pick domain/subdomain |
 | `extract-skills.js` | **The core loop**: format each session → call `claude -p --model sonnet` → validate + cache skills |
 | `validate-skills.js` | Validate skill markdown and cache to `~/.openscientist/cache/skills/` |
+| `clean-skills.js` | Review extracted skills with Opus: reject engineering, fix PII, merge duplicates |
+| `score-skills.js` | Score surviving skills with Opus on 3 dimensions: procedural, semantic, episodic value |
 | `finalize.js` | Collect cached skills → upload to researchskills.ai |
 
 ---
@@ -113,7 +117,39 @@ If you need to process multiple projects with different domains, call the script
 
 ---
 
-## Stage 4 — Finalize Per Project
+## Stage 4 — Clean Skills
+
+Run Opus to review all extracted skills: reject engineering content, fix PII leaks, merge duplicates.
+
+```bash
+node ~/.claude/utils/clean-skills.js \
+  --session-ids <ALL-research-session-ids-csv> \
+  --verbose
+```
+
+This spawns a Claude Code instance with Opus that directly reads, deletes, and edits skill files on disk.
+
+Report: `"Clean: kept N, rejected M, merged K."`
+
+---
+
+## Stage 5 — Score Skills
+
+Run Opus to assess the value of each surviving skill on 3 dimensions.
+
+```bash
+node ~/.claude/utils/score-skills.js \
+  --session-ids <ALL-research-session-ids-csv> \
+  --verbose
+```
+
+This spawns a Claude Code instance with Opus that reads each skill and writes `review_scores` (procedural, semantic, episodic — each 0-5) into the YAML frontmatter.
+
+Report: `"Scored N skills. Avg: procedural X.X, semantic X.X, episodic X.X."`
+
+---
+
+## Stage 6 — Finalize Per Project
 
 ```bash
 node ~/.claude/utils/finalize.js \
@@ -127,7 +163,7 @@ node ~/.claude/utils/finalize.js \
 
 ---
 
-## Stage 5 — Terminal Summary
+## Stage 7 — Terminal Summary
 
 ```
 ═══════════════════════════════════════════════════════
@@ -135,9 +171,13 @@ node ~/.claude/utils/finalize.js \
 ═══════════════════════════════════════════════════════
 
 Extracted N skills from M sessions across P projects:
-  • Episodic:   E skills (F failure, A adaptation, X anomalous)
-  • Semantic:   S skills (Fr frontier, Np non-public, C correction)
-  • Procedural: Pr skills (T tie, Nc no-change, Cf constraint-failure, Of operator-fail)
+  • Episodic:   E skills
+  • Semantic:   S skills
+  • Procedural: Pr skills
+
+Review (Opus):
+  • Kept: K / Rejected: R / Merged: G
+  • Avg scores: procedural X.X, semantic X.X, episodic X.X
 
 Review your skills:
   → https://researchskills.ai/review/batch/<batchId>
