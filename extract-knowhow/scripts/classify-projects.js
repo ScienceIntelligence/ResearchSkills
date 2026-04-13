@@ -183,12 +183,22 @@ async function main() {
       };
     }
 
-    // Parse JSON from Sonnet output
+    // Parse JSON from Sonnet output.
+    // Use bracket-balanced extraction instead of a greedy regex — if any text
+    // follows the JSON (e.g. a Claude Code hook prints to stdout after the
+    // response), the greedy /\{[\s\S]*\}/ would stretch to the last "}" in
+    // that trailing text and produce invalid JSON for JSON.parse.
     let classification;
     try {
-      const jsonMatch = output.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('No JSON found in output');
-      classification = JSON.parse(jsonMatch[0]);
+      const start = output.indexOf('{');
+      if (start === -1) throw new Error('No JSON found in output');
+      let depth = 0, end = -1;
+      for (let i = start; i < output.length; i++) {
+        if (output[i] === '{') depth++;
+        else if (output[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
+      }
+      if (end === -1) throw new Error('Unbalanced JSON object in output');
+      classification = JSON.parse(output.slice(start, end + 1));
     } catch (e) {
       if (opts.verbose) console.log(`  ${slug}: PARSE ERROR — ${e.message}\n    Output: ${output.substring(0, 200)}`);
       return {
