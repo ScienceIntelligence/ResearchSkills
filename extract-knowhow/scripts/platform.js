@@ -93,7 +93,7 @@ function createCCRunner() {
         prompt, verbose, timeoutMs
       );
     },
-    classify(prompt, timeoutMs = 120_000) {
+    classify(prompt, timeoutMs = 300_000) {
       return spawnCC(
         ['-p', '--model', 'sonnet', '--no-session-persistence'],
         prompt, false, timeoutMs
@@ -177,7 +177,7 @@ function createCodexRunner() {
     score(prompt, verbose = false, timeoutMs = 900_000) {
       return spawnCodex(codexBaseArgs('high'), prompt, verbose, timeoutMs);
     },
-    classify(prompt, timeoutMs = 120_000) {
+    classify(prompt, timeoutMs = 300_000) {
       return spawnCodex(codexBaseArgs('medium'), prompt, false, timeoutMs);
     },
   };

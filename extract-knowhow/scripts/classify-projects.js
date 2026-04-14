@@ -35,6 +35,9 @@ const { parsePlatformFlag, createRunner } = require('./platform');
 
 const OUTPUT_PATH = path.join(os.homedir(), '.openscientist', 'cache', 'classification.json');
 
+// Max concurrent AI classify calls — prevents resource thrashing & API rate limits
+const CONCURRENCY = 5;
+
 // ---------------------------------------------------------------------------
 // CLI
 // ---------------------------------------------------------------------------
@@ -163,9 +166,9 @@ async function main() {
   const result = { projects: {} };
   const projectPaths = Object.keys(byProject);
 
-  console.log(`\nClassifying ${projectPaths.length} projects in parallel...\n`);
+  console.log(`\nClassifying ${projectPaths.length} projects (${CONCURRENCY} at a time)...\n`);
 
-  // Classify all projects via Sonnet in parallel
+  // Classify projects with bounded concurrency
   const classifyOne = async (projPath) => {
     const projSessions = byProject[projPath];
     const slug = projPath.split('/').filter(Boolean).pop() || 'unknown';
@@ -236,7 +239,16 @@ async function main() {
     };
   };
 
-  const classifications = await Promise.all(projectPaths.map(classifyOne));
+  // Process in batches of CONCURRENCY to avoid spawning too many CLI processes
+  const classifications = [];
+  for (let i = 0; i < projectPaths.length; i += CONCURRENCY) {
+    const batch = projectPaths.slice(i, i + CONCURRENCY);
+    const batchResults = await Promise.all(batch.map(classifyOne));
+    classifications.push(...batchResults);
+    if (i + CONCURRENCY < projectPaths.length) {
+      console.log(`  ... classified ${Math.min(i + CONCURRENCY, projectPaths.length)}/${projectPaths.length} projects`);
+    }
+  }
 
   // Collect results and print
   for (const c of classifications) {
