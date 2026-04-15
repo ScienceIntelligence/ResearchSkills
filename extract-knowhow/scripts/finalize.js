@@ -65,7 +65,12 @@ function finalize(metaPath, options = {}) {
   runNode(VALIDATE_SKILLS, ['collect', outputDir, sessionIds.join(',')]);
   console.log(`✓ Skills collected → ${outputDir}`);
 
-  if (options.noUpload) return { outputDir, uploaded: false };
+  if (!options.upload) {
+    console.log(`⚠ Skills collected but NOT uploaded (no --upload flag).`);
+    console.log(`  Review the skills locally at: ${outputDir}`);
+    console.log(`  To upload, re-run with --upload`);
+    return { outputDir, uploaded: false };
+  }
 
   // 2. Upload skills
   const uploadArgs = [outputDir];
@@ -110,6 +115,7 @@ if (require.main === module) {
       case '--project-slug':   cliOpts.projectSlug = args[++i]; break;
       case '--description':    cliOpts.description = args[++i]; break;
       case '--test':           cliOpts.isTest = true; break;
+      case '--upload':          cliOpts.upload = true; break;
       case '--no-upload':      cliOpts.noUpload = true; break;
       case '--no-open':        cliOpts.noOpen = true; break;
       default:
@@ -151,7 +157,7 @@ if (require.main === module) {
 
   try {
     finalize(resolvedMetaPath, {
-      noUpload: cliOpts.noUpload || false,
+      upload: cliOpts.upload && !cliOpts.noUpload,
       noOpen: cliOpts.noOpen || false,
     });
   } catch (err) {

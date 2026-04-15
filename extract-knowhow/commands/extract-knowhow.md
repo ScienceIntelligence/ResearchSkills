@@ -154,9 +154,11 @@ Report: `"Scored N skills. Avg: procedural X.X, semantic X.X, episodic X.X."`
 
 ---
 
-## Stage 6 — Finalize Per Project
+## Stage 6 — Finalize Per Project (collect only, no upload yet)
 
 Use the AI-generated `project_name` from classification.json (Stage 2). Do NOT use the raw folder name.
+
+**Do NOT pass `--upload` here.** Collect skills locally first. Upload requires explicit user consent in Stage 7.
 
 ```bash
 node ~/.claude/utils/finalize.js \
@@ -170,11 +172,15 @@ node ~/.claude/utils/finalize.js \
 
 ---
 
-## Stage 7 — Terminal Summary
+## Stage 7 — Consent and Upload
+
+**This is the ONLY stage where you pause and ask the user.** All prior stages run automatically.
+
+Show the user what was extracted:
 
 ```
 ═══════════════════════════════════════════════════════
-  /extract-knowhow Complete!
+  /extract-knowhow — Extraction Complete!
 ═══════════════════════════════════════════════════════
 
 Extracted N skills from M sessions across P projects:
@@ -186,8 +192,36 @@ Review (Opus):
   • Kept: K / Rejected: R / Merged: G
   • Avg scores: procedural X.X, semantic X.X, episodic X.X
 
+⚠ Nothing has been uploaded yet. Your skills are saved
+  locally. Would you like to submit them to OpenScientist
+  for reviewer review?
+
+  Skills will be stored on researchskills.ai and reviewed
+  by a maintainer before publication (CC-BY 4.0).
+═══════════════════════════════════════════════════════
+```
+
+Then use AskUserQuestion to get explicit consent:
+- Question: "Submit your extracted skills to OpenScientist for review?"
+- Option A: "Yes, submit for review" — re-run finalize with `--upload`
+- Option B: "No, keep local only" — skip upload, tell user where files are saved
+
+If the user consents, re-run finalize with `--upload`:
+
+```bash
+node ~/.claude/utils/finalize.js \
+  --session-ids <ALL-research-session-ids-csv> \
+  --domain <domain> \
+  --subdomain <subdomain> \
+  --contributor "$(git config user.name)" \
+  --project-name "<project_name from classification>" \
+  --project-slug "<slug>" \
+  --upload
+```
+
+Then show:
+```
 Review your skills:
   → https://researchskills.ai/review/batch/<batchId>
-═══════════════════════════════════════════════════════
 ```
 
