@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Submit a Skill
+    url: https://researchskills.ai/
+    about: Submit your skill via the ResearchSkills.ai platform
+  - name: Request a Skill
+    url: https://researchskills.ai/
+    about: Request a new skill from a domain expert
+  - name: Apply as Reviewer
+    url: https://researchskills.ai/
+    about: Apply to become a subdomain reviewer
+  - name: Propose New Area
+    url: https://researchskills.ai/
+    about: Suggest a new top-level domain or subdomain
