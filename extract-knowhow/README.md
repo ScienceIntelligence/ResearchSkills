@@ -100,7 +100,7 @@ npm uninstall -g @openscientist/extract-knowhow
 - All analysis happens locally via your Claude Code / Codex session
 - Session data is read from `~/.claude/projects/` and `~/.codex/` on your machine
 - **You choose which projects to scan** — the tool pauses after classification for your selection
-- No conversation history is read for unselected projects
+- Unselected projects are skipped for extraction (classification reads only brief message samples)
 - AI auto-strips personal information; you review before submitting
 - Nothing is uploaded without your explicit consent
 
