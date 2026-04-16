@@ -6,7 +6,7 @@ description: "Extract research skills from conversation history into OpenScienti
 
 Extract research skills from the user's Codex session history for **OpenScientist**.
 
-**Run fully automatically with ZERO user interaction.** Do not pause or ask questions. Report progress at each milestone.
+**Run automatically with TWO pauses for user consent:** once after classifying projects (Stage 2.5 — choose which projects to scan), and once before upload (Stage 7 — choose whether to submit). Report progress at each milestone.
 
 > **Prerequisite:** This skill spawns nested `codex exec` calls that need full network and filesystem access. Start Codex with: `codex -a never -s danger-full-access` (or `--dangerously-bypass-approvals-and-sandbox`). If the parent session is sandboxed, nested calls will fail with network errors.
 
@@ -89,6 +89,31 @@ Report: `"Classified N projects. Proceeding with M."`
 
 ---
 
+## Stage 2.5 — Project Consent Gate
+
+**PAUSE and ask the user.** After classification, show all discovered projects and let the user choose which to scan.
+
+Read `~/.openscientist/cache/classification.json` and display:
+
+```
+Select which projects to scan for research skills:
+
+  [x] 1. Protein Folding Pipeline     (4 sessions, research, quantitative-biology)
+  [x] 2. Quantum Monte Carlo Study    (3 sessions, research, physics)
+  [ ] 3. Personal Website             (3 sessions, engineering)
+  [ ] 4. Dotfiles                     (2 sessions, other)
+
+Enter numbers to toggle, or press Enter to continue:
+```
+
+Research projects are pre-selected; engineering/other are deselected.
+
+Only pass user-approved projects to Stage 3+. Remove deselected project session IDs from all subsequent `--session-ids` arguments.
+
+Report: `"Proceeding with N projects (M sessions) after user confirmation."`
+
+---
+
 ## Stage 3 — Extract Skills Per Session
 
 ### MANDATORY: Use --single-batch and loop. NEVER run all at once.
@@ -159,9 +184,11 @@ Report: `"Scored N skills. Avg: procedural X.X, semantic X.X, episodic X.X."`
 
 ---
 
-## Stage 6 — Finalize Per Project
+## Stage 6 — Finalize Per Project (collect only, no upload yet)
 
 Use the AI-generated `project_name` from classification.json (Stage 2). Do NOT use the raw folder name.
+
+**Do NOT pass `--upload` here.** Collect skills locally first. Upload requires explicit user consent in Stage 7.
 
 ```bash
 node ~/.codex/skills/extract-knowhow/scripts/finalize.js \
@@ -175,11 +202,15 @@ node ~/.codex/skills/extract-knowhow/scripts/finalize.js \
 
 ---
 
-## Stage 7 — Terminal Summary
+## Stage 7 — Consent and Upload
+
+**Second consent gate.** Pause and ask the user before uploading anything.
+
+Show the user what was extracted:
 
 ```
 ═══════════════════════════════════════════════════════
-  /extract-knowhow Complete!
+  /extract-knowhow — Extraction Complete!
 ═══════════════════════════════════════════════════════
 
 Extracted N skills from M sessions across P projects:
@@ -191,7 +222,34 @@ Review:
   • Kept: K / Rejected: R / Merged: G
   • Avg scores: procedural X.X, semantic X.X, episodic X.X
 
+⚠ Nothing has been uploaded yet. Your skills are saved
+  locally. Would you like to submit them to OpenScientist
+  for reviewer review?
+
+  Skills will be stored on researchskills.ai and reviewed
+  by a maintainer before publication (CC-BY 4.0).
+═══════════════════════════════════════════════════════
+```
+
+Ask for explicit consent:
+- "Yes, submit for review" — re-run finalize with `--upload`
+- "No, keep local only" — skip upload, tell user where files are saved
+
+If the user consents, re-run finalize with `--upload`:
+
+```bash
+node ~/.codex/skills/extract-knowhow/scripts/finalize.js \
+  --session-ids <ALL-research-session-ids-csv> \
+  --domain <domain> \
+  --subdomain <subdomain> \
+  --contributor "$(git config user.name)" \
+  --project-name "<project_name from classification>" \
+  --project-slug "<slug>" \
+  --upload
+```
+
+Then show:
+```
 Review your skills:
   → https://researchskills.ai/review/batch/<batchId>
-═══════════════════════════════════════════════════════
 ```

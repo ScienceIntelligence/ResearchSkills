@@ -2,7 +2,7 @@
 
 Extract research skills from the user's Claude Code session history for **OpenScientist**.
 
-**Run fully automatically with ZERO user interaction.** Do not pause or ask questions. Report progress at each milestone.
+**Run automatically with TWO pauses for user consent:** once after classifying projects (Stage 2.5 — choose which projects to scan), and once before upload (Stage 7 — choose whether to submit). Report progress at each milestone.
 
 You extract three types of cognitive memory from research conversations:
 - **Procedural** — IF-THEN rules for **scientific research** decisions: methodology choices, data interpretation strategies, research direction pivots. NOT engineering workflows.
@@ -80,6 +80,31 @@ Read the output file. For each project with `type: "research"`, use its `researc
 The script generates an AI-summarized `project_name` for each project (e.g. "Protein Folding Simulation Pipeline") instead of using the raw folder name. Use this `project_name` in Stage 6 finalize. If `project_name` is null, fall back to the `slug`.
 
 Report: `"Classified N projects. Proceeding with M."`
+
+---
+
+## Stage 2.5 — Project Consent Gate
+
+**PAUSE and ask the user.** After classification, show all discovered projects and let the user choose which to scan.
+
+Read `~/.openscientist/cache/classification.json` and display:
+
+```
+Select which projects to scan for research skills:
+
+  [x] 1. Protein Folding Pipeline     (4 sessions, research, quantitative-biology)
+  [x] 2. Quantum Monte Carlo Study    (3 sessions, research, physics)
+  [ ] 3. Personal Website             (3 sessions, engineering)
+  [ ] 4. Dotfiles                     (2 sessions, other)
+
+Enter numbers to toggle, or press Enter to continue:
+```
+
+Research projects are pre-selected; engineering/other are deselected.
+
+Use AskUserQuestion to get the selection. Only pass user-approved projects to Stage 3+. Remove deselected project session IDs from all subsequent `--session-ids` arguments.
+
+Report: `"Proceeding with N projects (M sessions) after user confirmation."`
 
 ---
 
@@ -174,7 +199,7 @@ node ~/.claude/utils/finalize.js \
 
 ## Stage 7 — Consent and Upload
 
-**This is the ONLY stage where you pause and ask the user.** All prior stages run automatically.
+**Second consent gate.** Pause and ask the user before uploading anything.
 
 Show the user what was extracted:
 
