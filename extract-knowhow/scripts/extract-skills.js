@@ -314,9 +314,22 @@ function prepareSession(session) {
     return { sid, skip: 'trivial prompt' };
   }
 
+  // The file_path recorded in work-list.json may have disappeared between
+  // scan and extract (user cleanup, Claude Code retention, project rename).
+  // Treat that as a per-session error so the batch keeps going instead of
+  // the format-session subprocess throwing out of prepareSession().
+  if (!fs.existsSync(session.file_path)) {
+    return { sid, error: 'session file not found (removed after scan?)' };
+  }
+
   // Format
   const outPath = path.join(os.tmpdir(), `session-${sid}.txt`);
-  const meta = formatSession(session.file_path, outPath);
+  let meta;
+  try {
+    meta = formatSession(session.file_path, outPath);
+  } catch (e) {
+    return { sid, error: `format threw: ${(e.message || String(e)).split('\n')[0]}` };
+  }
   if (!meta) {
     return { sid, error: 'format failed' };
   }
