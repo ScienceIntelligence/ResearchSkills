@@ -355,7 +355,7 @@ function scan() {
       start_timestamp: meta.start_timestamp,
     };
 
-    const fp = `${meta.first_prompt || ''}::${meta.user_message_count || 0}`;
+    const fp = `${projectPath}::${meta.first_prompt || ''}::${meta.user_message_count || 0}`;
     const existing = byFingerprint.get(fp);
     if (existing) {
       skipped.duplicate += 1;
