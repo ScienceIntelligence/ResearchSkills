@@ -102,7 +102,9 @@ Enter numbers to toggle, or press Enter to continue:
 
 Research projects are pre-selected; engineering/other are deselected.
 
-Use AskUserQuestion to get the selection. Only pass user-approved projects to Stage 3+. Remove deselected project session IDs from all subsequent `--session-ids` arguments.
+**YOU MUST STOP HERE AND WAIT FOR THE USER TO RESPOND.** Use AskUserQuestion to present the project list and block until the user replies. Do NOT continue to Stage 3 without an explicit user response.
+
+Only pass user-approved projects to Stage 3+. Remove deselected project session IDs from all subsequent `--session-ids` arguments.
 
 Report: `"Proceeding with N projects (M sessions) after user confirmation."`
 

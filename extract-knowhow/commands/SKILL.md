@@ -108,6 +108,8 @@ Enter numbers to toggle, or press Enter to continue:
 
 Research projects are pre-selected; engineering/other are deselected.
 
+**YOU MUST STOP HERE AND WAIT FOR THE USER TO RESPOND.** Use `ask` (Codex) or `AskUserQuestion` (Claude Code) to present the project list and block until the user replies. Do NOT continue to Stage 3 without an explicit user response. If no interactive tool is available, print the list and end your turn — the user's next message is their selection.
+
 Only pass user-approved projects to Stage 3+. Remove deselected project session IDs from all subsequent `--session-ids` arguments.
 
 Report: `"Proceeding with N projects (M sessions) after user confirmation."`
