@@ -9,7 +9,7 @@
  * and exits non-zero so the caller can surface the error.
  *
  * Usage:
- *   upload-skills.js <skills_dir> [--no-open] [--headless] [--api <url>]
+ *   upload-skills.js <skills_dir> [--no-open] [--headless] [--consent] [--api <url>]
  *
  * Exit codes:
  *   0 = all uploaded
@@ -164,6 +164,7 @@ async function uploadSkills(skillsDir, options = {}) {
   const apiUrl = options.apiUrl || DEFAULT_API;
   const batchId = randomUUID();
   const headless = options.headless || false;
+  const consent = options.consent || false;
 
   const files = fs.readdirSync(skillsDir).filter((f) => f.endsWith('.md'));
   if (files.length === 0) {
@@ -175,7 +176,7 @@ async function uploadSkills(skillsDir, options = {}) {
   let allOk = true;
 
   if (headless) {
-    console.log(`[headless] Batch ${batchId} — uploading ${files.length} skill(s) with consent`);
+    console.log(`[headless] Batch ${batchId} — uploading ${files.length} skill(s)${consent ? ' with consent' : ''}`);
   } else {
     console.log(`Batch ${batchId} — uploading ${files.length} skill(s)`);
   }
@@ -194,7 +195,7 @@ async function uploadSkills(skillsDir, options = {}) {
     const payload = { ...parsed.frontmatter, body: parsed.body, batch_id: batchId };
     if (options.projectSlug) payload.project_slug = options.projectSlug;
     if (options.projectName) payload.project_name = options.projectName;
-    if (headless) payload.consent = true;
+    if (consent) payload.consent = true;
 
     try {
       const response = await postSkill(apiUrl, payload);
@@ -208,19 +209,20 @@ async function uploadSkills(skillsDir, options = {}) {
     }
   }
 
-  return { ok: allOk, results, failedSkills, batchId, headless };
+  return { ok: allOk, results, failedSkills, batchId };
 }
 
 // CLI
 if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.length < 1 || args[0] === '--help' || args[0] === '-h') {
-    console.error('Usage: upload-skills.js <skills_dir> [--no-open] [--headless] [--api <url>]');
+    console.error('Usage: upload-skills.js <skills_dir> [--no-open] [--headless] [--consent] [--api <url>]');
     process.exit(args.length < 1 ? 1 : 0);
   }
 
   const skillsDir = path.resolve(args[0]);
   const headless = args.includes('--headless') || isHeadless();
+  const consent = args.includes('--consent');
   const noOpen = args.includes('--no-open') || headless;
   const apiIdx = args.indexOf('--api');
   const apiUrl = apiIdx !== -1 && args[apiIdx + 1] ? args[apiIdx + 1] : DEFAULT_API;
@@ -230,7 +232,7 @@ if (require.main === module) {
   const projectName = projectNameIdx !== -1 && args[projectNameIdx + 1] ? args[projectNameIdx + 1] : null;
 
   if (headless) {
-    console.log('[headless] SSH/remote environment detected — browser open disabled, consent flag set');
+    console.log('[headless] SSH/remote environment detected — browser open disabled');
   }
 
   if (!fs.existsSync(skillsDir) || !fs.statSync(skillsDir).isDirectory()) {
@@ -238,7 +240,7 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  uploadSkills(skillsDir, { apiUrl, projectSlug, projectName, headless }).then((result) => {
+  uploadSkills(skillsDir, { apiUrl, projectSlug, projectName, headless, consent }).then((result) => {
     if (result.ok) {
       const uploaded = result.results.filter((r) => r.ok);
       const ids = uploaded
@@ -258,7 +260,7 @@ if (require.main === module) {
       console.log(`RESULT=${JSON.stringify(summary)}`);
 
       if (headless) {
-        console.log(`\u2713 ${uploaded.length} skill(s) uploaded with consent flag`);
+        console.log(`\u2713 ${uploaded.length} skill(s) uploaded${consent ? ' with consent' : ''}`);
         console.log(`  Review your skills (from any browser): ${batchReviewUrl}`);
         console.log('  Sign in with GitHub on the review page to claim credit and submit.');
       } else if (!noOpen) {

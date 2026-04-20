@@ -7,4 +7,5 @@ insight/
 docs/superpowers/
 webserver/
 webserver/.env
-__pycache__/.worktrees/
+__pycache__/
+.worktrees/
