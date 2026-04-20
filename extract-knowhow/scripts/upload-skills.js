@@ -9,7 +9,7 @@
  * and exits non-zero so the caller can surface the error.
  *
  * Usage:
- *   upload-skills.js <skills_dir> [--no-open] [--api <url>]
+ *   upload-skills.js <skills_dir> [--no-open] [--headless] [--consent] [--api <url>]
  *
  * Exit codes:
  *   0 = all uploaded
@@ -26,6 +26,22 @@ const { execFileSync } = require('child_process');
 const { randomUUID } = require('crypto');
 
 const DEFAULT_API = 'https://researchskills.ai/api/skills';
+
+/**
+ * Detect if running in a headless/SSH environment where a browser can't open.
+ * Checks for SSH_CONNECTION, SSH_CLIENT, SSH_TTY (SSH session),
+ * and missing DISPLAY on Linux (no X server).
+ */
+function isHeadless() {
+  if (process.env.SSH_CONNECTION || process.env.SSH_CLIENT || process.env.SSH_TTY) {
+    return true;
+  }
+  // Linux without DISPLAY = no GUI
+  if (process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY) {
+    return true;
+  }
+  return false;
+}
 
 /**
  * Parse simple YAML frontmatter from markdown content.
@@ -147,6 +163,8 @@ function openBrowser(url) {
 async function uploadSkills(skillsDir, options = {}) {
   const apiUrl = options.apiUrl || DEFAULT_API;
   const batchId = randomUUID();
+  const headless = options.headless || false;
+  const consent = options.consent || false;
 
   const files = fs.readdirSync(skillsDir).filter((f) => f.endsWith('.md'));
   if (files.length === 0) {
@@ -157,7 +175,11 @@ async function uploadSkills(skillsDir, options = {}) {
   const failedSkills = [];
   let allOk = true;
 
-  console.log(`Batch ${batchId} — uploading ${files.length} skill(s)`);
+  if (headless) {
+    console.log(`[headless] Batch ${batchId} — uploading ${files.length} skill(s)${consent ? ' with consent' : ''}`);
+  } else {
+    console.log(`Batch ${batchId} — uploading ${files.length} skill(s)`);
+  }
 
   for (const file of files) {
     const filePath = path.join(skillsDir, file);
@@ -173,6 +195,7 @@ async function uploadSkills(skillsDir, options = {}) {
     const payload = { ...parsed.frontmatter, body: parsed.body, batch_id: batchId };
     if (options.projectSlug) payload.project_slug = options.projectSlug;
     if (options.projectName) payload.project_name = options.projectName;
+    if (consent) payload.consent = true;
 
     try {
       const response = await postSkill(apiUrl, payload);
@@ -193,12 +216,14 @@ async function uploadSkills(skillsDir, options = {}) {
 if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.length < 1 || args[0] === '--help' || args[0] === '-h') {
-    console.error('Usage: upload-skills.js <skills_dir> [--no-open] [--api <url>]');
+    console.error('Usage: upload-skills.js <skills_dir> [--no-open] [--headless] [--consent] [--api <url>]');
     process.exit(args.length < 1 ? 1 : 0);
   }
 
   const skillsDir = path.resolve(args[0]);
-  const noOpen = args.includes('--no-open');
+  const headless = args.includes('--headless') || isHeadless();
+  const consent = args.includes('--consent');
+  const noOpen = args.includes('--no-open') || headless;
   const apiIdx = args.indexOf('--api');
   const apiUrl = apiIdx !== -1 && args[apiIdx + 1] ? args[apiIdx + 1] : DEFAULT_API;
   const projectSlugIdx = args.indexOf('--project-slug');
@@ -206,12 +231,16 @@ if (require.main === module) {
   const projectNameIdx = args.indexOf('--project-name');
   const projectName = projectNameIdx !== -1 && args[projectNameIdx + 1] ? args[projectNameIdx + 1] : null;
 
+  if (headless) {
+    console.log('[headless] SSH/remote environment detected — browser open disabled');
+  }
+
   if (!fs.existsSync(skillsDir) || !fs.statSync(skillsDir).isDirectory()) {
     console.error(`Error: directory not found: ${skillsDir}`);
     process.exit(1);
   }
 
-  uploadSkills(skillsDir, { apiUrl, projectSlug, projectName }).then((result) => {
+  uploadSkills(skillsDir, { apiUrl, projectSlug, projectName, headless, consent }).then((result) => {
     if (result.ok) {
       const uploaded = result.results.filter((r) => r.ok);
       const ids = uploaded
@@ -230,7 +259,11 @@ if (require.main === module) {
 
       console.log(`RESULT=${JSON.stringify(summary)}`);
 
-      if (!noOpen) {
+      if (headless) {
+        console.log(`\u2713 ${uploaded.length} skill(s) uploaded${consent ? ' with consent' : ''}`);
+        console.log(`  Review your skills (from any browser): ${batchReviewUrl}`);
+        console.log('  Sign in with GitHub on the review page to claim credit and submit.');
+      } else if (!noOpen) {
         if (openBrowser(batchReviewUrl)) {
           console.log('\u2713 Opened batch review page in browser');
         } else {
@@ -259,5 +292,6 @@ module.exports = {
   parseFrontmatter,
   fallbackSave,
   openBrowser,
+  isHeadless,
   DEFAULT_API,
 };

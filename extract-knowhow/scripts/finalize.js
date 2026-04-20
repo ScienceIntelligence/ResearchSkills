@@ -74,6 +74,8 @@ function finalize(metaPath, options = {}) {
 
   // 2. Upload skills
   const uploadArgs = [outputDir];
+  if (options.headless) uploadArgs.push('--headless');
+  if (options.consent) uploadArgs.push('--consent');
   if (options.noOpen) uploadArgs.push('--no-open');
   if (meta.project_slug) {
     uploadArgs.push('--project-slug', meta.project_slug);
@@ -118,6 +120,8 @@ if (require.main === module) {
       case '--upload':          cliOpts.upload = true; break;
       case '--no-upload':      cliOpts.noUpload = true; break;
       case '--no-open':        cliOpts.noOpen = true; break;
+      case '--headless':       cliOpts.headless = true; break;
+      case '--consent':        cliOpts.consent = true; break;
       default:
         if (!args[i].startsWith('-') && !metaPath) metaPath = args[i];
     }
@@ -159,6 +163,8 @@ if (require.main === module) {
     finalize(resolvedMetaPath, {
       upload: cliOpts.upload && !cliOpts.noUpload,
       noOpen: cliOpts.noOpen || false,
+      headless: cliOpts.headless || false,
+      consent: cliOpts.consent || false,
     });
   } catch (err) {
     console.error(`Error: ${err.message}`);

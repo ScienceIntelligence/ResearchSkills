@@ -233,7 +233,13 @@ Then use AskUserQuestion to get explicit consent:
 - Option A: "Yes, submit for review" — re-run finalize with `--upload`
 - Option B: "No, keep local only" — skip upload, tell user where files are saved
 
-If the user consents, re-run finalize with `--upload`:
+If the user consents, re-run finalize with `--upload`.
+
+**Headless/SSH detection:** If running over SSH (SSH_CONNECTION or SSH_CLIENT env vars set) or on a headless Linux server (no DISPLAY), the upload script automatically detects this and:
+- Disables browser opening
+- Prints the review URL for the user to visit from any browser
+
+When the user has consented via the prompt above, pass `--consent` to include `consent: true` in the upload payload.
 
 ```bash
 node ~/.claude/utils/finalize.js \
@@ -250,5 +256,10 @@ Then show:
 ```
 Review your skills:
   → https://researchskills.ai/review/batch/<batchId>
+```
+
+If headless, also show:
+```
+  (Sign in with GitHub on the review page to claim credit and submit.)
 ```
 
