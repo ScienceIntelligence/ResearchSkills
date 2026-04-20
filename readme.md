@@ -158,11 +158,11 @@ Rules:
 
 </details>
 
-After running, submit via: [**Submit your skill →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml)
+After running, submit via: [**Submit your skill →**](https://researchskills.ai/)
 
 ### Method C: Write Manually
 
-Write your own skill following the [template](skills/_template.md), then [**submit via GitHub Issue →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml)
+Write your own skill following the [template](skills/_template.md), then [**submit →**](https://researchskills.ai/submit-manually)
 
 > Don't see your field? [Propose a new area →](https://github.com/OpenScientists/OpenScientist/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/OpenScientists/OpenScientist/issues/new?template=02-skill-request.yml)
 

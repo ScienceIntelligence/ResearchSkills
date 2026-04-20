@@ -158,11 +158,11 @@ Step 3: [具体步骤]
 
 </details>
 
-运行后提交：[**提交你的 Skill →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml)
+运行后提交：[**提交你的 Skill →**](https://researchskills.ai/)
 
 ### 方式 C：手动撰写
 
-参照[模板](skills/_template.md)撰写，然后 [**通过 GitHub Issue 提交 →**](https://github.com/OpenScientists/OpenScientist/issues/new?template=01-submit-skill.yml)
+参照[模板](skills/_template.md)撰写，然后 [**提交 →**](https://researchskills.ai/submit-manually)
 
 > 没有你的研究方向？[提议新领域 →](https://github.com/OpenScientists/OpenScientist/issues/new?template=04-propose-new-area.md) · 需要某个 Skill？[请求 Skill →](https://github.com/OpenScientists/OpenScientist/issues/new?template=02-skill-request.yml)
 
