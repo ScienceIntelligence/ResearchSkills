@@ -1,6 +1,6 @@
 {
   "name": "@openscientist/extract-knowhow",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Extract your research trajectory as a decision tree from conversation history for OpenScientist. Supports both Claude Code and Codex.",
   "keywords": [
     "claude-code",
