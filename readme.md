@@ -36,6 +36,22 @@ Each skill encodes the knowledge, tools, reasoning protocols, and common pitfall
 
 ---
 
+<h2 align="center">Why Contribute?</h2>
+
+- **Your skills make YOUR AI smarter first.** Extracted skills are cached locally. Your Claude Code / Codex / Cursor immediately reasons better in your domain — before you ever submit anything.
+
+- **Privacy first.** Nothing is scanned or uploaded without your explicit consent. A blocking consent gate asks before every operation. You review everything before submission.
+
+- **Low cost, smart caching.** Conversations are compressed before analysis. Already-processed sessions are cached and skipped on re-runs. The heavy lifting is delegated to lighter models.
+
+- **Works everywhere.** Claude Code, Codex, Cursor, Windsurf, VS Code, JetBrains — any tool that reads markdown instructions. Skills are plain `.md` files, not locked to one platform.
+
+- **Works on remote servers.** SSH and headless environments are auto-detected. No browser needed — the submission URL is printed to your terminal.
+
+- **Immortalize your expertise.** Your decades of know-how become a permanent, citable contribution to science. Every skill you contribute trains every future AI scientist.
+
+---
+
 <h2 align="center">2. How to Contribute</h2>
 
 ### Method A: Auto-Extract with `/extract-knowhow` (Recommended)
