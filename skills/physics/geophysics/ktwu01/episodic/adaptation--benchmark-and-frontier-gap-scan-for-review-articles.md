@@ -11,7 +11,6 @@ source:
 extracted_at: 2026-04-13
 tags: [literature-review, land-surface-modeling, benchmarking, differentiable-modeling, completeness-check]
 ---
-
 ## Situation
 A scientific review draft in land surface modeling looked broadly complete on historical development and ML-vs-physics framing, but external review notes suggested deeper scientific omissions.
 

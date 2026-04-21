@@ -11,7 +11,6 @@ source:
 extracted_at: 2026-04-13
 tags: [land-surface-models, spatial-scale, model-resolution, scientific-methodology]
 ---
-
 ## Fact
 
 Land surface model (LSM) grid spacing is not a fixed physical property of the model formulation. It is a **configurable choice** constrained by three practical factors: (1) availability and resolution of atmospheric forcing data, (2) computational budget, and (3) the resolution at which the parameterizations have been validated. A given LSM family (e.g., VIC, Noah, CABLE) can in principle be run at any grid spacing from ~1 km to ~500 km. Claiming a model "has" a fixed resolution is scientifically incorrect.
@@ -26,5 +25,4 @@ LLMs tend to assign a canonical resolution to each LSM (e.g., "VIC runs at 1/8°
 
 ## Expiry Signal
 
-Still accurate as of 2025; would only change if a new LSM formulation introduced a hard physical scale (e.g., a cellular-automaton scheme with fixed cell size).
-
+Still accurate as of 2026; would only change if a new LSM formulation introduced a hard physical scale (e.g., a cellular-automaton scheme with fixed cell size).
