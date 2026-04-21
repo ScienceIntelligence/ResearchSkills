@@ -88,9 +88,9 @@ Enable memory so the AI can access your history:
 
 | Platform | How to enable | Settings link |
 |----------|--------------|---------------|
-| **ChatGPT** | Settings > Personalization > turn on **Memory** and **Reference chat history** | [Settings](https://chatgpt.com/settings) |
+| **ChatGPT** | Settings > Personalization > turn on **Memory** and **Reference chat history** | [Settings](https://chatgpt.com/#settings/Personalization) |
 | **Claude** | Settings > Capabilities > turn on **Memory** | [Settings](https://claude.ai/settings/capabilities) |
-| **Gemini** | Settings > Personal context > turn on **Your past chats with Gemini** | [Settings](https://gemini.google.com/settings) |
+| **Gemini** | Settings > Personal context > turn on **Your past chats with Gemini** | [Settings](https://gemini.google.com/app/settings) |
 
 Then paste this prompt into a **new conversation**:
 
