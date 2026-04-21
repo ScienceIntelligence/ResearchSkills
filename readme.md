@@ -83,105 +83,11 @@ The command scans your conversation history and extracts **research skills** org
 An interactive browser review page lets you verify the extracted skills, check de-identification, and bind them to your paper (arXiv/DOI) or project. Submit your skills to OpenScientist, where they become part of a growing knowledge base for building better AI scientists.
 
 ### Method B: One-Click Prompt for Web Users (ChatGPT / Claude / Gemini)
-
-Enable memory so the AI can access your history:
-
-| Platform | How to enable | Settings link |
-|----------|--------------|---------------|
-| **ChatGPT** | Settings > Personalization > turn on **Memory** and **Reference chat history** | [Settings](https://chatgpt.com/#settings/Personalization) |
-| **Claude** | Settings > Capabilities > turn on **Memory** | [Settings](https://claude.ai/settings/capabilities) |
-| **Gemini** | Settings > Personal context > turn on **Your past chats with Gemini** | [Settings](https://gemini.google.com/app/settings) |
-
-Then paste this prompt into a **new conversation**:
-
-<details>
-<summary><b>Click to expand the full prompt</b></summary>
-
-````
-You have access to my full conversation history. Review ALL of it and extract **research skills** — the tacit know-how from my scientific work that a frontier LLM doesn't already know. Be comprehensive, not selective: a typical researcher accumulates dozens of worthwhile skills across a year of conversations.
-
-## Three memory types (with required subtypes)
-
-Pick exactly ONE subtype per skill. If nothing fits, don't force it — skip.
-
-### 1. Procedural — IF-THEN rules for research impasses
-- `tie` — multiple viable paths, unclear which to try first (e.g., "ablation vs. full retrain?")
-- `no-change` — completely stuck, no hypothesis about what to try (e.g., "results are bizarre, nothing makes sense")
-- `constraint-failure` — a methodological assumption breaks (e.g., "data violates i.i.d.")
-- `operator-fail` — right method chosen, execution fails (e.g., "CUDA OOM at large batch")
-
-### 2. Semantic — Facts a frontier LLM doesn't reliably know
-- `frontier` — post-training-cutoff knowledge (e.g., "Flash Attention 3 renamed the `causal` parameter")
-- `non-public` — lab-internal or unpublished findings (e.g., "this H100 batch has NCCL topology issues")
-- `correction` — fixes for an incorrect LLM default belief (e.g., "Adam eps=1e-8 is unstable under fp16; use 1e-5")
-
-### 3. Episodic — Concrete episodes with a transferable lesson
-- `failure` — "did X, broke because of hidden reason Y"
-- `adaptation` — "standard method failed; workaround Z worked"
-- `anomalous` — "expected A, observed B — turned out to be important"
-
-## Hard filters (DO NOT extract)
-
-- Engineering / DevOps / deployment / CI / UI / database / Docker
-- Generic programming: git, npm, React, debugging build errors
-- Textbook knowledge any LLM knows
-- Casual chat, setup, file organization, project naming
-
-A skill that an LLM could have generated itself is worth zero. Only extract what **corrects or extends** what a frontier model already knows.
-
-## Output format
-
-For each skill, output ONE YAML+markdown block separated by `===`:
-
-```
----
-name: gradient-explosion-under-fp16
-memory_type: procedural
-subtype: operator-fail
-domain: computer-science      # arXiv top-level: physics, math, computer-science, q-bio, stat, eess, econ, q-fin
-subdomain: machine-learning   # see https://arxiv.org/category_taxonomy
-tags: [adam, mixed-precision, numerical-stability]
----
-
-## When
-Training deep transformers with Adam under fp16; loss spikes to NaN within the first few epochs despite gradient clipping.
-
-## Decision
-Raise Adam's `eps` from 1e-8 to 1e-5 BEFORE lowering the learning rate or touching architecture. Rejected: lowering LR (masks the symptom), switching to SGD (loses Adam's benefits).
-
-## Why
-At fp16 resolution, 1e-8 denormalizes to zero, so Adam's update divides by ~0. Most "gradient explosion" under mixed precision is this, not true instability.
-
-## Local Verifiers
-- NaN appears in optimizer state BEFORE gradient clipping fires
-- Symptom disappears under bf16 (wider dynamic range) — confirms the eps hypothesis
-
-## Anti-exemplars
-Don't apply if using bf16 or fp32 — eps=1e-8 is fine there.
-===
-```
-
-## Rules
-
-- **De-identify**: strip file paths, usernames, project names, private URLs, collaborator names. KEEP scientific content (materials, parameters, methods, model names).
-- **Dead ends are gold**: failed experiments and abandoned approaches are often the most valuable skills. Don't skip them.
-- **Favor specificity**: "IF loss plateaus THEN try X" is weak. "IF Adam loss plateaus on transformers >1B params after warmup THEN X because Y" is strong.
-- **Aim for coverage, not brevity**: if you only found 3 skills across a year of research conversations, you missed most of them.
-
-## After you finish
-
-1. Count how many skills you extracted and briefly summarize the distribution (X procedural / Y semantic / Z episodic).
-2. List any research threads you're uncertain about — ask me whether to revisit them.
-3. Tell me to submit via: https://researchskills.ai/
-````
-
-</details>
-
-After running, submit via: [**Submit your skill →**](https://researchskills.ai/)
+After running, submit via [**here →**](https://researchskills.ai/submit-manually/#auto-parse)
 
 ### Method C: Write Manually
 
-Write your own skill following the [**guide →**](https://researchskills.ai/submit-manually)
+Write your own skill following the [**guide →**](https://researchskills.ai/submit-manually/#manual-entry)
 
 > Don't see your field? [Propose a new area →](https://github.com/OpenScientists/OpenScientist/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/OpenScientists/OpenScientist/issues/new?template=02-skill-request.yml)
 
