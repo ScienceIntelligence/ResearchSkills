@@ -702,38 +702,29 @@ function formatGeminiSession(dirPath) {
     messageCount += 1;
   }
 
-  // Read resolved snapshots grouped by artifact, each in sequence order.
-  // Gemini uses independent .resolved.N sequences per artifact (e.g.
-  // task.md.resolved.0..5 and walkthrough.md.resolved.0); interleaving
-  // by number alone would jumble the timeline.
+  // Read resolved snapshots sorted by file mtime for correct chronology.
+  // Gemini uses independent .resolved.N counters per artifact, so sorting
+  // by mtime across all artifacts preserves the actual decision sequence.
   const allDirFiles = fs.readdirSync(dirPath);
-  const resolvedByArtifact = new Map();
+  const resolvedSnapshots = [];
   for (const f of allDirFiles) {
     const m = f.match(/^(.+)\.resolved\.(\d+)$/);
     if (!m) continue;
     const artifact = m[1];
-    const seq = parseInt(m[2], 10);
-    if (!resolvedByArtifact.has(artifact)) resolvedByArtifact.set(artifact, []);
-    resolvedByArtifact.get(artifact).push({ file: f, seq });
+    const fullPath = path.join(dirPath, f);
+    let mtime = 0;
+    try { mtime = fs.statSync(fullPath).mtimeMs; } catch {}
+    resolvedSnapshots.push({ file: f, artifact, mtime });
   }
-  // Emit task snapshots first, then plan, then walkthrough, then others
-  const artifactOrder = ['task.md', 'implementation_plan.md', 'walkthrough.md'];
-  const sortedArtifacts = [...resolvedByArtifact.keys()].sort((a, b) => {
-    const ai = artifactOrder.indexOf(a);
-    const bi = artifactOrder.indexOf(b);
-    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-  });
-  for (const artifact of sortedArtifacts) {
-    const snapshots = resolvedByArtifact.get(artifact);
-    snapshots.sort((a, b) => a.seq - b.seq);
-    const label = artifact.replace(/\.md$/, '').replace(/_/g, ' ');
-    for (const { file: rf } of snapshots) {
-      try {
-        const content = fs.readFileSync(path.join(dirPath, rf), 'utf-8').trim();
-        lines.push(`[Snapshot: ${label}]: ${truncate(content, USER_MAX_CHARS)}`);
-        messageCount += 1;
-      } catch {}
-    }
+  resolvedSnapshots.sort((a, b) => a.mtime - b.mtime);
+
+  for (const { file: rf, artifact } of resolvedSnapshots) {
+    try {
+      const content = fs.readFileSync(path.join(dirPath, rf), 'utf-8').trim();
+      const label = artifact.replace(/\.md$/, '').replace(/_/g, ' ');
+      lines.push(`[Snapshot: ${label}]: ${truncate(content, USER_MAX_CHARS)}`);
+      messageCount += 1;
+    } catch {}
   }
 
   // Read walkthrough.md — the session's summary/outcome

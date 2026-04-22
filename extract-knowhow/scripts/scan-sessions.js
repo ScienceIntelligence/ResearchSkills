@@ -310,11 +310,13 @@ function extractMetaGemini(dirPath) {
     (f) => f.endsWith('.md') && !f.endsWith('.resolved') && !/\.resolved\.\d+$/.test(f)
   );
 
-  // Count resolved snapshots as a proxy for user interactions
-  const resolvedFiles = fs.readdirSync(dirPath).filter(
+  // Count resolved snapshots as a proxy for user interactions.
+  // Only resolved files indicate real iterative work — the base .md files
+  // (task, plan, walkthrough) are often auto-generated in a single shot.
+  const resolvedFiles = allFiles.filter(
     (f) => /\.resolved\.\d+$/.test(f)
   );
-  const userMessageCount = Math.max(resolvedFiles.length, mdFiles.length);
+  const userMessageCount = resolvedFiles.length;
 
   // Extract timestamps from metadata sidecars
   let startTimestamp = null;
