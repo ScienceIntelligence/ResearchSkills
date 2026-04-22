@@ -2,10 +2,11 @@
 /**
  * format-session.js
  *
- * Preprocess a raw Claude Code or Codex .jsonl session file into
- * compact text optimized for research skill extraction.
+ * Preprocess a raw Claude Code or Codex .jsonl session file, or a
+ * Gemini brain entry directory, into compact text optimized for
+ * research skill extraction.
  *
- * Supports both Claude Code and Codex JSONL formats.
+ * Supports Claude Code JSONL, Codex JSONL, and Gemini brain formats.
  *
  * Design principle: We're extracting HUMAN tacit knowledge. The human's
  * inputs, corrections, and decisions are the signal. AI outputs and tool
@@ -653,6 +654,88 @@ function formatSession(jsonlPath) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Gemini brain entry formatter
+// ---------------------------------------------------------------------------
+
+/**
+ * Format a Gemini brain entry directory into extraction-ready text.
+ *
+ * Brain entries contain task.md, implementation_plan.md, walkthrough.md,
+ * plus .resolved.N snapshots showing progression. We reconstruct a
+ * session narrative from these artifacts.
+ */
+function formatGeminiSession(dirPath) {
+  const lines = [];
+  let startTimestamp = null;
+  let messageCount = 0;
+
+  // Collect metadata timestamps
+  const metaFiles = fs.readdirSync(dirPath).filter((f) => f.endsWith('.metadata.json'));
+  const timestamps = [];
+  for (const mf of metaFiles) {
+    try {
+      const meta = JSON.parse(fs.readFileSync(path.join(dirPath, mf), 'utf-8'));
+      if (meta.updatedAt) timestamps.push(meta.updatedAt);
+      if (meta.summary) {
+        lines.push(`[CONTEXT]: ${truncate(meta.summary, USER_MAX_CHARS)}`);
+        messageCount += 1;
+      }
+    } catch {}
+  }
+  timestamps.sort();
+  if (timestamps.length > 0) startTimestamp = timestamps[0];
+
+  // Read task.md — the session's goal
+  const taskFile = path.join(dirPath, 'task.md');
+  if (fs.existsSync(taskFile)) {
+    const taskContent = fs.readFileSync(taskFile, 'utf-8').trim();
+    lines.push(`USER: ${truncate(taskContent, USER_MAX_CHARS)}`);
+    messageCount += 1;
+  }
+
+  // Read implementation_plan.md — the AI's plan
+  const planFile = path.join(dirPath, 'implementation_plan.md');
+  if (fs.existsSync(planFile)) {
+    const planContent = fs.readFileSync(planFile, 'utf-8').trim();
+    lines.push(`ASSISTANT: ${truncate(planContent, USER_MAX_CHARS)}`);
+    messageCount += 1;
+  }
+
+  // Read resolved snapshots in order — these show the session progression
+  const resolvedFiles = fs.readdirSync(dirPath)
+    .filter((f) => /\.resolved\.\d+$/.test(f))
+    .sort((a, b) => {
+      const numA = parseInt(a.match(/\.(\d+)$/)[1], 10);
+      const numB = parseInt(b.match(/\.(\d+)$/)[1], 10);
+      return numA - numB;
+    });
+
+  for (const rf of resolvedFiles) {
+    try {
+      const content = fs.readFileSync(path.join(dirPath, rf), 'utf-8').trim();
+      const baseName = rf.replace(/\.resolved\.\d+$/, '');
+      const label = baseName.replace(/\.md$/, '').replace(/_/g, ' ');
+      lines.push(`[Snapshot: ${label}]: ${truncate(content, USER_MAX_CHARS)}`);
+      messageCount += 1;
+    } catch {}
+  }
+
+  // Read walkthrough.md — the session's summary/outcome
+  const walkthroughFile = path.join(dirPath, 'walkthrough.md');
+  if (fs.existsSync(walkthroughFile)) {
+    const walkthroughContent = fs.readFileSync(walkthroughFile, 'utf-8').trim();
+    lines.push(`ASSISTANT: ${truncate(walkthroughContent, USER_MAX_CHARS)}`);
+    messageCount += 1;
+  }
+
+  return {
+    text: lines.join('\n'),
+    startTimestamp,
+    messageCount,
+  };
+}
+
 function splitIntoSegments(text) {
   if (text.length <= SEGMENT_THRESHOLD) return [text];
   const lines = text.split('\n');
@@ -677,7 +760,7 @@ function splitIntoSegments(text) {
 if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.length < 2) {
-    console.error('Usage: format-session.js <input.jsonl> <output.txt>');
+    console.error('Usage: format-session.js <input.jsonl|gemini-brain-dir> <output.txt>');
     process.exit(1);
   }
 
@@ -685,12 +768,16 @@ if (require.main === module) {
   const outputPath = path.resolve(args[1]);
 
   if (!fs.existsSync(inputPath)) {
-    console.error(`Error: input file not found: ${inputPath}`);
+    console.error(`Error: input not found: ${inputPath}`);
     process.exit(1);
   }
 
   try {
-    const { text, startTimestamp, messageCount } = formatSession(inputPath);
+    // Detect Gemini brain entry (directory with task.md) vs JSONL file
+    const isGemini = fs.statSync(inputPath).isDirectory() && fs.existsSync(path.join(inputPath, 'task.md'));
+    const { text, startTimestamp, messageCount } = isGemini
+      ? formatGeminiSession(inputPath)
+      : formatSession(inputPath);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 
     const segments = splitIntoSegments(text);
@@ -723,7 +810,8 @@ if (require.main === module) {
 }
 
 module.exports = {
-  formatSession, splitIntoSegments, extractMessage: extractMessageClaude,
+  formatSession, formatGeminiSession, splitIntoSegments,
+  extractMessage: extractMessageClaude,
   extractMessageCodex, detectFormat, truncate,
   USER_MAX_CHARS, ASSISTANT_MAX_CHARS, SEGMENT_THRESHOLD, SEGMENT_SIZE,
 };
