@@ -76,24 +76,45 @@ try {
 const OLD_CACHE_ROOT = path.join(os.homedir(), ".openscientist");
 const NEW_CACHE_ROOT = path.join(os.homedir(), ".researchskills");
 
-if (fs.existsSync(OLD_CACHE_ROOT) && !fs.existsSync(NEW_CACHE_ROOT)) {
-  try {
-    fs.renameSync(OLD_CACHE_ROOT, NEW_CACHE_ROOT);
-    console.log("✓ Migrated ~/.openscientist/ → ~/.researchskills/");
-  } catch (err) {
-    console.warn("⚠ Could not migrate ~/.openscientist/ —", err.message);
-    console.warn("  You can manually run: mv ~/.openscientist ~/.researchskills");
+if (fs.existsSync(OLD_CACHE_ROOT)) {
+  if (!fs.existsSync(NEW_CACHE_ROOT)) {
+    // Simple case: just rename
+    try {
+      fs.renameSync(OLD_CACHE_ROOT, NEW_CACHE_ROOT);
+      console.log("✓ Migrated ~/.openscientist/ → ~/.researchskills/");
+    } catch (err) {
+      console.warn("⚠ Could not migrate ~/.openscientist/ —", err.message);
+      console.warn("  You can manually run: mv ~/.openscientist ~/.researchskills");
+    }
+  } else {
+    // Both exist: copy any missing subdirs from old to new
+    try {
+      for (const sub of ["cache/meta", "cache/skills", "cache/sessions", "skills-fallback"]) {
+        const oldSub = path.join(OLD_CACHE_ROOT, sub);
+        const newSub = path.join(NEW_CACHE_ROOT, sub);
+        if (fs.existsSync(oldSub) && !fs.existsSync(newSub)) {
+          fs.mkdirSync(path.dirname(newSub), { recursive: true });
+          fs.renameSync(oldSub, newSub);
+        }
+      }
+      console.log("✓ Merged legacy ~/.openscientist/ into ~/.researchskills/");
+    } catch (err) {
+      console.warn("⚠ Could not merge ~/.openscientist/ —", err.message);
+    }
   }
 }
 
 // --- Warn about old package ---
+// Tell users to uninstall old package AFTER reinstalling the new one,
+// so the old postuninstall doesn't delete the new package's files.
 try {
   const { execSync } = require("child_process");
   const out = execSync("npm ls -g @openscientist/extract-knowhow --depth=0 2>/dev/null", { encoding: "utf-8" });
   if (out.includes("@openscientist/extract-knowhow")) {
     console.log("\n⚠ The old @openscientist/extract-knowhow package is still installed globally.");
-    console.log("  Please uninstall it to avoid conflicts:");
-    console.log("  npm uninstall -g @openscientist/extract-knowhow\n");
+    console.log("  To safely remove it, uninstall the old package then reinstall this one:");
+    console.log("  npm uninstall -g @openscientist/extract-knowhow");
+    console.log("  npm install -g @researchskills/extract-knowhow\n");
   }
 } catch (_) { /* not installed or npm ls failed — fine */ }
 
