@@ -702,23 +702,38 @@ function formatGeminiSession(dirPath) {
     messageCount += 1;
   }
 
-  // Read resolved snapshots in order — these show the session progression
-  const resolvedFiles = fs.readdirSync(dirPath)
-    .filter((f) => /\.resolved\.\d+$/.test(f))
-    .sort((a, b) => {
-      const numA = parseInt(a.match(/\.(\d+)$/)[1], 10);
-      const numB = parseInt(b.match(/\.(\d+)$/)[1], 10);
-      return numA - numB;
-    });
-
-  for (const rf of resolvedFiles) {
-    try {
-      const content = fs.readFileSync(path.join(dirPath, rf), 'utf-8').trim();
-      const baseName = rf.replace(/\.resolved\.\d+$/, '');
-      const label = baseName.replace(/\.md$/, '').replace(/_/g, ' ');
-      lines.push(`[Snapshot: ${label}]: ${truncate(content, USER_MAX_CHARS)}`);
-      messageCount += 1;
-    } catch {}
+  // Read resolved snapshots grouped by artifact, each in sequence order.
+  // Gemini uses independent .resolved.N sequences per artifact (e.g.
+  // task.md.resolved.0..5 and walkthrough.md.resolved.0); interleaving
+  // by number alone would jumble the timeline.
+  const allDirFiles = fs.readdirSync(dirPath);
+  const resolvedByArtifact = new Map();
+  for (const f of allDirFiles) {
+    const m = f.match(/^(.+)\.resolved\.(\d+)$/);
+    if (!m) continue;
+    const artifact = m[1];
+    const seq = parseInt(m[2], 10);
+    if (!resolvedByArtifact.has(artifact)) resolvedByArtifact.set(artifact, []);
+    resolvedByArtifact.get(artifact).push({ file: f, seq });
+  }
+  // Emit task snapshots first, then plan, then walkthrough, then others
+  const artifactOrder = ['task.md', 'implementation_plan.md', 'walkthrough.md'];
+  const sortedArtifacts = [...resolvedByArtifact.keys()].sort((a, b) => {
+    const ai = artifactOrder.indexOf(a);
+    const bi = artifactOrder.indexOf(b);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+  });
+  for (const artifact of sortedArtifacts) {
+    const snapshots = resolvedByArtifact.get(artifact);
+    snapshots.sort((a, b) => a.seq - b.seq);
+    const label = artifact.replace(/\.md$/, '').replace(/_/g, ' ');
+    for (const { file: rf } of snapshots) {
+      try {
+        const content = fs.readFileSync(path.join(dirPath, rf), 'utf-8').trim();
+        lines.push(`[Snapshot: ${label}]: ${truncate(content, USER_MAX_CHARS)}`);
+        messageCount += 1;
+      } catch {}
+    }
   }
 
   // Read walkthrough.md — the session's summary/outcome

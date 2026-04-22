@@ -298,14 +298,17 @@ function extractMetaGemini(dirPath) {
   const titleMatch = taskContent.match(/^#\s+(.+)/m);
   const firstPrompt = titleMatch ? titleMatch[1].trim() : null;
 
-  // Compute combined size of all .md files in the entry
-  const mdFiles = fs.readdirSync(dirPath).filter(
-    (f) => f.endsWith('.md') && !f.endsWith('.resolved') && !f.match(/\.resolved\.\d+$/)
-  );
+  const allFiles = fs.readdirSync(dirPath);
+
+  // Compute combined size of all files (matches the cache key in scan())
   let totalSize = 0;
-  for (const f of mdFiles) {
+  for (const f of allFiles) {
     try { totalSize += fs.statSync(path.join(dirPath, f)).size; } catch {}
   }
+
+  const mdFiles = allFiles.filter(
+    (f) => f.endsWith('.md') && !f.endsWith('.resolved') && !/\.resolved\.\d+$/.test(f)
+  );
 
   // Count resolved snapshots as a proxy for user interactions
   const resolvedFiles = fs.readdirSync(dirPath).filter(
@@ -422,16 +425,14 @@ function scan() {
   const byFingerprint = new Map();
 
   for (const { file, source } of candidates) {
-    // For Gemini, `file` is a directory; use combined .md file size
-    // so entries with short task.md but substantial plan/walkthrough pass
+    // For Gemini, `file` is a directory; sum all file sizes so the cache
+    // key invalidates when any artifact changes (resolved, metadata, etc.)
     let fileSize;
     try {
       if (source === 'gemini') {
         fileSize = 0;
         for (const f of fs.readdirSync(file)) {
-          if (f.endsWith('.md') && !f.endsWith('.resolved') && !/\.resolved\.\d+$/.test(f)) {
-            fileSize += fs.statSync(path.join(file, f)).size;
-          }
+          try { fileSize += fs.statSync(path.join(file, f)).size; } catch {}
         }
       } else {
         fileSize = fs.statSync(file).size;
@@ -473,11 +474,17 @@ function scan() {
       continue;
     }
 
-    const projectPath =
-      meta.cwd ||
-      (source === 'claude'
-        ? claudeProjectDirName(file)
-        : path.basename(path.dirname(file)));
+    let projectPath = meta.cwd;
+    if (!projectPath) {
+      if (source === 'claude') {
+        projectPath = claudeProjectDirName(file);
+      } else if (source === 'gemini') {
+        // Use gemini/<uuid> to keep link-less entries separate
+        projectPath = `gemini/${path.basename(file)}`;
+      } else {
+        projectPath = path.basename(path.dirname(file));
+      }
+    }
 
     const record = {
       session_id: sessionId,
