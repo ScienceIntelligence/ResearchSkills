@@ -8,7 +8,7 @@
  * Usage:
  *   classify-projects.js <work-list.json> [--test] [--verbose]
  *
- * Output: ~/.openscientist/cache/classification.json
+ * Output: ~/.researchskills/cache/classification.json
  *   {
  *     projects: {
  *       "<project_path>": {
@@ -33,7 +33,7 @@ const os = require('os');
 const https = require('https');
 const { parsePlatformFlag, createRunner } = require('./platform');
 
-const OUTPUT_PATH = path.join(os.homedir(), '.openscientist', 'cache', 'classification.json');
+const OUTPUT_PATH = path.join(os.homedir(), '.researchskills', 'cache', 'classification.json');
 
 // Max concurrent AI classify calls — prevents resource thrashing & API rate limits
 const CONCURRENCY = 5;

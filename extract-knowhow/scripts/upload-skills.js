@@ -5,7 +5,7 @@
  * Read skill .md files from a directory, parse frontmatter, and POST
  * each to the /api/skills endpoint on researchskills.ai.
  *
- * On failure, saves skills locally to ~/.openscientist/skills-fallback/
+ * On failure, saves skills locally to ~/.researchskills/skills-fallback/
  * and exits non-zero so the caller can surface the error.
  *
  * Usage:
@@ -131,7 +131,7 @@ async function postSkill(apiUrl, payload) {
 }
 
 function fallbackSave(skills) {
-  const dir = path.join(os.homedir(), '.openscientist', 'skills-fallback');
+  const dir = path.join(os.homedir(), '.researchskills', 'skills-fallback');
   fs.mkdirSync(dir, { recursive: true });
 
   for (const skill of skills) {

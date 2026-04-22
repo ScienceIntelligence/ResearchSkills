@@ -44,7 +44,7 @@ node ~/.claude/utils/clean-skills.js --session-ids <csv> [--verbose]
 
 ### 行为
 
-1. 收集 `~/.openscientist/cache/skills/` 下所有目标 session 的 `.md` 文件
+1. 收集 `~/.researchskills/cache/skills/` 下所有目标 session 的 `.md` 文件
 2. 将所有 skill 内容内联到 prompt 中（每个 skill 用 `<skill path="...">...</skill>` 标签包裹）
 3. 通过 stdin 传给 `claude -p --model opus`
 4. Opus 输出结构化 JSON 决策清单，脚本解析后执行文件操作

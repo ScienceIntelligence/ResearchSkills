@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate OpenScientist skill files against the schema defined in SKILL_SCHEMA.md."""
+"""Validate ResearchSkills skill files against the schema defined in SKILL_SCHEMA.md."""
 
 import sys
 from pathlib import Path

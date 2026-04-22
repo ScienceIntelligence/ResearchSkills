@@ -1,6 +1,6 @@
 ---
 name: Propose New Area
-about: Suggest a new top-level domain or subdomain for OpenScientist
+about: Suggest a new top-level domain or subdomain for ResearchSkills
 title: "[New Area] <domain-name>"
 labels: "area: proposed"
 assignees: HHHHHejia
@@ -20,7 +20,7 @@ assignees: HHHHHejia
 <!-- What kinds of skills would live here? What research questions would they address?
      Be specific enough to distinguish this area from existing domains. -->
 
-## Why it belongs in OpenScientist
+## Why it belongs in ResearchSkills
 
 <!-- Why is this area valuable for AI-assisted scientific reasoning?
      What frontier problems could AI agents tackle with these skills? -->

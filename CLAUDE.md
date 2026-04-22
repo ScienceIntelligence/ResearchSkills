@@ -1,4 +1,4 @@
-# OpenScientist — CLAUDE.md
+# ResearchSkills — CLAUDE.md
 
 ## Editing Rules
 

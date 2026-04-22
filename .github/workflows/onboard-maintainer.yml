@@ -398,7 +398,7 @@ jobs:
                 `- \`docs/index.html\` — your name appears on the interactive knowledge tree`,
                 `- \`docs/reviewers.html\` — your profile is listed on the reviewers page`,
                 ``,
-                `Thank you for contributing your expertise to OpenScientist!`,
+                `Thank you for contributing your expertise to ResearchSkills!`,
               ].join('\n'),
             });
 

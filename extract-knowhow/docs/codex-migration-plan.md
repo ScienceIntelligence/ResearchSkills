@@ -224,7 +224,7 @@ git *               → git 操作（��弃）
 | Skill/Command 文件 | `~/.claude/commands/extract-knowhow.md` | `~/.codex/skills/extract-knowhow/SKILL.md` |
 | 辅助脚本 | `~/.claude/utils/` | `~/.codex/skills/extract-knowhow/scripts/` |
 | Session 数据 | `~/.claude/projects/` | `~/.codex/sessions/` + `~/.codex/archived_sessions/` |
-| 共享缓存 | `~/.openscientist/cache/` | `~/.openscientist/cache/`（共用） |
+| 共享缓存 | `~/.researchskills/cache/` | `~/.researchskills/cache/`（共用） |
 
 ---
 
@@ -283,7 +283,7 @@ Extract research skills from...
 ```yaml
 ---
 name: "extract-knowhow"
-description: "Extract research skills from conversation history into OpenScientist skill files."
+description: "Extract research skills from conversation history into ResearchSkills skill files."
 ---
 # /extract-knowhow
 
@@ -397,4 +397,4 @@ Output:
 ### Phase 3: 文档
 - [ ] 更新 `commands/extract-knowhow.md` 支持动态路径
 - [ ] 更新 `README.md` 双平台说明
-- [ ] 更新 `OpenScientist/readme.md`
+- [ ] 更新 `ResearchSkills/readme.md`

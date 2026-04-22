@@ -1,5 +1,5 @@
 ---
-name: openscientist-skill-memory-taxonomy
+name: researchskills-skill-memory-taxonomy
 memory_type: semantic
 subtype: non-public
 domain: computer-science
@@ -14,7 +14,7 @@ tags: [cognitive-architecture, soar, act-r, case-based-reasoning, skill-ontology
 
 ## Fact
 
-OpenScientist skills are organized by cognitive memory type rather than arbitrary topical categories:
+ResearchSkills skills are organized by cognitive memory type rather than arbitrary topical categories:
 
 - Procedural memory: IF-THEN decisions at research impasses, grounded in Soar-style impasse types.
 - Semantic memory: missing scientific facts or authoritative project knowledge, grounded in ACT-R-style declarative memory.

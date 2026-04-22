@@ -22,7 +22,7 @@ const path = require('path');
 const os = require('os');
 const { parsePlatformFlag, createRunner } = require('./platform');
 
-const CACHE_DIR = path.join(os.homedir(), '.openscientist', 'cache', 'skills');
+const CACHE_DIR = path.join(os.homedir(), '.researchskills', 'cache', 'skills');
 
 // ---------------------------------------------------------------------------
 // CLI

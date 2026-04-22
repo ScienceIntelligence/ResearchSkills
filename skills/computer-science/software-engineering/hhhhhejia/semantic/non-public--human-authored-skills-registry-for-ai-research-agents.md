@@ -20,7 +20,7 @@ The registry should include procedural methods, protocol choices, failure cases,
 
 ## Evidence
 
-In the session, the scientist clarified that the main purpose is a knowledge base built by human experts for AI agents to automate research. They then aligned it with OpenScientist skill architecture and the broader cognitive architecture framing.
+In the session, the scientist clarified that the main purpose is a knowledge base built by human experts for AI agents to automate research. They then aligned it with ResearchSkills skill architecture and the broader cognitive architecture framing.
 
 ## Expiry Signal
 

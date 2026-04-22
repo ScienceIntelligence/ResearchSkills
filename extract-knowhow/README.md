@@ -1,6 +1,6 @@
-# @openscientist/extract-knowhow
+# @researchskills/extract-knowhow
 
-> Automatically extract **research skills** from Claude Code / Codex conversation history and submit them to [OpenScientist](https://github.com/ScienceIntelligence/ResearchSkills).
+> Automatically extract **research skills** from Claude Code / Codex conversation history and submit them to [ResearchSkills](https://github.com/ScienceIntelligence/ResearchSkills).
 
 ## What It Does
 
@@ -15,7 +15,7 @@ When you use Claude Code or Codex for scientific research — data analysis, pap
 ## Install
 
 ```bash
-npm install -g @openscientist/extract-knowhow
+npm install -g @researchskills/extract-knowhow
 ```
 
 This installs the command automatically to both platforms:
@@ -88,12 +88,12 @@ After extraction, an interactive review page opens at `researchskills.ai/review/
 - Review and edit skill content
 - See the 3-dimension review scores
 - Assign domain/subdomain taxonomy
-- Submit to OpenScientist
+- Submit to ResearchSkills
 
 ## Uninstall
 
 ```bash
-npm uninstall -g @openscientist/extract-knowhow
+npm uninstall -g @researchskills/extract-knowhow
 ```
 
 ## Privacy
@@ -109,6 +109,6 @@ npm uninstall -g @openscientist/extract-knowhow
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
-## Part of [OpenScientist](https://github.com/ScienceIntelligence/ResearchSkills)
+## Part of [ResearchSkills](https://github.com/ScienceIntelligence/ResearchSkills)
 
 > Building the Library of Alexandria for AGI — Accelerating Automated Scientific Discovery.

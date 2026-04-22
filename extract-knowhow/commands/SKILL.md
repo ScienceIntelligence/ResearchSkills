@@ -1,10 +1,10 @@
 ---
 name: "extract-knowhow"
-description: "Extract research skills from conversation history into OpenScientist skill files."
+description: "Extract research skills from conversation history into ResearchSkills skill files."
 ---
 # /extract-knowhow
 
-Extract research skills from the user's Codex session history for **OpenScientist**.
+Extract research skills from the user's Codex session history for **ResearchSkills**.
 
 **Run automatically with TWO pauses for user consent:** once after classifying projects (Stage 2.5 — choose which projects to scan), and once before upload (Stage 7 — choose whether to submit). Report progress at each milestone.
 
@@ -40,7 +40,7 @@ Helper scripts (installed at `~/.codex/skills/extract-knowhow/scripts/`):
 | `scan-sessions.js` | Discover sessions, extract metadata, filter, group by project |
 | `classify-projects.js` | Classify projects as research/engineering via Codex, pick domain/subdomain |
 | `extract-skills.js` | **The core loop**: format each session → call `codex exec` → validate + cache skills |
-| `validate-skills.js` | Validate skill markdown and cache to `~/.openscientist/cache/skills/` |
+| `validate-skills.js` | Validate skill markdown and cache to `~/.researchskills/cache/skills/` |
 | `clean-skills.js` | Review extracted skills: reject engineering, fix PII, merge duplicates |
 | `score-skills.js` | Score surviving skills on 3 dimensions: procedural, semantic, episodic value |
 | `finalize.js` | Collect cached skills → upload to researchskills.ai |
@@ -59,11 +59,11 @@ Detect mode at start. Announce: `"Running in TEST MODE"` or `"Running in product
 ## Stage 1 — Scan
 
 ```bash
-mkdir -p ~/.openscientist/cache/meta ~/.openscientist/cache/skills
+mkdir -p ~/.researchskills/cache/meta ~/.researchskills/cache/skills
 node ~/.codex/skills/extract-knowhow/scripts/scan-sessions.js
 ```
 
-Reads `~/.openscientist/cache/work-list.json` output. Report: `"Found N sessions across M projects."`
+Reads `~/.researchskills/cache/work-list.json` output. Report: `"Found N sessions across M projects."`
 
 ---
 
@@ -72,14 +72,14 @@ Reads `~/.openscientist/cache/work-list.json` output. Report: `"Found N sessions
 **YOU MUST call this script. Do NOT classify projects yourself.**
 
 ```bash
-node ~/.codex/skills/extract-knowhow/scripts/classify-projects.js ~/.openscientist/cache/work-list.json --codex --verbose
+node ~/.codex/skills/extract-knowhow/scripts/classify-projects.js ~/.researchskills/cache/work-list.json --codex --verbose
 ```
 
 For test mode, add `--test`.
 
 The script calls Codex to classify each project as research/engineering and picks domain/subdomain from the taxonomy. It also filters out non-research sessions (e.g., extract-knowhow runs, build/deploy tasks) via `skip_patterns`.
 
-Output: `~/.openscientist/cache/classification.json`.
+Output: `~/.researchskills/cache/classification.json`.
 
 Read the output file. For each project with `type: "research"`, use its `research_session_ids` (NOT `session_ids`), `domain`, `subdomain`, and `project_name` in later stages. Do NOT include skipped sessions.
 
@@ -93,7 +93,7 @@ Report: `"Classified N projects. Proceeding with M."`
 
 **PAUSE and ask the user.** After classification, show all discovered projects and let the user choose which to scan.
 
-Read `~/.openscientist/cache/classification.json` and display:
+Read `~/.researchskills/cache/classification.json` and display:
 
 ```
 Select which projects to scan for research skills:
@@ -130,7 +130,7 @@ The extraction script MUST be called in a loop with `--single-batch`. Each call 
 
 ```bash
 # REPEAT this exact call in a loop. Each call = 1 batch.
-node ~/.codex/skills/extract-knowhow/scripts/extract-skills.js ~/.openscientist/cache/work-list.json \
+node ~/.codex/skills/extract-knowhow/scripts/extract-skills.js ~/.researchskills/cache/work-list.json \
   --codex \
   --domain <domain> \
   --subdomain <subdomain> \
@@ -225,7 +225,7 @@ Review:
   • Avg scores: procedural X.X, semantic X.X, episodic X.X
 
 ⚠ Nothing has been uploaded yet. Your skills are saved
-  locally. Would you like to submit them to OpenScientist
+  locally. Would you like to submit them to ResearchSkills
   for reviewer review?
 
   Skills will be stored on researchskills.ai and reviewed

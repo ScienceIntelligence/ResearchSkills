@@ -20,7 +20,7 @@
  *   is-cached <session_id>
  *       Exit 0 if any cached skills exist for this session, 1 otherwise.
  *
- * Cache location: ~/.openscientist/cache/skills/<session_id>/
+ * Cache location: ~/.researchskills/cache/skills/<session_id>/
  */
 
 'use strict';
@@ -30,7 +30,7 @@ const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
 
-const CACHE_DIR = path.join(os.homedir(), '.openscientist', 'cache', 'skills');
+const CACHE_DIR = path.join(os.homedir(), '.researchskills', 'cache', 'skills');
 
 const VALID_MEMORY_TYPES = new Set(['procedural', 'semantic', 'episodic']);
 

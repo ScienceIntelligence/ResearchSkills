@@ -123,7 +123,7 @@ Opens a local web page (reusing v1's browser review infrastructure) where the us
 
 ### Step 4: Public Submission
 
-User submits the reviewed tree to the OpenScientist GitHub repo. Format TBD (GitHub Issue with JSON attachment, or PR adding a tree file to a designated directory).
+User submits the reviewed tree to the ResearchSkills GitHub repo. Format TBD (GitHub Issue with JSON attachment, or PR adding a tree file to a designated directory).
 
 ## De-identification
 

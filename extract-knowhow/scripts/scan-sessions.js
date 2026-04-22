@@ -22,7 +22,7 @@
  *     projects: { "<project_path>": [session_id, ...] }
  *   }
  *
- * Per-session metadata is cached at ~/.openscientist/cache/meta/<id>.json
+ * Per-session metadata is cached at ~/.researchskills/cache/meta/<id>.json
  * keyed by file_size, so unchanged sessions are not re-parsed.
  */
 
@@ -32,7 +32,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const META_CACHE_DIR = path.join(os.homedir(), '.openscientist', 'cache', 'meta');
+const META_CACHE_DIR = path.join(os.homedir(), '.researchskills', 'cache', 'meta');
 const MIN_FILE_SIZE = 500;
 const MIN_USER_MESSAGES = 2;
 const MIN_DURATION_MINUTES = 1;
@@ -401,7 +401,7 @@ if (require.main === module) {
   const outPath =
     outIdx !== -1 && args[outIdx + 1]
       ? path.resolve(args[outIdx + 1])
-      : path.join(os.homedir(), '.openscientist', 'cache', 'work-list.json');
+      : path.join(os.homedir(), '.researchskills', 'cache', 'work-list.json');
 
   try {
     const result = scan();

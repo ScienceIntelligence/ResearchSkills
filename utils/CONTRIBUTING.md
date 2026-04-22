@@ -1,4 +1,4 @@
-# Contributing to OpenScientist
+# Contributing to ResearchSkills
 
 Thank you for contributing your expertise! There are two ways to contribute:
 
@@ -12,7 +12,7 @@ Thank you for contributing your expertise! There are two ways to contribute:
 ### Via Claude Code / Codex
 
 ```bash
-npm install -g @openscientist/extract-knowhow
+npm install -g @researchskills/extract-knowhow
 ```
 
 Then in Claude Code: `/extract-knowhow`
@@ -31,8 +31,8 @@ Use the one-click prompt from the [README](https://github.com/ScienceIntelligenc
 ### 2.1 Fork & clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/OpenScientist.git
-cd OpenScientist
+git clone https://github.com/YOUR_USERNAME/ResearchSkills.git
+cd ResearchSkills
 ```
 
 ### 2.2 Create your skill file
@@ -116,7 +116,7 @@ Open a GitHub Discussion or reach out to the core team via issues.
 ### 通过 Claude Code / Codex
 
 ```bash
-npm install -g @openscientist/extract-knowhow
+npm install -g @researchskills/extract-knowhow
 ```
 
 在 Claude Code 中运行: `/extract-knowhow`
@@ -135,8 +135,8 @@ npm install -g @openscientist/extract-knowhow
 ### 2.1 Fork 并克隆仓库
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/OpenScientist.git
-cd OpenScientist
+git clone https://github.com/YOUR_USERNAME/ResearchSkills.git
+cd ResearchSkills
 ```
 
 ### 2.2 创建你的 Skill 文件

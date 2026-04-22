@@ -62,5 +62,5 @@ try {
   // ignore
 }
 
-// Note: cache directory ~/.openscientist/cache/ is intentionally preserved,
+// Note: cache directory ~/.researchskills/cache/ is intentionally preserved,
 // so reinstalling retains previously extracted subtrees.

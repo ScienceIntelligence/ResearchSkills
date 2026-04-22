@@ -1,12 +1,12 @@
 <div align="right">
 
-[English](#-openscientist) · [中文](readme_zh.md)
+[English](#-researchskills) · [中文](readme_zh.md)
 
 </div>
 
 <div align="center">
 
-# 🌍 OpenScientist
+# 🌍 ResearchSkills
 
 [![GitHub stars](https://img.shields.io/github/stars/ScienceIntelligence/ResearchSkills?style=social)](https://github.com/ScienceIntelligence/ResearchSkills/stargazers) [![GitHub forks](https://img.shields.io/github/forks/ScienceIntelligence/ResearchSkills?style=social)](https://github.com/ScienceIntelligence/ResearchSkills/fork) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
@@ -22,7 +22,7 @@ Today: We're launching the largest academic collaboration in human history
 
 ---
 
-<h2 align="center">1. About OpenScientist</h2>
+<h2 align="center">1. About ResearchSkills</h2>
 
 </div>
 
@@ -30,7 +30,7 @@ Today: We're launching the largest academic collaboration in human history
 
 This intuition lives in your head — the know-how, the heuristics, the reasoning patterns, the "I just know this won't work" instinct. It never makes it into papers. It dies when you retire.
 
-**OpenScientist captures it before it's lost.** We turn the tacit knowledge of the world's top researchers — their skills, thinking frameworks, and principles — into reusable AI agent skills (compatible with **Claude Code** and **Codex**). Every contribution makes every AI scientist — now and in the future — smarter, permanently.
+**ResearchSkills captures it before it's lost.** We turn the tacit knowledge of the world's top researchers — their skills, thinking frameworks, and principles — into reusable AI agent skills (compatible with **Claude Code** and **Codex**). Every contribution makes every AI scientist — now and in the future — smarter, permanently.
 
 Each skill encodes the knowledge, tools, reasoning protocols, and common pitfalls of a scientific field. Skills can be written by domain experts or **auto-extracted from your research conversations** using `/extract-knowhow`. The command extracts three types of cognitive memory from your research sessions — **procedural** (IF-THEN rules for research impasses), **semantic** (facts LLMs don't know), and **episodic** (concrete research episodes) — then packages them as reusable skills. Point your AI agent at a skill, and it reasons like a domain expert.
 
@@ -59,7 +59,7 @@ Each skill encodes the knowledge, tools, reasoning protocols, and common pitfall
 ### Method A: Auto-Extract with `/extract-knowhow` (Recommended)
 
 ```bash
-npm install -g @openscientist/extract-knowhow
+npm install -g @researchskills/extract-knowhow
 ```
 
 **Claude Code:**
@@ -80,7 +80,7 @@ The command scans your conversation history and extracts **research skills** org
 - **Semantic memory:** Domain facts that LLMs don't reliably know (e.g., calibration constants, method limitations, undocumented tool behaviors)
 - **Episodic memory:** Concrete research episodes capturing what was tried, what failed, and what the researcher learned
 
-An interactive browser review page lets you verify the extracted skills, check de-identification, and bind them to your paper (arXiv/DOI) or project. Submit your skills to OpenScientist, where they become part of a growing knowledge base for building better AI scientists.
+An interactive browser review page lets you verify the extracted skills, check de-identification, and bind them to your paper (arXiv/DOI) or project. Submit your skills to ResearchSkills, where they become part of a growing knowledge base for building better AI scientists.
 
 ### Method B: One-Click Prompt for Web Users (ChatGPT / Claude / Gemini)
 After running, submit via [**here →**](https://researchskills.ai/submit-manually/#auto-parse)
@@ -95,7 +95,7 @@ Write your own skill following the [**guide →**](https://researchskills.ai/sub
 
 <h2 align="center">3. Skill Architecture</h2>
 
-OpenScientist skills are grounded in cognitive architecture theory — [Soar](https://en.wikipedia.org/wiki/Soar_(cognitive_architecture)) (Laird, 2012), [ACT-R](https://en.wikipedia.org/wiki/ACT-R) (Anderson, 1996), and [Case-Based Reasoning](https://en.wikipedia.org/wiki/Case-based_reasoning) (Kolodner, 1993). Skills are organized by **how researchers' minds actually store and retrieve expertise**, not by arbitrary categories.
+ResearchSkills skills are grounded in cognitive architecture theory — [Soar](https://en.wikipedia.org/wiki/Soar_(cognitive_architecture)) (Laird, 2012), [ACT-R](https://en.wikipedia.org/wiki/ACT-R) (Anderson, 1996), and [Case-Based Reasoning](https://en.wikipedia.org/wiki/Case-based_reasoning) (Kolodner, 1993). Skills are organized by **how researchers' minds actually store and retrieve expertise**, not by arbitrary categories.
 
 ### Three Memory Types
 

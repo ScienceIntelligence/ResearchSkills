@@ -76,7 +76,7 @@ try {
 // Any version change wipes all caches (skills + meta + sessions).
 // Reason: both extraction prompts AND raw-conversation preprocessing can change
 // between versions, so nothing is safe to reuse.
-const CACHE_DIR = path.join(os.homedir(), ".openscientist", "cache");
+const CACHE_DIR = path.join(os.homedir(), ".researchskills", "cache");
 const VERSION_FILE = path.join(CACHE_DIR, ".version");
 const CURRENT_VERSION = require(path.join(__dirname, "..", "package.json")).version;
 

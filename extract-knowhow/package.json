@@ -1,17 +1,17 @@
 {
-  "name": "@openscientist/extract-knowhow",
+  "name": "@researchskills/extract-knowhow",
   "version": "0.16.0",
-  "description": "Extract your research trajectory as a decision tree from conversation history for OpenScientist. Supports both Claude Code and Codex.",
+  "description": "Extract your research trajectory as a decision tree from conversation history for ResearchSkills. Supports both Claude Code and Codex.",
   "keywords": [
     "claude-code",
     "codex",
-    "openscientist",
+    "researchskills",
     "scientific-research",
     "know-how",
     "skills",
     "ai-science"
   ],
-  "author": "OpenScientist Contributors",
+  "author": "ResearchSkills Contributors",
   "license": "CC-BY-4.0",
   "repository": {
     "type": "git",
