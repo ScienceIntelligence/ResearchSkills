@@ -328,10 +328,16 @@ function extractMetaGemini(dirPath) {
     } catch {}
   }
 
-  // Extract project path from file:// links in resolved files or plan
+  // Extract project path from file:// links in plan, task, and resolved snapshots
   let cwd = null;
   const planFile = path.join(dirPath, 'implementation_plan.md');
   const searchFiles = [planFile, taskFile];
+  // Also search resolved snapshots which may contain file:// links
+  for (const f of fs.readdirSync(dirPath)) {
+    if (/\.resolved(\.\d+)?$/.test(f)) {
+      searchFiles.push(path.join(dirPath, f));
+    }
+  }
   for (const sf of searchFiles) {
     if (cwd) break;
     try {
@@ -416,11 +422,17 @@ function scan() {
   const byFingerprint = new Map();
 
   for (const { file, source } of candidates) {
-    // For Gemini, `file` is a directory path; size check uses task.md
+    // For Gemini, `file` is a directory; use combined .md file size
+    // so entries with short task.md but substantial plan/walkthrough pass
     let fileSize;
     try {
       if (source === 'gemini') {
-        fileSize = fs.statSync(path.join(file, 'task.md')).size;
+        fileSize = 0;
+        for (const f of fs.readdirSync(file)) {
+          if (f.endsWith('.md') && !f.endsWith('.resolved') && !/\.resolved\.\d+$/.test(f)) {
+            fileSize += fs.statSync(path.join(file, f)).size;
+          }
+        }
       } else {
         fileSize = fs.statSync(file).size;
       }
