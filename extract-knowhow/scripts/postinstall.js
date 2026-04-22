@@ -72,6 +72,31 @@ try {
   console.error("⚠ Codex: could not install —", err.message);
 }
 
+// --- Migrate legacy cache from @openscientist/extract-knowhow ---
+const OLD_CACHE_ROOT = path.join(os.homedir(), ".openscientist");
+const NEW_CACHE_ROOT = path.join(os.homedir(), ".researchskills");
+
+if (fs.existsSync(OLD_CACHE_ROOT) && !fs.existsSync(NEW_CACHE_ROOT)) {
+  try {
+    fs.renameSync(OLD_CACHE_ROOT, NEW_CACHE_ROOT);
+    console.log("✓ Migrated ~/.openscientist/ → ~/.researchskills/");
+  } catch (err) {
+    console.warn("⚠ Could not migrate ~/.openscientist/ —", err.message);
+    console.warn("  You can manually run: mv ~/.openscientist ~/.researchskills");
+  }
+}
+
+// --- Warn about old package ---
+try {
+  const { execSync } = require("child_process");
+  const out = execSync("npm ls -g @openscientist/extract-knowhow --depth=0 2>/dev/null", { encoding: "utf-8" });
+  if (out.includes("@openscientist/extract-knowhow")) {
+    console.log("\n⚠ The old @openscientist/extract-knowhow package is still installed globally.");
+    console.log("  Please uninstall it to avoid conflicts:");
+    console.log("  npm uninstall -g @openscientist/extract-knowhow\n");
+  }
+} catch (_) { /* not installed or npm ls failed — fine */ }
+
 // --- Cache directory ---
 // Any version change wipes all caches (skills + meta + sessions).
 // Reason: both extraction prompts AND raw-conversation preprocessing can change
