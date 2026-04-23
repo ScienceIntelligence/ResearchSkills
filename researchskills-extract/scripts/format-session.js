@@ -713,11 +713,14 @@ function formatGeminiSession(dirPath) {
     } catch {}
   }
 
-  // Read task.md — the session's current/final goal (after snapshots)
+  // Read task.md — the session's current/final goal (after snapshots).
+  // Labeled as CONTEXT rather than USER because Gemini expands task.md with
+  // generated checklists, substeps, and completion markers. The user's
+  // original intent is the title line; the rest is agent-authored.
   const taskFile = path.join(dirPath, 'task.md');
   if (fs.existsSync(taskFile)) {
     const taskContent = fs.readFileSync(taskFile, 'utf-8').trim();
-    lines.push(`USER: ${truncate(taskContent, USER_MAX_CHARS)}`);
+    lines.push(`[CONTEXT]: ${truncate(taskContent, USER_MAX_CHARS)}`);
     messageCount += 1;
   }
 

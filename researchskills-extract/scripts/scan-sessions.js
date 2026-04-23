@@ -306,19 +306,18 @@ function extractMetaGemini(dirPath) {
     try { totalSize += fs.statSync(path.join(dirPath, f)).size; } catch {}
   }
 
-  // Use distinct metadata timestamps as the user turn proxy.
-  // Task snapshots are unreliable — Gemini auto-creates resolved.N files
-  // on checklist updates even without user interaction. Distinct metadata
-  // timestamps better reflect actual user-initiated sessions.
-  const metaTimestamps = new Set();
-  for (const f of allFiles) {
-    if (!f.endsWith('.metadata.json')) continue;
-    try {
-      const meta = JSON.parse(fs.readFileSync(path.join(dirPath, f), 'utf-8'));
-      if (meta.updatedAt) metaTimestamps.add(meta.updatedAt);
-    } catch {}
-  }
-  const userMessageCount = Math.max(metaTimestamps.size, 1);
+  // Count user turns from task.md resolved snapshots only.
+  // Other artifacts (plan, walkthrough) have their own .metadata.json but
+  // those track agent-generated updates, not user interactions. Each
+  // task.md.resolved.N represents a distinct user-initiated task revision.
+  // The current task.md counts as the initial turn.
+  const taskResolved = allFiles.filter(
+    (f) => /^task\.md\.resolved\.\d+$/.test(f)
+  ).length;
+  // For entries with no resolved snapshots, we only have the initial task —
+  // that's 1 user turn. With resolved snapshots, each snapshot is a prior
+  // revision plus the current task.md.
+  const userMessageCount = taskResolved > 0 ? taskResolved + 1 : 1;
 
   // Extract timestamps from metadata sidecars
   let startTimestamp = null;
