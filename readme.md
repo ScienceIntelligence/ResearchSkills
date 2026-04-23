@@ -93,6 +93,8 @@ Write your own skill following the [**guide →**](https://researchskills.ai/sub
 
 Already have research skills written down — in notes, documents, custom formats, or another AI tool's memory? If you have Claude Code, paste the prompt below to translate them into ResearchSkills format.
 
+> **Privacy note:** Your pasted text is sent to the model provider (Anthropic). Remove any confidential or sensitive information (private URLs, internal file paths, proprietary data) from your source material **before** pasting.
+
 **In Claude Code, run:**
 
 ````
@@ -126,7 +128,7 @@ subdomain: <arXiv subdomain>
 contributor: <github-username>
 ---
 ```
-Sections: ## Fact, ## Evidence, ## LLM Default Belief, ## Expiry Signal
+Sections: ## Fact, ## Evidence, ## LLM Default Belief (correction only), ## Expiry Signal
 
 **Episodic** (concrete research episodes):
 ```yaml
