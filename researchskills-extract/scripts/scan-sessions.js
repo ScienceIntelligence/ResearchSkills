@@ -306,18 +306,25 @@ function extractMetaGemini(dirPath) {
     try { totalSize += fs.statSync(path.join(dirPath, f)).size; } catch {}
   }
 
-  // Count user turns from task.md resolved snapshots only.
-  // Other artifacts (plan, walkthrough) have their own .metadata.json but
-  // those track agent-generated updates, not user interactions. Each
-  // task.md.resolved.N represents a distinct user-initiated task revision.
-  // The current task.md counts as the initial turn.
-  const taskResolved = allFiles.filter(
-    (f) => /^task\.md\.resolved\.\d+$/.test(f)
-  ).length;
-  // For entries with no resolved snapshots, we only have the initial task —
-  // that's 1 user turn. With resolved snapshots, each snapshot is a prior
-  // revision plus the current task.md.
-  const userMessageCount = taskResolved > 0 ? taskResolved + 1 : 1;
+  // Gemini brain entries don't reliably distinguish user-initiated turns
+  // from agent-generated artifact updates. Count distinct metadata
+  // timestamps separated by >60s as separate interactions — timestamps
+  // within the same minute are assumed to be from a single agent run.
+  const allMetaTimestamps = [];
+  for (const f of allFiles) {
+    if (!f.endsWith('.metadata.json')) continue;
+    try {
+      const meta = JSON.parse(fs.readFileSync(path.join(dirPath, f), 'utf-8'));
+      if (meta.updatedAt) allMetaTimestamps.push(new Date(meta.updatedAt).getTime());
+    } catch {}
+  }
+  allMetaTimestamps.sort((a, b) => a - b);
+  let userMessageCount = allMetaTimestamps.length > 0 ? 1 : 0;
+  for (let i = 1; i < allMetaTimestamps.length; i++) {
+    if (allMetaTimestamps[i] - allMetaTimestamps[i - 1] > 60000) {
+      userMessageCount++;
+    }
+  }
 
   // Extract timestamps from metadata sidecars
   let startTimestamp = null;
@@ -364,20 +371,10 @@ function extractMetaGemini(dirPath) {
           } catch {}
         }
         // If the linked directory no longer exists (e.g. deleted worktree),
-        // use the deepest recognizable project-like path segment to avoid
-        // splitting one repo into per-subdirectory projects.
-        if (!cwd) {
-          const parts2 = filePath.split('/');
-          // Use the last directory component that looks like a project name
-          // (before src/, lib/, etc.) or fall back to the parent directory.
-          for (let j = parts2.length - 2; j >= 1; j--) {
-            if (['src', 'lib', 'pkg', 'cmd', 'internal', 'components', 'app'].includes(parts2[j])) {
-              cwd = parts2.slice(0, j).join('/');
-              break;
-            }
-          }
-          if (!cwd) cwd = path.dirname(filePath);
-        }
+        // use the raw file path as-is. The gemini/<uuid> fallback in scan()
+        // will handle grouping for link-less entries. Using path.dirname
+        // here would split one repo across subdirectories.
+        if (!cwd) cwd = filePath;
       }
     } catch {}
   }

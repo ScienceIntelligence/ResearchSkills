@@ -728,7 +728,7 @@ function formatGeminiSession(dirPath) {
   const planFile = path.join(dirPath, 'implementation_plan.md');
   if (fs.existsSync(planFile)) {
     const planContent = fs.readFileSync(planFile, 'utf-8').trim();
-    lines.push(`ASSISTANT: ${truncate(planContent, USER_MAX_CHARS)}`);
+    lines.push(`ASSISTANT: ${truncate(planContent, ASSISTANT_MAX_CHARS)}`);
     messageCount += 1;
   }
 
@@ -736,7 +736,7 @@ function formatGeminiSession(dirPath) {
   const walkthroughFile = path.join(dirPath, 'walkthrough.md');
   if (fs.existsSync(walkthroughFile)) {
     const walkthroughContent = fs.readFileSync(walkthroughFile, 'utf-8').trim();
-    lines.push(`ASSISTANT: ${truncate(walkthroughContent, USER_MAX_CHARS)}`);
+    lines.push(`ASSISTANT: ${truncate(walkthroughContent, ASSISTANT_MAX_CHARS)}`);
     messageCount += 1;
   }
 
