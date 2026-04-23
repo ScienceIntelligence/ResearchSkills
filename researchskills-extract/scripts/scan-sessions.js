@@ -306,13 +306,15 @@ function extractMetaGemini(dirPath) {
     try { totalSize += fs.statSync(path.join(dirPath, f)).size; } catch {}
   }
 
-  // Count only task.md resolved snapshots as user turns.
+  // Count task.md resolved snapshots + the current task.md as user turns.
   // Plan/walkthrough snapshots are AI-generated artifacts — counting them
   // would let one-shot entries (with task+plan+walkthrough resolved.0) pass
-  // the MIN_USER_MESSAGES filter.
-  const userMessageCount = allFiles.filter(
+  // the MIN_USER_MESSAGES filter. The current task.md counts as one turn
+  // since formatGeminiSession() emits it alongside resolved snapshots.
+  const taskResolvedCount = allFiles.filter(
     (f) => /^task\.md\.resolved\.\d+$/.test(f)
   ).length;
+  const userMessageCount = taskResolvedCount + 1;
 
   // Extract timestamps from metadata sidecars
   let startTimestamp = null;
@@ -371,16 +373,19 @@ function extractMetaGemini(dirPath) {
     }
   }
 
-  // Fallback: derive duration from resolved snapshot mtimes when metadata
-  // is singular (e.g. only task.md.metadata.json exists, yielding start==end)
+  // Fallback: derive duration from artifact mtimes when metadata is singular
+  // (e.g. only task.md.metadata.json exists, yielding start==end).
+  // Include both resolved snapshots and current task.md so entries with a
+  // single resolved snapshot can still compute a span against the current file.
   if (durationMinutes === 0) {
-    const resolvedMtimes = [];
+    const artifactMtimes = [];
     for (const f of allFiles) {
-      if (!/\.resolved\.\d+$/.test(f)) continue;
-      try { resolvedMtimes.push(fs.statSync(path.join(dirPath, f)).mtimeMs); } catch {}
+      if (/\.resolved\.\d+$/.test(f) || f === 'task.md') {
+        try { artifactMtimes.push(fs.statSync(path.join(dirPath, f)).mtimeMs); } catch {}
+      }
     }
-    if (resolvedMtimes.length >= 2) {
-      const span = Math.max(...resolvedMtimes) - Math.min(...resolvedMtimes);
+    if (artifactMtimes.length >= 2) {
+      const span = Math.max(...artifactMtimes) - Math.min(...artifactMtimes);
       if (span > 0) durationMinutes = Math.round(span / 60000);
     }
   }
