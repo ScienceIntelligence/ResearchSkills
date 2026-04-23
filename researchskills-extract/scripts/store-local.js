@@ -72,9 +72,9 @@ function extractBody(content) {
 }
 
 function collectSkills(sessionIds) {
-  // Dedup by (name, domain, subdomain) to preserve same-named skills from
-  // different domains while still collapsing true duplicates
-  const byKey = new Map(); // "name|domain|subdomain" → { content, name, bodyLen }
+  // Dedup by (name, domain, subdomain, memory_type) to preserve distinct skills
+  // while still collapsing true duplicates
+  const byKey = new Map();
   for (const sid of sessionIds) {
     const sessionDir = path.join(CACHE_DIR, sid);
     if (!fs.existsSync(sessionDir)) continue;
@@ -85,7 +85,8 @@ function collectSkills(sessionIds) {
       const name = extractField(content, 'name') || path.basename(file, '.md');
       const domain = (extractField(content, 'domain') || '').toLowerCase();
       const subdomain = (extractField(content, 'subdomain') || '').toLowerCase();
-      const key = `${name.toLowerCase()}|${domain}|${subdomain}`;
+      const memType = (extractField(content, 'memory_type') || '').toLowerCase();
+      const key = `${name.toLowerCase()}|${domain}|${subdomain}|${memType}`;
       const bodyLen = extractBody(content).length;
       const existing = byKey.get(key);
       // Keep the longer body for duplicates (matches validate-skills.js collect behavior)
@@ -114,16 +115,20 @@ function storeToTarget(targetName, skills) {
 
   if (targetName === 'claude') {
     // Claude Code: ~/.claude/commands/researchskills/<slug>.md
+    // Strip YAML frontmatter — Claude commands are plain markdown prompts
     dir = path.join(os.homedir(), '.claude', 'commands', 'researchskills');
     fs.mkdirSync(dir, { recursive: true });
 
-    for (const [slug, { content }] of skills) {
+    for (const [slug, { content, name }] of skills) {
+      const body = extractBody(content).trim();
+      // Prepend a markdown title from the skill name
+      const commandContent = `# ${name}\n\n${body}\n`;
       const dst = path.join(dir, `${slug}.md`);
-      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === content) {
+      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === commandContent) {
         skipped++;
         continue;
       }
-      fs.writeFileSync(dst, content);
+      fs.writeFileSync(dst, commandContent);
       installed++;
     }
   } else if (targetName === 'codex') {
