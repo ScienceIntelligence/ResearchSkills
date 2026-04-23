@@ -101,7 +101,9 @@ Already have research skills written down — in notes, documents, custom format
 I have research skills/knowledge that I'd like to contribute to ResearchSkills
 (https://github.com/ScienceIntelligence/ResearchSkills).
 
-Please help me convert them into the ResearchSkills format. Each skill should be a
+Please help me convert them into the ResearchSkills format. Only extract genuine
+**research** skills — skip generic software engineering, DevOps, textbook knowledge,
+or anything an LLM would already know from training data. Each skill should be a
 Markdown file with YAML frontmatter matching one of three memory types:
 
 **Procedural** (IF-THEN rules for research impasses):
@@ -147,6 +149,8 @@ IMPORTANT — De-identification: Before outputting the final files, remove all p
 names, private file paths, internal URLs, lab-specific identifiers, and any other
 information that could identify individuals or institutions. Replace them with
 anonymized placeholders (e.g., "a colleague", "internal tool", "our lab").
+All output must be in English. If the source material is in another language,
+paraphrase the content into English — do not preserve direct non-English quotes.
 
 Here are my skills to convert:
 
