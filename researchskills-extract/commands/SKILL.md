@@ -98,11 +98,11 @@ Report: `"Classified N projects. Proceeding with M."`
 Read `~/.researchskills/cache/classification.json` and display:
 
 ```
-Select which projects to scan for research skills (all selected — deselect any you want to skip):
+Select which projects to scan for research skills (all research projects selected — deselect any project that is not related to research):
 
   [x] 1. Protein Folding Pipeline     (4 sessions, research, quantitative-biology)
   [x] 2. Quantum Monte Carlo Study    (3 sessions, research, physics)
-  [x] 3. Personal Website             (3 sessions, engineering)
+  [ ] 3. Personal Website             (3 sessions, engineering)
   [x] 4. Dotfiles                     (2 sessions, other)
 
 Shortcuts:  a = select all  |  r = research only  |  e = engineering only  |  n = select none
