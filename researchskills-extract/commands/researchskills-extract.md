@@ -92,18 +92,18 @@ Report: `"Classified N projects. Proceeding with M."`
 Read `~/.researchskills/cache/classification.json` and display:
 
 ```
-Select which projects to scan for research skills (all selected — deselect any you want to skip):
+Select which projects to scan for research skills (all research projects selected — deselect any project that is not related to research):
 
   [x] 1. Protein Folding Pipeline     (4 sessions, research, quantitative-biology)
   [x] 2. Quantum Monte Carlo Study    (3 sessions, research, physics)
-  [x] 3. Personal Website             (3 sessions, engineering)
+  [ ] 3. Personal Website             (3 sessions, engineering)
   [x] 4. Dotfiles                     (2 sessions, other)
 
 Shortcuts:  a = select all  |  r = research only  |  e = engineering only  |  n = select none
 Enter numbers to toggle, or press Enter to continue:
 ```
 
-All projects are pre-selected by default. Users can deselect individual projects by number, or use shortcuts to bulk-toggle by category.
+All research projects are pre-selected by default. Users can deselect individual projects by number, or use shortcuts to bulk-toggle by category.
 
 **YOU MUST STOP HERE AND WAIT FOR THE USER TO RESPOND.** Use AskUserQuestion to present the project list and block until the user replies. Do NOT continue to Stage 3 without an explicit user response.
 
