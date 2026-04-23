@@ -371,10 +371,8 @@ function extractMetaGemini(dirPath) {
           } catch {}
         }
         // If the linked directory no longer exists (e.g. deleted worktree),
-        // use the raw file path as-is. The gemini/<uuid> fallback in scan()
-        // will handle grouping for link-less entries. Using path.dirname
-        // here would split one repo across subdirectories.
-        if (!cwd) cwd = filePath;
+        // leave cwd unset. scan() will fall back to gemini/<uuid> which
+        // avoids splitting one repo across file-level pseudo-projects.
       }
     } catch {}
   }
