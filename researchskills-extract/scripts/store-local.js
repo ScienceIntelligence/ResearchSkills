@@ -29,14 +29,14 @@ const os = require('os');
 const CACHE_DIR = path.join(os.homedir(), '.researchskills', 'cache', 'skills');
 
 /**
- * Extract the `name` field from YAML frontmatter.
+ * Extract a field from YAML frontmatter.
  * Returns null if not found.
  */
-function extractName(content) {
+function extractField(content, field) {
   const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
   if (!match) return null;
-  const nameMatch = match[1].match(/^name:\s*["']?(.+?)["']?\s*$/m);
-  return nameMatch ? nameMatch[1].trim() : null;
+  const fieldMatch = match[1].match(new RegExp(`^${field}:\\s*["']?(.+?)["']?\\s*$`, 'm'));
+  return fieldMatch ? fieldMatch[1].trim() : null;
 }
 
 /**
@@ -59,9 +59,11 @@ function collectSkills(sessionIds) {
       if (!file.endsWith('.md')) continue;
       const src = path.join(sessionDir, file);
       const content = fs.readFileSync(src, 'utf-8');
-      const name = extractName(content);
+      const name = extractField(content, 'name');
       const slug = slugify(name || path.basename(file, '.md'));
-      // Later sessions overwrite earlier ones for same-slugged skills (dedup)
+      const existing = skills.get(slug);
+      // Keep the longer body for same-slug duplicates (matches validate-skills.js collect behavior)
+      if (existing && existing.content.length >= content.length) continue;
       skills.set(slug, { src, content, name: name || slug });
     }
   }
@@ -92,15 +94,22 @@ function storeToTarget(targetName, skills) {
     dir = path.join(os.homedir(), '.codex', 'skills');
     fs.mkdirSync(dir, { recursive: true });
 
-    for (const [slug, { content }] of skills) {
+    for (const [slug, { content, name }] of skills) {
+      // Codex requires a `description` field in frontmatter to index the skill
+      let finalContent = content;
+      if (!extractField(content, 'description')) {
+        const memoryType = extractField(content, 'memory_type') || 'research';
+        const desc = `ResearchSkills ${memoryType} skill: ${name}`;
+        finalContent = content.replace(/^(---\s*\n)/, `$1description: "${desc}"\n`);
+      }
       const skillDir = path.join(dir, `researchskills-${slug}`);
       fs.mkdirSync(skillDir, { recursive: true });
       const dst = path.join(skillDir, 'SKILL.md');
-      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === content) {
+      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === finalContent) {
         skipped++;
         continue;
       }
-      fs.writeFileSync(dst, content);
+      fs.writeFileSync(dst, finalContent);
       installed++;
     }
   } else {
@@ -154,4 +163,4 @@ if (require.main === module) {
   console.log(`\n${JSON.stringify({ total: skills.size, results })}`);
 }
 
-module.exports = { collectSkills, storeToTarget, slugify, extractName };
+module.exports = { collectSkills, storeToTarget, slugify, extractField };
