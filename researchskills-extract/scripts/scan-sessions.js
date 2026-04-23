@@ -4,7 +4,7 @@
  *
  * Stage 1 + 2 of /researchskills-extract, as a single deterministic script.
  *
- * Discovers Claude Code and Codex session files, extracts per-session
+ * Discovers Claude Code, Codex, and Gemini brain session files, extracts per-session
  * metadata, filters out garbage (too-small, too-short, sub-agent, duplicate),
  * groups by project path, and emits a work list that the AI phase iterates
  * over.
@@ -79,7 +79,36 @@ function discoverCodex() {
   return [...archived, ...sessions];
 }
 
+/**
+ * Discover Gemini brain entries at ~/.gemini/antigravity/brain/<uuid>/.
+ * Each non-empty UUID directory is treated as one session.
+ * Returns an array of directory paths (not individual files).
+ */
+function discoverGemini() {
+  const root = path.join(os.homedir(), '.gemini', 'antigravity', 'brain');
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  const results = [];
+  let entries;
+  try {
+    entries = fs.readdirSync(root, { withFileTypes: true });
+  } catch (err) {
+    return results;
+  }
+  for (const e of entries) {
+    if (!e.isDirectory() || !UUID_RE.test(e.name)) continue;
+    const dir = path.join(root, e.name);
+    const taskFile = path.join(dir, 'task.md');
+    if (!fs.existsSync(taskFile)) continue;
+    results.push(dir);
+  }
+  return results;
+}
+
 function extractSessionId(filePath, source) {
+  if (source === 'gemini') {
+    // filePath is the brain entry directory; its basename is the UUID
+    return path.basename(filePath);
+  }
   const base = path.basename(filePath, '.jsonl');
   if (source === 'codex') {
     const m = base.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/);
@@ -258,6 +287,103 @@ function extractMeta(filePath) {
   };
 }
 
+/**
+ * Extract metadata from a Gemini brain entry directory.
+ * Brain entries contain task.md, implementation_plan.md, walkthrough.md,
+ * plus .metadata.json sidecars and .resolved.N historical snapshots.
+ */
+function extractMetaGemini(dirPath) {
+  const taskFile = path.join(dirPath, 'task.md');
+  const taskContent = fs.readFileSync(taskFile, 'utf-8');
+  const titleMatch = taskContent.match(/^#\s+(.+)/m);
+  const firstPrompt = titleMatch ? titleMatch[1].trim() : null;
+
+  const allFiles = fs.readdirSync(dirPath);
+
+  // Compute combined size of all files (matches the cache key in scan())
+  let totalSize = 0;
+  for (const f of allFiles) {
+    try { totalSize += fs.statSync(path.join(dirPath, f)).size; } catch {}
+  }
+
+  // Count resolved snapshots as a proxy for user interactions.
+  // Only resolved files indicate real iterative work — the base .md files
+  // (task, plan, walkthrough) are often auto-generated in a single shot.
+  const resolvedFiles = allFiles.filter(
+    (f) => /\.resolved\.\d+$/.test(f)
+  );
+  const userMessageCount = resolvedFiles.length;
+
+  // Extract timestamps from metadata sidecars
+  let startTimestamp = null;
+  let endTimestamp = null;
+  for (const f of allFiles) {
+    if (!f.endsWith('.metadata.json')) continue;
+    try {
+      const meta = JSON.parse(fs.readFileSync(path.join(dirPath, f), 'utf-8'));
+      const ts = meta.updatedAt || null;
+      if (ts) {
+        if (!startTimestamp || ts < startTimestamp) startTimestamp = ts;
+        if (!endTimestamp || ts > endTimestamp) endTimestamp = ts;
+      }
+    } catch {}
+  }
+
+  // Extract project path from file:// links in plan, task, and resolved snapshots
+  let cwd = null;
+  const planFile = path.join(dirPath, 'implementation_plan.md');
+  const searchFiles = [planFile, taskFile];
+  // Also search resolved snapshots which may contain file:// links
+  for (const f of allFiles) {
+    if (/\.resolved(\.\d+)?$/.test(f)) {
+      searchFiles.push(path.join(dirPath, f));
+    }
+  }
+  for (const sf of searchFiles) {
+    if (cwd) break;
+    try {
+      const content = fs.readFileSync(sf, 'utf-8');
+      const fileMatch = content.match(/file:\/\/\/([\w/._-]+\/[\w._-]+)/);
+      if (fileMatch) {
+        const filePath = '/' + fileMatch[1];
+        // Walk up to find a likely project root (dir with package.json, Cargo.toml, etc.)
+        const parts = filePath.split('/');
+        for (let i = parts.length - 1; i >= 2; i--) {
+          const candidate = parts.slice(0, i).join('/');
+          try {
+            const entries = fs.readdirSync(candidate);
+            if (entries.some((e) => ['package.json', 'Cargo.toml', 'go.mod', 'pyproject.toml', '.git'].includes(e))) {
+              cwd = candidate;
+              break;
+            }
+          } catch {}
+        }
+        if (!cwd) cwd = path.dirname(filePath);
+      }
+    } catch {}
+  }
+
+  let durationMinutes = 0;
+  if (startTimestamp && endTimestamp) {
+    const dt = new Date(endTimestamp).getTime() - new Date(startTimestamp).getTime();
+    if (!Number.isNaN(dt) && dt > 0) {
+      durationMinutes = Math.round(dt / 60000);
+    }
+  }
+
+  return {
+    file_size: totalSize,
+    is_sub_agent: false,
+    first_prompt: firstPrompt ? firstPrompt.substring(0, 500) : null,
+    sampled_prompts: [],
+    user_message_count: userMessageCount,
+    cwd,
+    start_timestamp: startTimestamp,
+    end_timestamp: endTimestamp,
+    duration_minutes: durationMinutes,
+  };
+}
+
 function metaCachePath(sessionId) {
   return path.join(META_CACHE_DIR, `${sessionId}.json`);
 }
@@ -283,6 +409,7 @@ function scan() {
   const candidates = [
     ...discoverClaude().map((f) => ({ file: f, source: 'claude' })),
     ...discoverCodex().map((f) => ({ file: f, source: 'codex' })),
+    ...discoverGemini().map((f) => ({ file: f, source: 'gemini' })),
   ];
 
   const skipped = {
@@ -296,23 +423,32 @@ function scan() {
   const byFingerprint = new Map();
 
   for (const { file, source } of candidates) {
-    let stats;
+    // For Gemini, `file` is a directory; sum all file sizes so the cache
+    // key invalidates when any artifact changes (resolved, metadata, etc.)
+    let fileSize;
     try {
-      stats = fs.statSync(file);
+      if (source === 'gemini') {
+        fileSize = 0;
+        for (const f of fs.readdirSync(file)) {
+          try { fileSize += fs.statSync(path.join(file, f)).size; } catch {}
+        }
+      } else {
+        fileSize = fs.statSync(file).size;
+      }
     } catch (err) {
       skipped.unreadable += 1;
       continue;
     }
-    if (stats.size < MIN_FILE_SIZE) {
+    if (fileSize < MIN_FILE_SIZE) {
       skipped.tooSmall += 1;
       continue;
     }
 
     const sessionId = extractSessionId(file, source);
-    let meta = loadCachedMeta(sessionId, stats.size);
+    let meta = loadCachedMeta(sessionId, fileSize);
     if (!meta) {
       try {
-        meta = extractMeta(file);
+        meta = source === 'gemini' ? extractMetaGemini(file) : extractMeta(file);
       } catch (err) {
         skipped.unreadable += 1;
         continue;
@@ -336,11 +472,17 @@ function scan() {
       continue;
     }
 
-    const projectPath =
-      meta.cwd ||
-      (source === 'claude'
-        ? claudeProjectDirName(file)
-        : path.basename(path.dirname(file)));
+    let projectPath = meta.cwd;
+    if (!projectPath) {
+      if (source === 'claude') {
+        projectPath = claudeProjectDirName(file);
+      } else if (source === 'gemini') {
+        // Use gemini/<uuid> to keep link-less entries separate
+        projectPath = `gemini/${path.basename(file)}`;
+      } else {
+        projectPath = path.basename(path.dirname(file));
+      }
+    }
 
     const record = {
       session_id: sessionId,
