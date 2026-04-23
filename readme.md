@@ -106,12 +106,15 @@ Please help me convert them into the ResearchSkills format. Only extract genuine
 or anything an LLM would already know from training data. Each skill should be a
 Markdown file with YAML frontmatter matching one of three memory types:
 
+For each skill, pick exactly ONE subtype from the options listed below.
+
 **Procedural** (IF-THEN rules for research impasses):
+- Subtypes: `tie`, `no-change`, `constraint-failure`, `operator-fail`
 ```yaml
 ---
 name: "descriptive-skill-name"
 memory_type: procedural
-subtype: tie | no-change | constraint-failure | operator-fail
+subtype: tie  # pick one: tie, no-change, constraint-failure, operator-fail
 domain: <arXiv domain>
 subdomain: <arXiv subdomain>
 contributor: <github-username>
@@ -120,11 +123,12 @@ contributor: <github-username>
 Sections: ## When, ## Decision, ## Local Verifiers, ## Failure Handling, ## Anti-exemplars
 
 **Semantic** (domain facts LLMs don't reliably know):
+- Subtypes: `frontier`, `non-public`, `correction`
 ```yaml
 ---
 name: "descriptive-skill-name"
 memory_type: semantic
-subtype: frontier | non-public | correction
+subtype: correction  # pick one: frontier, non-public, correction
 domain: <arXiv domain>
 subdomain: <arXiv subdomain>
 contributor: <github-username>
@@ -133,11 +137,12 @@ contributor: <github-username>
 Sections: ## Fact, ## Evidence, ## LLM Default Belief (correction only), ## Expiry Signal
 
 **Episodic** (concrete research episodes):
+- Subtypes: `failure`, `adaptation`, `anomalous`
 ```yaml
 ---
 name: "descriptive-skill-name"
 memory_type: episodic
-subtype: failure | adaptation | anomalous
+subtype: failure  # pick one: failure, adaptation, anomalous
 domain: <arXiv domain>
 subdomain: <arXiv subdomain>
 contributor: <github-username>
