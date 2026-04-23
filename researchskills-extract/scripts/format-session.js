@@ -670,21 +670,25 @@ function formatGeminiSession(dirPath) {
   let startTimestamp = null;
   let messageCount = 0;
 
-  // Collect metadata timestamps
+  // Collect metadata timestamps and summaries, sorted by updatedAt for
+  // deterministic output across machines (readdirSync order varies).
   const metaFiles = fs.readdirSync(dirPath).filter((f) => f.endsWith('.metadata.json'));
-  const timestamps = [];
+  const metaEntries = [];
   for (const mf of metaFiles) {
     try {
       const meta = JSON.parse(fs.readFileSync(path.join(dirPath, mf), 'utf-8'));
-      if (meta.updatedAt) timestamps.push(meta.updatedAt);
-      if (meta.summary) {
-        lines.push(`[CONTEXT]: ${truncate(meta.summary, USER_MAX_CHARS)}`);
-        messageCount += 1;
-      }
+      metaEntries.push({ updatedAt: meta.updatedAt || '', summary: meta.summary || '' });
     } catch {}
   }
-  timestamps.sort();
+  metaEntries.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
+  const timestamps = metaEntries.filter((e) => e.updatedAt).map((e) => e.updatedAt);
   if (timestamps.length > 0) startTimestamp = timestamps[0];
+  for (const entry of metaEntries) {
+    if (entry.summary) {
+      lines.push(`[CONTEXT]: ${truncate(entry.summary, USER_MAX_CHARS)}`);
+      messageCount += 1;
+    }
+  }
 
   // Read resolved snapshots first, sorted by file mtime for correct chronology.
   // Gemini uses independent .resolved.N counters per artifact, so sorting
