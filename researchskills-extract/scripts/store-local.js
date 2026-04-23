@@ -63,10 +63,18 @@ function hashContributor(content) {
   return content.replace(/^contributor:\s*.+$/m, `contributor: anon-${hash}`);
 }
 
+/**
+ * Extract the body (everything after the closing ---) from a skill file.
+ */
+function extractBody(content) {
+  const match = content.match(/^---\s*\n[\s\S]*?\n---\s*\n([\s\S]*)$/);
+  return match ? match[1] : content;
+}
+
 function collectSkills(sessionIds) {
   // Dedup by lowercased name (not slug) to avoid losing distinct skills
   // whose names differ only by punctuation
-  const byName = new Map(); // lowercased name → { content, name, file }
+  const byName = new Map(); // lowercased name → { content, name, bodyLen }
   for (const sid of sessionIds) {
     const sessionDir = path.join(CACHE_DIR, sid);
     if (!fs.existsSync(sessionDir)) continue;
@@ -76,10 +84,11 @@ function collectSkills(sessionIds) {
       const content = fs.readFileSync(src, 'utf-8');
       const name = extractField(content, 'name') || path.basename(file, '.md');
       const key = name.toLowerCase();
+      const bodyLen = extractBody(content).length;
       const existing = byName.get(key);
       // Keep the longer body for duplicates (matches validate-skills.js collect behavior)
-      if (existing && existing.content.length >= content.length) continue;
-      byName.set(key, { src, content, name });
+      if (existing && existing.bodyLen >= bodyLen) continue;
+      byName.set(key, { content, name, bodyLen });
     }
   }
   // Convert to slug-keyed map, appending suffix on collision
@@ -125,7 +134,9 @@ function storeToTarget(targetName, skills) {
       let finalContent = content;
       if (!extractField(content, 'description')) {
         const memoryType = extractField(content, 'memory_type') || 'research';
-        const desc = `ResearchSkills ${memoryType} skill: ${name}`;
+        const rawDesc = `ResearchSkills ${memoryType} skill: ${name}`;
+        // Escape quotes and backslashes for valid YAML
+        const desc = rawDesc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
         finalContent = content.replace(/^(---\s*\n)/, `$1description: "${desc}"\n`);
       }
       const skillDir = path.join(dir, `researchskills-${slug}`);
