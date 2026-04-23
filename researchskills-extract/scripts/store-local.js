@@ -94,16 +94,28 @@ function collectSkills(sessionIds) {
       byKey.set(key, { content, name, bodyLen });
     }
   }
-  // Convert to slug-keyed map, appending suffix on collision
+  // Convert to slug-keyed map, appending suffix on collision and
+  // disambiguating the frontmatter name so Codex can distinguish them
   const skills = new Map();
   for (const { content, name } of byKey.values()) {
-    let slug = slugify(name);
-    let finalSlug = slug;
+    const baseSlug = slugify(name);
+    let finalSlug = baseSlug;
     let suffix = 2;
     while (skills.has(finalSlug)) {
-      finalSlug = `${slug}-${suffix++}`;
+      finalSlug = `${baseSlug}-${suffix++}`;
     }
-    skills.set(finalSlug, { content: hashContributor(content), name });
+    // If slug was disambiguated, also disambiguate the name in frontmatter
+    let finalContent = hashContributor(content);
+    let finalName = name;
+    if (finalSlug !== baseSlug) {
+      const memType = extractField(content, 'memory_type') || '';
+      finalName = memType ? `${name} (${memType})` : `${name} (${suffix - 1})`;
+      finalContent = finalContent.replace(
+        /^name:\s*.+$/m,
+        `name: "${finalName.replace(/"/g, '\\"')}"`
+      );
+    }
+    skills.set(finalSlug, { content: finalContent, name: finalName });
   }
   return skills;
 }
@@ -137,11 +149,21 @@ function storeToTarget(targetName, skills) {
     fs.mkdirSync(dir, { recursive: true });
 
     for (const [slug, { content, name }] of skills) {
-      // Codex requires a `description` field in frontmatter to index the skill
+      // Codex requires a `description` field in frontmatter to index/trigger skills.
+      // Build a retrievable description from domain + first body sentence.
       let finalContent = content;
       if (!extractField(content, 'description')) {
         const memoryType = extractField(content, 'memory_type') || 'research';
-        const rawDesc = `ResearchSkills ${memoryType} skill: ${name}`;
+        const domain = extractField(content, 'domain') || '';
+        const subdomain = extractField(content, 'subdomain') || '';
+        const body = extractBody(content).trim();
+        // Extract first sentence (up to 120 chars) for trigger context
+        const firstLine = body.split(/\n/)[0] || '';
+        const snippet = firstLine.substring(0, 120).replace(/[#*_>]/g, '').trim();
+        const parts = [`${memoryType} skill`, domain, subdomain].filter(Boolean);
+        const rawDesc = snippet
+          ? `${parts.join(' / ')}: ${snippet}`
+          : `ResearchSkills ${parts.join(' / ')}: ${name}`;
         // Escape quotes and backslashes for valid YAML
         const desc = rawDesc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
         finalContent = content.replace(/^(---\s*\n)/, `$1description: "${desc}"\n`);
