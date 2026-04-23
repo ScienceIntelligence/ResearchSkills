@@ -91,7 +91,7 @@ Write your own skill following the [**guide →**](https://researchskills.ai/sub
 
 ### Method D: Submit Existing Skills via Claude Code
 
-Already have research skills written down — in notes, documents, custom formats, or another AI tool's memory? If you have Claude Code, paste the prompt below to translate them into ResearchSkills format and submit.
+Already have research skills written down — in notes, documents, custom formats, or another AI tool's memory? If you have Claude Code, paste the prompt below to translate them into ResearchSkills format.
 
 **In Claude Code, run:**
 
@@ -141,12 +141,17 @@ contributor: <github-username>
 ```
 Sections: ## Situation, ## Action, ## Outcome, ## Lesson, ## Retrieval Cues
 
+IMPORTANT — De-identification: Before outputting the final files, remove all personal
+names, private file paths, internal URLs, lab-specific identifiers, and any other
+information that could identify individuals or institutions. Replace them with
+anonymized placeholders (e.g., "a colleague", "internal tool", "our lab").
+
 Here are my skills to convert:
 
 <paste your skills here>
 ````
 
-After Claude Code generates the files, fork [ResearchSkills](https://github.com/ScienceIntelligence/ResearchSkills), place each file under `skills/<domain>/<subdomain>/<your-username>/<memory_type>/`, and open a PR.
+After Claude Code generates the files, review each one for any remaining personal or sensitive information, then submit via [**researchskills.ai →**](https://researchskills.ai/submit-manually/#auto-parse).
 
 > Don't see your field? [Propose a new area →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=02-skill-request.yml)
 
