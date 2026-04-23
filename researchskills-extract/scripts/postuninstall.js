@@ -16,6 +16,7 @@ const HELPER_SCRIPTS = [
   "score-skills.js",
   "upload-skills.js",
   "finalize.js",
+  "store-local.js",
 ];
 
 // --- Claude Code ---
