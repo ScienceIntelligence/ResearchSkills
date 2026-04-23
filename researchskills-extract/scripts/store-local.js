@@ -6,14 +6,18 @@
  * configuration so they are available as commands/skills in future sessions.
  *
  * Targets:
- *   - Claude Code: ~/.claude/commands/researchskills/<skill>.md
- *   - Codex:       ~/.codex/skills/researchskills/<skill>.md
+ *   - Claude Code: ~/.claude/commands/researchskills/<slug>.md
+ *   - Codex:       ~/.codex/skills/researchskills-<slug>/SKILL.md
+ *
+ * Skill slugs are derived from the YAML frontmatter `name` field, not from
+ * cache temp filenames. Deduplication uses the slug, so re-extractions that
+ * produce the same skill name will overwrite cleanly.
  *
  * Usage:
  *   store-local.js --target claude|codex|both --session-ids id1,id2,...
  *
  * Reads validated skills from ~/.researchskills/cache/skills/<session_id>/
- * and copies them to the chosen target(s). Deduplicates by skill filename.
+ * and copies them to the chosen target(s).
  */
 
 'use strict';
@@ -24,53 +28,87 @@ const os = require('os');
 
 const CACHE_DIR = path.join(os.homedir(), '.researchskills', 'cache', 'skills');
 
-const TARGETS = {
-  claude: path.join(os.homedir(), '.claude', 'commands', 'researchskills'),
-  codex: path.join(os.homedir(), '.codex', 'skills', 'researchskills'),
-};
+/**
+ * Extract the `name` field from YAML frontmatter.
+ * Returns null if not found.
+ */
+function extractName(content) {
+  const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) return null;
+  const nameMatch = match[1].match(/^name:\s*["']?(.+?)["']?\s*$/m);
+  return nameMatch ? nameMatch[1].trim() : null;
+}
+
+/**
+ * Turn a skill name into a filesystem-safe slug.
+ */
+function slugify(name) {
+  return String(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .substring(0, 80) || 'unnamed-skill';
+}
 
 function collectSkills(sessionIds) {
-  const skills = new Map(); // filename → { src, sessionId }
+  const skills = new Map(); // slug → { src, content, name }
   for (const sid of sessionIds) {
     const sessionDir = path.join(CACHE_DIR, sid);
     if (!fs.existsSync(sessionDir)) continue;
     for (const file of fs.readdirSync(sessionDir)) {
       if (!file.endsWith('.md')) continue;
-      // Later sessions overwrite earlier ones for same-named skills (dedup)
-      skills.set(file, { src: path.join(sessionDir, file), sessionId: sid });
+      const src = path.join(sessionDir, file);
+      const content = fs.readFileSync(src, 'utf-8');
+      const name = extractName(content);
+      const slug = slugify(name || path.basename(file, '.md'));
+      // Later sessions overwrite earlier ones for same-slugged skills (dedup)
+      skills.set(slug, { src, content, name: name || slug });
     }
   }
   return skills;
 }
 
 function storeToTarget(targetName, skills) {
-  const targetDir = TARGETS[targetName];
-  if (!targetDir) {
+  let installed = 0;
+  let skipped = 0;
+  let dir;
+
+  if (targetName === 'claude') {
+    // Claude Code: ~/.claude/commands/researchskills/<slug>.md
+    dir = path.join(os.homedir(), '.claude', 'commands', 'researchskills');
+    fs.mkdirSync(dir, { recursive: true });
+
+    for (const [slug, { content }] of skills) {
+      const dst = path.join(dir, `${slug}.md`);
+      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === content) {
+        skipped++;
+        continue;
+      }
+      fs.writeFileSync(dst, content);
+      installed++;
+    }
+  } else if (targetName === 'codex') {
+    // Codex: ~/.codex/skills/researchskills-<slug>/SKILL.md
+    dir = path.join(os.homedir(), '.codex', 'skills');
+    fs.mkdirSync(dir, { recursive: true });
+
+    for (const [slug, { content }] of skills) {
+      const skillDir = path.join(dir, `researchskills-${slug}`);
+      fs.mkdirSync(skillDir, { recursive: true });
+      const dst = path.join(skillDir, 'SKILL.md');
+      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === content) {
+        skipped++;
+        continue;
+      }
+      fs.writeFileSync(dst, content);
+      installed++;
+    }
+  } else {
     console.error(`Unknown target: ${targetName}`);
     return { installed: 0, skipped: 0 };
   }
 
-  fs.mkdirSync(targetDir, { recursive: true });
-
-  let installed = 0;
-  let skipped = 0;
-
-  for (const [filename, { src }] of skills) {
-    const dst = path.join(targetDir, filename);
-    if (fs.existsSync(dst)) {
-      // Check if content is identical
-      const srcContent = fs.readFileSync(src, 'utf-8');
-      const dstContent = fs.readFileSync(dst, 'utf-8');
-      if (srcContent === dstContent) {
-        skipped++;
-        continue;
-      }
-    }
-    fs.copyFileSync(src, dst);
-    installed++;
-  }
-
-  return { installed, skipped, dir: targetDir };
+  return { installed, skipped, dir };
 }
 
 // CLI
@@ -116,4 +154,4 @@ if (require.main === module) {
   console.log(`\n${JSON.stringify({ total: skills.size, results })}`);
 }
 
-module.exports = { collectSkills, storeToTarget, TARGETS };
+module.exports = { collectSkills, storeToTarget, slugify, extractName };

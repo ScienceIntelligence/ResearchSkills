@@ -213,8 +213,8 @@ node ~/.codex/skills/researchskills-extract/scripts/finalize.js \
 Use `ask` (Codex) or `AskUserQuestion` (Claude Code) to present the options. If no interactive tool is available, print the options and end your turn — the user's next message is their selection.
 
 - Question: "Install extracted skills into your local AI coding tool?"
-- Option A: "Yes, install to Claude Code" — stores skills to `~/.claude/commands/researchskills/`
-- Option B: "Yes, install to Codex" — stores skills to `~/.codex/skills/researchskills/`
+- Option A: "Yes, install to Claude Code" — stores skills to `~/.claude/commands/researchskills/<slug>.md`
+- Option B: "Yes, install to Codex" — stores skills to `~/.codex/skills/researchskills-<slug>/SKILL.md`
 - Option C: "Yes, install to both"
 - Option D: "No, skip local install"
 

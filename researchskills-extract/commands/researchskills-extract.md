@@ -207,8 +207,8 @@ node ~/.claude/utils/finalize.js \
 
 Use AskUserQuestion to present the options:
 - Question: "Install extracted skills into your local AI coding tool?"
-- Option A: "Yes, install to Claude Code" — stores skills to `~/.claude/commands/researchskills/`
-- Option B: "Yes, install to Codex" — stores skills to `~/.codex/skills/researchskills/`
+- Option A: "Yes, install to Claude Code" — stores skills to `~/.claude/commands/researchskills/<slug>.md`
+- Option B: "Yes, install to Codex" — stores skills to `~/.codex/skills/researchskills-<slug>/SKILL.md`
 - Option C: "Yes, install to both"
 - Option D: "No, skip local install"
 
