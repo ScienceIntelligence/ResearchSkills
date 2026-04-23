@@ -98,17 +98,17 @@ Report: `"Classified N projects. Proceeding with M."`
 Read `~/.researchskills/cache/classification.json` and display:
 
 ```
-Select which projects to scan for research skills:
+Select which projects to scan for research skills (all research projects selected — deselect any project that is not related to research):
 
   [x] 1. Protein Folding Pipeline     (4 sessions, research, quantitative-biology)
   [x] 2. Quantum Monte Carlo Study    (3 sessions, research, physics)
   [ ] 3. Personal Website             (3 sessions, engineering)
-  [ ] 4. Dotfiles                     (2 sessions, other)
+  [x] 4. Dotfiles                     (2 sessions, other)
 
 Enter numbers to toggle, or press Enter to continue:
 ```
 
-Research projects are pre-selected; engineering/other are deselected.
+All projects are pre-selected by default. Users can deselect individual projects by number.
 
 **YOU MUST STOP HERE AND WAIT FOR THE USER TO RESPOND.** Use `ask` (Codex) or `AskUserQuestion` (Claude Code) to present the project list and block until the user replies. Do NOT continue to Stage 3 without an explicit user response. If no interactive tool is available, print the list and end your turn — the user's next message is their selection.
 
