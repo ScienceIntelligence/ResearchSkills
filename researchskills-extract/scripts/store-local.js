@@ -25,6 +25,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 
 const CACHE_DIR = path.join(os.homedir(), '.researchskills', 'cache', 'skills');
 
@@ -50,8 +51,22 @@ function slugify(name) {
     .substring(0, 80) || 'unnamed-skill';
 }
 
+/**
+ * Hash the contributor field for de-identification (matches validate-skills.js).
+ */
+function hashContributor(content) {
+  const match = content.match(/^contributor:\s*(.+)$/m);
+  if (!match) return content;
+  const raw = match[1].trim().replace(/^["']|["']$/g, '');
+  if (raw.startsWith('anon-')) return content; // already hashed
+  const hash = crypto.createHash('sha256').update(raw).digest('hex').substring(0, 8);
+  return content.replace(/^contributor:\s*.+$/m, `contributor: anon-${hash}`);
+}
+
 function collectSkills(sessionIds) {
-  const skills = new Map(); // slug → { src, content, name }
+  // Dedup by lowercased name (not slug) to avoid losing distinct skills
+  // whose names differ only by punctuation
+  const byName = new Map(); // lowercased name → { content, name, file }
   for (const sid of sessionIds) {
     const sessionDir = path.join(CACHE_DIR, sid);
     if (!fs.existsSync(sessionDir)) continue;
@@ -59,13 +74,24 @@ function collectSkills(sessionIds) {
       if (!file.endsWith('.md')) continue;
       const src = path.join(sessionDir, file);
       const content = fs.readFileSync(src, 'utf-8');
-      const name = extractField(content, 'name');
-      const slug = slugify(name || path.basename(file, '.md'));
-      const existing = skills.get(slug);
-      // Keep the longer body for same-slug duplicates (matches validate-skills.js collect behavior)
+      const name = extractField(content, 'name') || path.basename(file, '.md');
+      const key = name.toLowerCase();
+      const existing = byName.get(key);
+      // Keep the longer body for duplicates (matches validate-skills.js collect behavior)
       if (existing && existing.content.length >= content.length) continue;
-      skills.set(slug, { src, content, name: name || slug });
+      byName.set(key, { src, content, name });
     }
+  }
+  // Convert to slug-keyed map, appending suffix on collision
+  const skills = new Map();
+  for (const { content, name } of byName.values()) {
+    let slug = slugify(name);
+    let finalSlug = slug;
+    let suffix = 2;
+    while (skills.has(finalSlug)) {
+      finalSlug = `${slug}-${suffix++}`;
+    }
+    skills.set(finalSlug, { content: hashContributor(content), name });
   }
   return skills;
 }
