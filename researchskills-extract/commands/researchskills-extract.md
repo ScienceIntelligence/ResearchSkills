@@ -2,7 +2,7 @@
 
 Extract research skills from the user's Claude Code session history for **ResearchSkills**.
 
-**Run automatically with TWO pauses for user consent:** once after classifying projects (Stage 2.5 — choose which projects to scan), and once before upload (Stage 7 — choose whether to submit). Report progress at each milestone.
+**Run automatically with THREE pauses for user consent:** once after classifying projects (Stage 2.5 — choose which projects to scan), once after scoring to offer local installation (Stage 6.5 — store skills in Claude/Codex), and once before upload (Stage 7 — choose whether to submit). Report progress at each milestone.
 
 You extract three types of cognitive memory from research conversations:
 - **Procedural** — IF-THEN rules for **scientific research** decisions: methodology choices, data interpretation strategies, research direction pivots. NOT engineering workflows.
@@ -22,6 +22,7 @@ extract-skills.js      ─┤  deterministic scripts (you call them)
   └─ claude -p sonnet   │  ← Sonnet CLI call per session, inside the script
 clean-skills.js        ─┤  ← Opus reviews: reject/fix/merge
 score-skills.js        ─┤  ← Opus scores: 3-dim value assessment
+store-local.js         ─┤  ← optional: install skills into Claude/Codex
 finalize.js            ─┘
 
 You (main agent)       ← call scripts, read summaries, report
@@ -37,6 +38,7 @@ Helper scripts (installed at `~/.claude/utils/`):
 | `validate-skills.js` | Validate skill markdown and cache to `~/.researchskills/cache/skills/` |
 | `clean-skills.js` | Review extracted skills with Opus: reject engineering, fix PII, merge duplicates |
 | `score-skills.js` | Score surviving skills with Opus on 3 dimensions: procedural, semantic, episodic value |
+| `store-local.js` | Install extracted skills into user's local Claude/Codex config |
 | `finalize.js` | Collect cached skills → upload to researchskills.ai |
 
 ---
@@ -199,9 +201,36 @@ node ~/.claude/utils/finalize.js \
 
 ---
 
+## Stage 6.5 — Store Skills Locally (Optional)
+
+**Third consent gate.** After finalize collects skills, ask the user whether to install them into their local AI coding tool so the skills are available as context in future sessions.
+
+Use AskUserQuestion to present the options:
+- Question: "Install extracted skills into your local AI coding tool?"
+- Option A: "Yes, install to Claude Code" — stores skills to `~/.claude/commands/researchskills/<slug>.md`
+- Option B: "Yes, install to Codex" — stores skills to `~/.codex/skills/researchskills-<slug>/SKILL.md`
+- Option C: "Yes, install to both"
+- Option D: "No, skip local install"
+
+**YOU MUST STOP HERE AND WAIT FOR THE USER TO RESPOND.** Do NOT continue to Stage 7 without an explicit user response.
+
+If the user picks A, B, or C, run:
+
+```bash
+node ~/.claude/utils/store-local.js \
+  --target <claude|codex|both> \
+  --session-ids <ALL-research-session-ids-csv>
+```
+
+Report: `"Installed N skills to <target>. M already up-to-date."`
+
+If the user picks D, skip and continue to Stage 7.
+
+---
+
 ## Stage 7 — Consent and Upload
 
-**Second consent gate.** Pause and ask the user before uploading anything.
+**Fourth consent gate.** Pause and ask the user before uploading anything.
 
 Show the user what was extracted:
 
