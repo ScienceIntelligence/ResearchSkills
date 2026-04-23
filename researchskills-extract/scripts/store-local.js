@@ -72,9 +72,9 @@ function extractBody(content) {
 }
 
 function collectSkills(sessionIds) {
-  // Dedup by lowercased name (not slug) to avoid losing distinct skills
-  // whose names differ only by punctuation
-  const byName = new Map(); // lowercased name → { content, name, bodyLen }
+  // Dedup by (name, domain, subdomain) to preserve same-named skills from
+  // different domains while still collapsing true duplicates
+  const byKey = new Map(); // "name|domain|subdomain" → { content, name, bodyLen }
   for (const sid of sessionIds) {
     const sessionDir = path.join(CACHE_DIR, sid);
     if (!fs.existsSync(sessionDir)) continue;
@@ -83,17 +83,19 @@ function collectSkills(sessionIds) {
       const src = path.join(sessionDir, file);
       const content = fs.readFileSync(src, 'utf-8');
       const name = extractField(content, 'name') || path.basename(file, '.md');
-      const key = name.toLowerCase();
+      const domain = (extractField(content, 'domain') || '').toLowerCase();
+      const subdomain = (extractField(content, 'subdomain') || '').toLowerCase();
+      const key = `${name.toLowerCase()}|${domain}|${subdomain}`;
       const bodyLen = extractBody(content).length;
-      const existing = byName.get(key);
+      const existing = byKey.get(key);
       // Keep the longer body for duplicates (matches validate-skills.js collect behavior)
       if (existing && existing.bodyLen >= bodyLen) continue;
-      byName.set(key, { content, name, bodyLen });
+      byKey.set(key, { content, name, bodyLen });
     }
   }
   // Convert to slug-keyed map, appending suffix on collision
   const skills = new Map();
-  for (const { content, name } of byName.values()) {
+  for (const { content, name } of byKey.values()) {
     let slug = slugify(name);
     let finalSlug = slug;
     let suffix = 2;
@@ -150,8 +152,7 @@ function storeToTarget(targetName, skills) {
       installed++;
     }
   } else {
-    console.error(`Unknown target: ${targetName}`);
-    return { installed: 0, skipped: 0 };
+    throw new Error(`Unknown target: "${targetName}". Must be "claude", "codex", or "both".`);
   }
 
   return { installed, skipped, dir };
