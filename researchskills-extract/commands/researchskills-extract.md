@@ -99,11 +99,10 @@ Select which projects to scan for research skills (all research projects selecte
   [ ] 3. Personal Website             (3 sessions, engineering)
   [x] 4. Dotfiles                     (2 sessions, other)
 
-Shortcuts:  a = select all  |  r = research only  |  e = engineering only  |  n = select none
 Enter numbers to toggle, or press Enter to continue:
 ```
 
-All research projects are pre-selected by default. Users can deselect individual projects by number, or use shortcuts to bulk-toggle by category.
+All research projects are pre-selected by default. Users can deselect individual projects by number.
 
 **YOU MUST STOP HERE AND WAIT FOR THE USER TO RESPOND.** Use AskUserQuestion to present the project list and block until the user replies. Do NOT continue to Stage 3 without an explicit user response.
 
