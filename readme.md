@@ -89,6 +89,65 @@ After running, submit via [**here →**](https://researchskills.ai/submit-manual
 
 Write your own skill following the [**guide →**](https://researchskills.ai/submit-manually/#manual-entry)
 
+### Method D: Submit Existing Skills via Claude Code
+
+Already have research skills written down — in notes, documents, custom formats, or another AI tool's memory? If you have Claude Code, paste the prompt below to translate them into ResearchSkills format and submit.
+
+**In Claude Code, run:**
+
+````
+I have research skills/knowledge that I'd like to contribute to ResearchSkills
+(https://github.com/ScienceIntelligence/ResearchSkills).
+
+Please help me convert them into the ResearchSkills format. Each skill should be a
+Markdown file with YAML frontmatter matching one of three memory types:
+
+**Procedural** (IF-THEN rules for research impasses):
+```yaml
+---
+name: "descriptive-skill-name"
+memory_type: procedural
+subtype: tie | no-change | constraint-failure | operator-fail
+domain: <arXiv domain>
+subdomain: <arXiv subdomain>
+contributor: <github-username>
+---
+```
+Sections: ## When, ## Decision, ## Local Verifiers, ## Failure Handling, ## Anti-exemplars
+
+**Semantic** (domain facts LLMs don't reliably know):
+```yaml
+---
+name: "descriptive-skill-name"
+memory_type: semantic
+subtype: frontier | non-public | correction
+domain: <arXiv domain>
+subdomain: <arXiv subdomain>
+contributor: <github-username>
+---
+```
+Sections: ## Fact, ## Evidence, ## LLM Default Belief, ## Expiry Signal
+
+**Episodic** (concrete research episodes):
+```yaml
+---
+name: "descriptive-skill-name"
+memory_type: episodic
+subtype: failure | adaptation | anomalous
+domain: <arXiv domain>
+subdomain: <arXiv subdomain>
+contributor: <github-username>
+---
+```
+Sections: ## Situation, ## Action, ## Outcome, ## Lesson, ## Retrieval Cues
+
+Here are my skills to convert:
+
+<paste your skills here>
+````
+
+After Claude Code generates the files, fork [ResearchSkills](https://github.com/ScienceIntelligence/ResearchSkills), place each file under `skills/<domain>/<subdomain>/<your-username>/<memory_type>/`, and open a PR.
+
 > Don't see your field? [Propose a new area →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=02-skill-request.yml)
 
 ---
