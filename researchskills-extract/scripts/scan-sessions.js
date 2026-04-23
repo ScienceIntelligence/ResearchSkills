@@ -306,13 +306,13 @@ function extractMetaGemini(dirPath) {
     try { totalSize += fs.statSync(path.join(dirPath, f)).size; } catch {}
   }
 
-  // Count resolved snapshots as a proxy for user interactions.
-  // Only resolved files indicate real iterative work — the base .md files
-  // (task, plan, walkthrough) are often auto-generated in a single shot.
-  const resolvedFiles = allFiles.filter(
-    (f) => /\.resolved\.\d+$/.test(f)
-  );
-  const userMessageCount = resolvedFiles.length;
+  // Count only task.md resolved snapshots as user turns.
+  // Plan/walkthrough snapshots are AI-generated artifacts — counting them
+  // would let one-shot entries (with task+plan+walkthrough resolved.0) pass
+  // the MIN_USER_MESSAGES filter.
+  const userMessageCount = allFiles.filter(
+    (f) => /^task\.md\.resolved\.\d+$/.test(f)
+  ).length;
 
   // Extract timestamps from metadata sidecars
   let startTimestamp = null;
@@ -368,6 +368,20 @@ function extractMetaGemini(dirPath) {
     const dt = new Date(endTimestamp).getTime() - new Date(startTimestamp).getTime();
     if (!Number.isNaN(dt) && dt > 0) {
       durationMinutes = Math.round(dt / 60000);
+    }
+  }
+
+  // Fallback: derive duration from resolved snapshot mtimes when metadata
+  // is singular (e.g. only task.md.metadata.json exists, yielding start==end)
+  if (durationMinutes === 0) {
+    const resolvedMtimes = [];
+    for (const f of allFiles) {
+      if (!/\.resolved\.\d+$/.test(f)) continue;
+      try { resolvedMtimes.push(fs.statSync(path.join(dirPath, f)).mtimeMs); } catch {}
+    }
+    if (resolvedMtimes.length >= 2) {
+      const span = Math.max(...resolvedMtimes) - Math.min(...resolvedMtimes);
+      if (span > 0) durationMinutes = Math.round(span / 60000);
     }
   }
 

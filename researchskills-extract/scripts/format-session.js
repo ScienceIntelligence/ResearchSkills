@@ -686,25 +686,11 @@ function formatGeminiSession(dirPath) {
   timestamps.sort();
   if (timestamps.length > 0) startTimestamp = timestamps[0];
 
-  // Read task.md — the session's goal
-  const taskFile = path.join(dirPath, 'task.md');
-  if (fs.existsSync(taskFile)) {
-    const taskContent = fs.readFileSync(taskFile, 'utf-8').trim();
-    lines.push(`USER: ${truncate(taskContent, USER_MAX_CHARS)}`);
-    messageCount += 1;
-  }
-
-  // Read implementation_plan.md — the AI's plan
-  const planFile = path.join(dirPath, 'implementation_plan.md');
-  if (fs.existsSync(planFile)) {
-    const planContent = fs.readFileSync(planFile, 'utf-8').trim();
-    lines.push(`ASSISTANT: ${truncate(planContent, USER_MAX_CHARS)}`);
-    messageCount += 1;
-  }
-
-  // Read resolved snapshots sorted by file mtime for correct chronology.
+  // Read resolved snapshots first, sorted by file mtime for correct chronology.
   // Gemini uses independent .resolved.N counters per artifact, so sorting
   // by mtime across all artifacts preserves the actual decision sequence.
+  // Current task.md/plan are emitted AFTER snapshots since snapshots are
+  // older states and current files represent the latest state.
   const allDirFiles = fs.readdirSync(dirPath);
   const resolvedSnapshots = [];
   for (const f of allDirFiles) {
@@ -725,6 +711,22 @@ function formatGeminiSession(dirPath) {
       lines.push(`[Snapshot: ${label}]: ${truncate(content, USER_MAX_CHARS)}`);
       messageCount += 1;
     } catch {}
+  }
+
+  // Read task.md — the session's current/final goal (after snapshots)
+  const taskFile = path.join(dirPath, 'task.md');
+  if (fs.existsSync(taskFile)) {
+    const taskContent = fs.readFileSync(taskFile, 'utf-8').trim();
+    lines.push(`USER: ${truncate(taskContent, USER_MAX_CHARS)}`);
+    messageCount += 1;
+  }
+
+  // Read implementation_plan.md — the AI's current/final plan
+  const planFile = path.join(dirPath, 'implementation_plan.md');
+  if (fs.existsSync(planFile)) {
+    const planContent = fs.readFileSync(planFile, 'utf-8').trim();
+    lines.push(`ASSISTANT: ${truncate(planContent, USER_MAX_CHARS)}`);
+    messageCount += 1;
   }
 
   // Read walkthrough.md — the session's summary/outcome
