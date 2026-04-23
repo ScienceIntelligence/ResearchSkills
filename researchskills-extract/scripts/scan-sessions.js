@@ -306,15 +306,19 @@ function extractMetaGemini(dirPath) {
     try { totalSize += fs.statSync(path.join(dirPath, f)).size; } catch {}
   }
 
-  // Count task.md resolved snapshots + the current task.md as user turns.
-  // Plan/walkthrough snapshots are AI-generated artifacts — counting them
-  // would let one-shot entries (with task+plan+walkthrough resolved.0) pass
-  // the MIN_USER_MESSAGES filter. The current task.md counts as one turn
-  // since formatGeminiSession() emits it alongside resolved snapshots.
-  const taskResolvedCount = allFiles.filter(
-    (f) => /^task\.md\.resolved\.\d+$/.test(f)
-  ).length;
-  const userMessageCount = taskResolvedCount + 1;
+  // Use distinct metadata timestamps as the user turn proxy.
+  // Task snapshots are unreliable — Gemini auto-creates resolved.N files
+  // on checklist updates even without user interaction. Distinct metadata
+  // timestamps better reflect actual user-initiated sessions.
+  const metaTimestamps = new Set();
+  for (const f of allFiles) {
+    if (!f.endsWith('.metadata.json')) continue;
+    try {
+      const meta = JSON.parse(fs.readFileSync(path.join(dirPath, f), 'utf-8'));
+      if (meta.updatedAt) metaTimestamps.add(meta.updatedAt);
+    } catch {}
+  }
+  const userMessageCount = Math.max(metaTimestamps.size, 1);
 
   // Extract timestamps from metadata sidecars
   let startTimestamp = null;
@@ -360,7 +364,21 @@ function extractMetaGemini(dirPath) {
             }
           } catch {}
         }
-        if (!cwd) cwd = path.dirname(filePath);
+        // If the linked directory no longer exists (e.g. deleted worktree),
+        // use the deepest recognizable project-like path segment to avoid
+        // splitting one repo into per-subdirectory projects.
+        if (!cwd) {
+          const parts2 = filePath.split('/');
+          // Use the last directory component that looks like a project name
+          // (before src/, lib/, etc.) or fall back to the parent directory.
+          for (let j = parts2.length - 2; j >= 1; j--) {
+            if (['src', 'lib', 'pkg', 'cmd', 'internal', 'components', 'app'].includes(parts2[j])) {
+              cwd = parts2.slice(0, j).join('/');
+              break;
+            }
+          }
+          if (!cwd) cwd = path.dirname(filePath);
+        }
       }
     } catch {}
   }
@@ -373,11 +391,12 @@ function extractMetaGemini(dirPath) {
     }
   }
 
-  // Fallback: derive duration from artifact mtimes when metadata is singular
-  // (e.g. only task.md.metadata.json exists, yielding start==end).
-  // Include both resolved snapshots and current task.md so entries with a
-  // single resolved snapshot can still compute a span against the current file.
-  if (durationMinutes === 0) {
+  // Fallback: derive duration from artifact mtimes ONLY when metadata has
+  // no usable span (start==end or missing). Do not fall back when metadata
+  // yields a real sub-minute span (rounded to 0), as old resolved snapshots
+  // can be days older and would inflate the duration.
+  const hasMetadataSpan = startTimestamp && endTimestamp && startTimestamp !== endTimestamp;
+  if (durationMinutes === 0 && !hasMetadataSpan) {
     const artifactMtimes = [];
     for (const f of allFiles) {
       if (/\.resolved\.\d+$/.test(f) || f === 'task.md') {
