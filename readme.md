@@ -89,80 +89,30 @@ After running, submit via [**here →**](https://researchskills.ai/submit-manual
 
 Write your own skill following the [**guide →**](https://researchskills.ai/submit-manually/#manual-entry)
 
-### Method D: Submit Existing Skills via Claude Code
+<details>
+<summary><strong>Method D: Submit Existing Skills via Claude Code / Codex</strong></summary>
 
-Already have research skills written down — in notes, documents, custom formats, or another AI tool's memory? If you have Claude Code, paste the prompt below to translate them into ResearchSkills format.
+Already have research skills in notes, documents, or another AI tool's memory? Paste this prompt into Claude Code or Codex — it will ask you a few questions and handle the rest.
 
-> **Privacy note:** Your pasted text is sent to the model provider (Anthropic). Remove any confidential or sensitive information (private URLs, internal file paths, proprietary data) from your source material **before** pasting.
-
-**In Claude Code, run:**
-
-````
-I have research skills/knowledge that I'd like to contribute to ResearchSkills
-(https://github.com/ScienceIntelligence/ResearchSkills).
-
-Please help me convert them into the ResearchSkills format. Only extract genuine
-**research** skills — skip generic software engineering, DevOps, textbook knowledge,
-or anything an LLM would already know from training data. Each skill should be a
-Markdown file with YAML frontmatter matching one of three memory types:
-
-For each skill, pick exactly ONE subtype from the options listed below.
-
-**Procedural** (IF-THEN rules for research impasses):
-- Subtypes: `tie`, `no-change`, `constraint-failure`, `operator-fail`
-```yaml
----
-name: "descriptive-skill-name"
-memory_type: procedural
-subtype: tie  # pick one: tie, no-change, constraint-failure, operator-fail
-domain: <arXiv domain>
-subdomain: <arXiv subdomain>
-contributor: <github-username>
----
 ```
-Sections: ## When, ## Decision, ## Local Verifiers, ## Failure Handling, ## Anti-exemplars
+I want to contribute my research skills to ResearchSkills (https://github.com/ScienceIntelligence/ResearchSkills). Please guide me through the process. Ask me these questions one at a time:
 
-**Semantic** (domain facts LLMs don't reliably know):
-- Subtypes: `frontier`, `non-public`, `correction`
-```yaml
----
-name: "descriptive-skill-name"
-memory_type: semantic
-subtype: correction  # pick one: frontier, non-public, correction
-domain: <arXiv domain>
-subdomain: <arXiv subdomain>
-contributor: <github-username>
----
+1. Where are your skills? (a file path, a directory, or "I'll paste them here")
+2. What is your research domain? (e.g., physics/geophysics, computer-science/machine-learning)
+3. What is your GitHub username? (for the contributor field)
+
+After I answer, read the files (or my pasted text), then convert each skill into a ```skill-md fenced block. Only extract genuine research skills — skip generic software engineering, DevOps, or textbook knowledge. For each skill, pick the best memory_type and subtype:
+
+- procedural (tie | no-change | constraint-failure | operator-fail): Sections: When, Decision, Local Verifiers, Failure Handling, Anti-exemplars
+- semantic (frontier | non-public | correction): Sections: Fact, Evidence, LLM Default Belief (correction only), Expiry Signal
+- episodic (failure | adaptation | anomalous): Sections: Situation, Action, Outcome, Lesson, Retrieval Cues
+
+De-identify all output: remove personal names, private file paths, internal URLs, lab identifiers. All output must be in English. Then help me submit the results to researchskills.ai/submit-manually/#auto-parse.
 ```
-Sections: ## Fact, ## Evidence, ## LLM Default Belief (correction only), ## Expiry Signal
 
-**Episodic** (concrete research episodes):
-- Subtypes: `failure`, `adaptation`, `anomalous`
-```yaml
----
-name: "descriptive-skill-name"
-memory_type: episodic
-subtype: failure  # pick one: failure, adaptation, anomalous
-domain: <arXiv domain>
-subdomain: <arXiv subdomain>
-contributor: <github-username>
----
-```
-Sections: ## Situation, ## Action, ## Outcome, ## Lesson, ## Retrieval Cues
+After Claude Code generates the output, paste it into [**researchskills.ai/submit-manually →**](https://researchskills.ai/submit-manually/#auto-parse) to review and submit.
 
-IMPORTANT — De-identification: Before outputting the final files, remove all personal
-names, private file paths, internal URLs, lab-specific identifiers, and any other
-information that could identify individuals or institutions. Replace them with
-anonymized placeholders (e.g., "a colleague", "internal tool", "our lab").
-All output must be in English. If the source material is in another language,
-paraphrase the content into English — do not preserve direct non-English quotes.
-
-Here are my skills to convert:
-
-<paste your skills here>
-````
-
-After Claude Code generates the files, review each one for any remaining personal or sensitive information, then submit via [**researchskills.ai →**](https://researchskills.ai/submit-manually/#auto-parse).
+</details>
 
 > Don't see your field? [Propose a new area →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=02-skill-request.yml)
 
