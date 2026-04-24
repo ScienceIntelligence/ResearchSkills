@@ -89,6 +89,29 @@ After running, submit via [**here →**](https://researchskills.ai/submit-manual
 
 Write your own skill following the [**guide →**](https://researchskills.ai/submit-manually/#manual-entry)
 
+<details>
+<summary><strong>Method D: Convert Existing Skills via Claude Code / Codex</strong></summary>
+
+Already have research skills in notes, documents, or any format? Run one command — it reads your files, converts them, and opens a PR.
+
+```bash
+npm install -g @scienceintelligence/researchskills-extract
+```
+
+**Claude Code:**
+```
+/researchskills-convert
+```
+
+**Codex:**
+```
+$researchskills-convert
+```
+
+The command asks where your skills are, reads them, converts each one into the correct format, and opens a PR to this repository. Forking, branching, file placement, and de-identification are handled automatically.
+
+</details>
+
 > Don't see your field? [Propose a new area →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=02-skill-request.yml)
 
 ---
