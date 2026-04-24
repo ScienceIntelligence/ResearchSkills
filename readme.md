@@ -112,6 +112,13 @@ The command asks where your skills are, reads them, converts each one into the c
 
 </details>
 
+<details>
+<summary><strong>Method E: Distill Skills from Published Papers</strong></summary>
+
+Already have a list of key papers in your field? You can reverse-engineer the tacit expertise embedded in published work — the implicit decisions, rejected alternatives, and domain heuristics that never make it into abstracts. See the full guide: [**Paper-Based Skill Distillation →**](docs/paper-distillation.md)
+
+</details>
+
 > Don't see your field? [Propose a new area →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=02-skill-request.yml)
 
 ---
