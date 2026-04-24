@@ -93,6 +93,7 @@ KEEP skills about:
 - Domain facts that AI doesn't know (frontier knowledge, unpublished info, corrections to LLM misconceptions)
 - Concrete research turning points (hypothesis overturned, methodology abandoned, unexpected findings)
 - Knowledge representation methodology (schema design for capturing research decision trees) — ONLY when discussing "how to represent scientific knowledge", NOT "how to code the implementation"
+- Computational science methods (numerical algorithms, solver configurations, simulation setup, scientific data preprocessing) — where the code implements or validates a scientific method, not generic software engineering
 
 ### 2. Check for residual PII
 
