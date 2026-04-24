@@ -56,6 +56,8 @@
 
 ### 方式 A：用 `/researchskills-extract` 自动提取（推荐）
 
+> **前置条件：** [安装 Node.js](https://nodejs.org/)（自带 npm）。推荐 LTS 版本。
+
 ```bash
 npm install -g @scienceintelligence/researchskills-extract
 ```
