@@ -131,7 +131,7 @@ Converted N skills:
 Proceed with forking and PR creation? (y/n)
 ```
 
-**STOP and wait for user confirmation.** Do not proceed without explicit consent.
+**STOP and wait for user confirmation.** Use AskUserQuestion (Claude Code) to present the table and block until the user replies. Do not proceed without explicit consent.
 
 If the user wants to edit, adjust, or remove specific skills, do so before proceeding.
 
@@ -225,7 +225,7 @@ gh pr create \
 - [x] Research Skill (converted from existing notes/documents via `/researchskills-convert`)
 
 ## Skills Added
-<list each skill: type, subtype, domain/subdomain, name>
+<!-- Fill this in: one line per skill, e.g. "- procedural / constraint-failure — statistics/methodology — AUC Computation With Masked Data" -->
 
 ## Checklist
 - [x] Files placed in `skills/<domain>/<subdomain>/<contributor>/<memory_type>/`
@@ -240,9 +240,13 @@ EOF
 
 ### 5.7 — Clean up
 
+Only clean up after the PR was successfully created:
+
 ```bash
 rm -rf "$WORK_DIR"
 ```
+
+If any step in Stage 5 fails (fork, clone, push, or PR creation), show the error to the user and suggest manual steps to recover. Do not silently swallow errors.
 
 ---
 
