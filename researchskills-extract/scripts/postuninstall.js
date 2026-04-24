@@ -21,12 +21,17 @@ const HELPER_SCRIPTS = [
 
 // --- Claude Code ---
 const CC_COMMAND_TARGET = path.join(os.homedir(), ".claude", "commands", "researchskills-extract.md");
+const CC_CONVERT_TARGET = path.join(os.homedir(), ".claude", "commands", "researchskills-convert.md");
 const CC_UTILS_DIR = path.join(os.homedir(), ".claude", "utils");
 
 try {
   if (fs.existsSync(CC_COMMAND_TARGET)) {
     fs.unlinkSync(CC_COMMAND_TARGET);
     console.log("✓ Claude Code: /researchskills-extract removed");
+  }
+  if (fs.existsSync(CC_CONVERT_TARGET)) {
+    fs.unlinkSync(CC_CONVERT_TARGET);
+    console.log("✓ Claude Code: /researchskills-convert removed");
   }
   for (const script of HELPER_SCRIPTS) {
     const p = path.join(CC_UTILS_DIR, script);
@@ -59,6 +64,17 @@ try {
     if (skillRemaining.length === 0) fs.rmdirSync(CODEX_SKILL_DIR);
   } catch (_) { /* best effort */ }
   console.log("✓ Codex: helper scripts removed");
+} catch (err) {
+  // ignore
+}
+
+// --- Codex: researchskills-convert ---
+const CODEX_CONVERT_DIR = path.join(os.homedir(), ".codex", "skills", "researchskills-convert");
+try {
+  if (fs.existsSync(CODEX_CONVERT_DIR)) {
+    fs.rmSync(CODEX_CONVERT_DIR, { recursive: true, force: true });
+    console.log("✓ Codex: /researchskills-convert removed");
+  }
 } catch (err) {
   // ignore
 }
