@@ -6,7 +6,9 @@ const path = require("path");
 const os = require("os");
 
 const SOURCE_CC_COMMAND = path.join(__dirname, "..", "commands", "researchskills-extract.md");
+const SOURCE_CC_CONVERT = path.join(__dirname, "..", "commands", "researchskills-convert.md");
 const SOURCE_CODEX_SKILL = path.join(__dirname, "..", "commands", "SKILL.md");
+const SOURCE_CODEX_CONVERT = path.join(__dirname, "..", "commands", "CONVERT-SKILL.md");
 
 // Helper scripts that must be available at runtime
 const HELPER_SCRIPTS = [
@@ -32,7 +34,10 @@ try {
   fs.mkdirSync(CC_COMMANDS_DIR, { recursive: true });
   fs.mkdirSync(CC_UTILS_DIR, { recursive: true });
   fs.copyFileSync(SOURCE_CC_COMMAND, CC_COMMAND_TARGET);
+  const CC_CONVERT_TARGET = path.join(CC_COMMANDS_DIR, "researchskills-convert.md");
+  fs.copyFileSync(SOURCE_CC_CONVERT, CC_CONVERT_TARGET);
   console.log("✓ Claude Code: /researchskills-extract installed to ~/.claude/commands/");
+  console.log("✓ Claude Code: /researchskills-convert installed to ~/.claude/commands/");
 
   for (const script of HELPER_SCRIPTS) {
     const src = path.join(__dirname, script);
@@ -58,6 +63,12 @@ try {
   fs.mkdirSync(CODEX_SCRIPTS_DIR, { recursive: true });
   fs.copyFileSync(SOURCE_CODEX_SKILL, CODEX_SKILL_TARGET);
   console.log("✓ Codex:   /researchskills-extract installed to ~/.codex/skills/researchskills-extract/");
+
+  // --- Codex: researchskills-convert ---
+  const CODEX_CONVERT_DIR = path.join(os.homedir(), ".codex", "skills", "researchskills-convert");
+  fs.mkdirSync(CODEX_CONVERT_DIR, { recursive: true });
+  fs.copyFileSync(SOURCE_CODEX_CONVERT, path.join(CODEX_CONVERT_DIR, "SKILL.md"));
+  console.log("✓ Codex:   /researchskills-convert installed to ~/.codex/skills/researchskills-convert/");
 
   for (const script of HELPER_SCRIPTS) {
     const src = path.join(__dirname, script);
@@ -188,4 +199,6 @@ try {
   console.error("⚠ Cache: could not prepare —", err.message);
 }
 
-console.log("\n  Usage: /researchskills-extract (Claude Code) or $researchskills-extract (Codex)");
+console.log("\n  Usage:");
+console.log("    /researchskills-extract  (Claude Code) or $researchskills-extract  (Codex) — extract from history");
+console.log("    /researchskills-convert  (Claude Code) or $researchskills-convert  (Codex) — convert existing skills");
