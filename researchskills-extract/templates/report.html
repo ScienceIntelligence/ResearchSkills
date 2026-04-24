@@ -84,20 +84,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="author-bar">
-    <div class="author-field">Name: <input id="author-name" type="text" placeholder="e.g. Albert Einstein"></div>
-    <div class="author-field">Institution: <input id="author-inst" type="text" placeholder="e.g. ETH Zürich Physics"></div>
-    <div class="author-field">Role: <select id="author-role" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;padding:6px 12px;border-radius:4px;font-size:.9rem">
+    <div class="author-field"><label for="author-name">Name:</label> <input id="author-name" type="text" placeholder="e.g. Albert Einstein"></div>
+    <div class="author-field"><label for="author-inst">Institution:</label> <input id="author-inst" type="text" placeholder="e.g. ETH Zürich Physics"></div>
+    <div class="author-field"><label for="author-role">Role:</label> <select id="author-role" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;padding:6px 12px;border-radius:4px;font-size:.9rem">
       <option value="">Select...</option>
-      <option value="Undergraduate">Undergraduate Student</option>
+      <option value="Undergraduate Student">Undergraduate Student</option>
       <option value="Master's Student">Master's Student</option>
       <option value="PhD Candidate">PhD Candidate</option>
-      <option value="Postdoc">Postdoctoral Researcher</option>
+      <option value="Postdoctoral Researcher">Postdoctoral Researcher</option>
       <option value="Research Scientist">Research Scientist</option>
       <option value="Research Engineer">Research Engineer</option>
       <option value="Assistant Professor">Assistant Professor</option>
       <option value="Associate Professor">Associate Professor</option>
       <option value="Professor">Professor</option>
-      <option value="Principal Investigator">Principal Investigator (PI)</option>
+      <option value="Principal Investigator (PI)">Principal Investigator (PI)</option>
       <option value="Industry Researcher">Industry Researcher</option>
       <option value="Independent Researcher">Independent Researcher</option>
     </select></div>
@@ -142,7 +142,7 @@ const CAT = {
 
 const projects = DATA.projects || [];
 document.getElementById('author-name').value = DATA.author || '';
-document.getElementById('author-inst').value = DATA.email || '';
+document.getElementById('author-inst').value = DATA.institution || '';
 if(DATA.role) document.getElementById('author-role').value = DATA.role;
 document.getElementById('rdate').textContent = DATA.date || new Date().toISOString().slice(0,10);
 document.getElementById('s-proj').textContent = projects.length;
