@@ -1,6 +1,6 @@
 {
   "name": "@scienceintelligence/researchskills-extract",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Extract your research trajectory as a decision tree from conversation history for ResearchSkills. Supports both Claude Code and Codex.",
   "keywords": [
     "claude-code",
