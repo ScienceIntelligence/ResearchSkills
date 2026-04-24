@@ -112,6 +112,135 @@ The command asks where your skills are, reads them, converts each one into the c
 
 </details>
 
+<details>
+<summary><strong>Method E: Distill Your Existing Skills via One-Click Prompt (Claude Code / Codex)</strong></summary>
+
+Already have research skills scattered across your local config files — `.claude/skills/`, `.cursor/rules/`, `CLAUDE.md`, `.github/copilot-instructions.md`, or similar? Paste the prompt below into **Claude Code** or **Codex** to auto-convert them into ResearchSkills format and submit a PR directly.
+
+<details>
+<summary><b>Click to expand the full prompt</b></summary>
+
+````
+You are a ResearchSkills distillation agent. Your job is to scan my local skill/rule files, extract any research-relevant knowledge, convert it to ResearchSkills format, and open a PR to submit them.
+
+## Step 1: Scan local files
+
+Search the current machine for files that may contain research skills, rules, or heuristics. Check ALL of the following paths (skip any that don't exist):
+
+- `.claude/skills/` and any subdirectories
+- `.claude/CLAUDE.md`
+- `CLAUDE.md` (project root)
+- `.cursor/rules/` and any subdirectories
+- `.cursorrules`
+- `.github/copilot-instructions.md`
+- `.github/instructions/`
+- `.windsurfrules`
+- `.clinerules`
+- `rules/` directory
+- Any `*.md` files in the above directories
+
+Read every file you find. List them all before proceeding.
+
+## Step 2: Identify research-relevant content
+
+From the files found, extract ONLY content that encodes research knowledge — the kind of tacit expertise that corrects or extends what a frontier LLM already knows. Apply this hard filter:
+
+**INCLUDE:**
+- Domain-specific heuristics for scientific research (e.g., "when training a Transformer on protein sequences, always normalize by sequence length")
+- Methodological know-how that took real research experience to learn
+- Corrections to common LLM misconceptions about scientific methods
+- Experimental lessons learned (failures, workarounds, anomalies)
+- Field-specific reasoning patterns or decision rules
+
+**EXCLUDE (absolutely do not convert):**
+- Engineering / DevOps / deployment / CI / UI / database / Docker rules
+- General programming: git workflows, npm, React, build tool configs
+- Textbook knowledge any LLM already knows
+- Project management, file organization, naming conventions
+- IDE settings, formatting rules, linting configs
+
+If a file mixes research and non-research content, extract only the research parts.
+
+## Step 3: Convert to ResearchSkills format
+
+For each research-relevant item, produce a YAML+markdown skill file. Each skill must have exactly one memory type and subtype:
+
+### Memory Types and Subtypes
+
+**Procedural** (IF-THEN rules for research impasses):
+- `tie` — multiple viable paths, unclear which to choose
+- `no-change` — completely stuck, no hypothesis to test
+- `constraint-failure` — a methodological assumption doesn't hold
+- `operator-fail` — right approach, execution fails
+
+**Semantic** (facts LLMs don't reliably know):
+- `frontier` — post-training-cutoff knowledge
+- `non-public` — lab-internal, unpublished findings
+- `correction` — fixes for LLM's incorrect default beliefs
+
+**Episodic** (concrete research episodes with transferable lessons):
+- `failure` — "did X, broke because of hidden reason Y"
+- `adaptation` — "standard method failed; workaround Z worked"
+- `anomalous` — "expected A, observed B — turned out to be important"
+
+### Skill file template
+
+```
+---
+name: kebab-case-descriptive-name
+memory_type: procedural | semantic | episodic
+subtype: one-of-the-subtypes-above
+domain: computer-science      # arXiv top-level: physics, math, computer-science, q-bio, stat, eess, econ, q-fin
+subdomain: machine-learning   # See https://arxiv.org/category_taxonomy
+tags: [tag1, tag2, tag3]
+---
+
+## When
+[Trigger condition — when should an AI agent retrieve this skill?]
+
+## Decision
+[What to do, what was rejected, and why]
+
+## Why
+[The reasoning — why this works, why alternatives fail]
+
+## Local Verifiers
+[How to check if the advice is working]
+
+## Anti-exemplars
+[When NOT to use this skill]
+```
+
+### De-identification rules
+- Remove file paths, usernames, project names, private URLs, collaborator names
+- Keep scientific content: materials, parameters, methods, model names
+
+## Step 4: Submit via GitHub PR
+
+1. Fork `ScienceIntelligence/ResearchSkills` (skip if already forked)
+2. Clone your fork (or use the existing clone)
+3. Create a branch: `distill/{your-github-username}`
+4. Place each skill file at the correct path:
+   ```
+   skills/{domain}/{subdomain}/{your-github-username}/{memory_type}/{subtype}--{name}.md
+   ```
+5. Commit all skill files
+6. Push and open a PR to `ScienceIntelligence/ResearchSkills` with:
+   - Title: `add(skills): {N} distilled skills by {username}`
+   - Body: list each skill with its memory type, subtype, and a one-line summary
+
+## Rules
+
+- If no research-relevant content is found, say so honestly — do not fabricate skills
+- Quality over quantity: only convert items that genuinely encode tacit research knowledge
+- Each skill must map cleanly to exactly one subtype — if it doesn't fit, skip it
+- Ask me to confirm the list of identified skills before opening the PR
+````
+
+</details>
+
+</details>
+
 > Don't see your field? [Propose a new area →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=04-propose-new-area.md) · Need a skill but can't write it yourself? [Request a skill →](https://github.com/ScienceIntelligence/ResearchSkills/issues/new?template=02-skill-request.yml)
 
 ---
