@@ -2,6 +2,7 @@
 
 - [ ] **Research Skill** — extracted via `/researchskills-extract`, converted via `/researchskills-convert`, or written by hand using the research skill templates
 - [ ] **Decision Tree** — research trajectory extracted via `/researchskills-extract` or web prompt
+- [ ] **Skill (from Gemini/ChatGPT/Claude Web UI)** — submit via [here](https://researchskills.ai/submit-manually)
 - [ ] **Skill (legacy)** — manually written skill file using the legacy template (`_template.md`)
 
 ---
