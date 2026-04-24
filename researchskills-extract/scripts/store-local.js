@@ -6,7 +6,7 @@
  * configuration so they are available as commands/skills in future sessions.
  *
  * Targets:
- *   - Claude Code: ~/.claude/commands/researchskills/<slug>.md
+ *   - Claude Code: ~/.claude/skills/researchskills/<slug>/SKILL.md
  *   - Codex:       ~/.codex/skills/researchskills-<slug>/SKILL.md
  *
  * Skill slugs are derived from the YAML frontmatter `name` field, not from
@@ -126,21 +126,36 @@ function storeToTarget(targetName, skills) {
   let dir;
 
   if (targetName === 'claude') {
-    // Claude Code: ~/.claude/commands/researchskills/<slug>.md
-    // Strip YAML frontmatter — Claude commands are plain markdown prompts
-    dir = path.join(os.homedir(), '.claude', 'commands', 'researchskills');
+    // Claude Code: ~/.claude/skills/researchskills/<slug>/SKILL.md
+    // Keep full content with YAML frontmatter (same as Codex path)
+    dir = path.join(os.homedir(), '.claude', 'skills', 'researchskills');
     fs.mkdirSync(dir, { recursive: true });
 
     for (const [slug, { content, name }] of skills) {
-      const body = extractBody(content).trim();
-      // Prepend a markdown title from the skill name
-      const commandContent = `# ${name}\n\n${body}\n`;
-      const dst = path.join(dir, `${slug}.md`);
-      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === commandContent) {
+      // Add description field if missing (for skill indexing/triggering)
+      let finalContent = content;
+      if (!extractField(content, 'description')) {
+        const memoryType = extractField(content, 'memory_type') || 'research';
+        const domain = extractField(content, 'domain') || '';
+        const subdomain = extractField(content, 'subdomain') || '';
+        const body = extractBody(content).trim();
+        const firstLine = body.split(/\n/)[0] || '';
+        const snippet = firstLine.substring(0, 120).replace(/[#*_>]/g, '').trim();
+        const parts = [`${memoryType} skill`, domain, subdomain].filter(Boolean);
+        const rawDesc = snippet
+          ? `${parts.join(' / ')}: ${snippet}`
+          : `ResearchSkills ${parts.join(' / ')}: ${name}`;
+        const desc = rawDesc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        finalContent = content.replace(/^(---\s*\n)/, `$1description: "${desc}"\n`);
+      }
+      const skillDir = path.join(dir, slug);
+      fs.mkdirSync(skillDir, { recursive: true });
+      const dst = path.join(skillDir, 'SKILL.md');
+      if (fs.existsSync(dst) && fs.readFileSync(dst, 'utf-8') === finalContent) {
         skipped++;
         continue;
       }
-      fs.writeFileSync(dst, commandContent);
+      fs.writeFileSync(dst, finalContent);
       installed++;
     }
   } else if (targetName === 'codex') {

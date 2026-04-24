@@ -28,7 +28,7 @@ finalize.js            ─┘
 You (main agent)       ← call scripts, read summaries, report
 ```
 
-Helper scripts (installed at `~/.claude/utils/`):
+Helper scripts (installed at `~/.claude/skills/researchskills-extract/scripts/`):
 
 | Script | What it does |
 |--------|-------------|
@@ -56,7 +56,7 @@ Detect mode at start. Announce: `"Running in TEST MODE"` or `"Running in product
 
 ```bash
 mkdir -p ~/.researchskills/cache/meta ~/.researchskills/cache/skills
-node ~/.claude/utils/scan-sessions.js
+node ~/.claude/skills/researchskills-extract/scripts/scan-sessions.js
 ```
 
 Reads `~/.researchskills/cache/work-list.json` output. Report: `"Found N sessions across M projects."`
@@ -68,7 +68,7 @@ Reads `~/.researchskills/cache/work-list.json` output. Report: `"Found N session
 **YOU MUST call this script. Do NOT classify projects yourself.**
 
 ```bash
-node ~/.claude/utils/classify-projects.js ~/.researchskills/cache/work-list.json --cc --verbose
+node ~/.claude/skills/researchskills-extract/scripts/classify-projects.js ~/.researchskills/cache/work-list.json --cc --verbose
 ```
 
 For test mode, add `--test`.
@@ -127,7 +127,7 @@ The extraction script MUST be called in a loop with `--single-batch`. Each call 
 
 ```bash
 # REPEAT this exact Bash call in a loop. Each call = 1 batch.
-node ~/.claude/utils/extract-skills.js ~/.researchskills/cache/work-list.json \
+node ~/.claude/skills/researchskills-extract/scripts/extract-skills.js ~/.researchskills/cache/work-list.json \
   --cc \
   --domain <domain> \
   --subdomain <subdomain> \
@@ -154,7 +154,7 @@ If you need to process multiple projects with different domains, call the script
 Run Opus to review all extracted skills: reject engineering content, fix PII leaks, merge duplicates.
 
 ```bash
-node ~/.claude/utils/clean-skills.js \
+node ~/.claude/skills/researchskills-extract/scripts/clean-skills.js \
   --cc \
   --session-ids <ALL-research-session-ids-csv> \
   --verbose
@@ -171,7 +171,7 @@ Report: `"Clean: kept N, rejected M, merged K."`
 Run Opus to assess the value of each surviving skill on 3 dimensions.
 
 ```bash
-node ~/.claude/utils/score-skills.js \
+node ~/.claude/skills/researchskills-extract/scripts/score-skills.js \
   --cc \
   --session-ids <ALL-research-session-ids-csv> \
   --verbose
@@ -190,7 +190,7 @@ Use the AI-generated `project_name` from classification.json (Stage 2). Do NOT u
 **Do NOT pass `--upload` here.** Collect skills locally first. Upload requires explicit user consent in Stage 7.
 
 ```bash
-node ~/.claude/utils/finalize.js \
+node ~/.claude/skills/researchskills-extract/scripts/finalize.js \
   --session-ids <ALL-research-session-ids-csv> \
   --domain <domain> \
   --subdomain <subdomain> \
@@ -207,7 +207,7 @@ node ~/.claude/utils/finalize.js \
 
 Use AskUserQuestion to present the options:
 - Question: "Install extracted skills into your local AI coding tool?"
-- Option A: "Yes, install to Claude Code" — stores skills to `~/.claude/commands/researchskills/<slug>.md`
+- Option A: "Yes, install to Claude Code" — stores skills to `~/.claude/skills/researchskills/<slug>/SKILL.md`
 - Option B: "Yes, install to Codex" — stores skills to `~/.codex/skills/researchskills-<slug>/SKILL.md`
 - Option C: "Yes, install to both"
 - Option D: "No, skip local install"
@@ -217,7 +217,7 @@ Use AskUserQuestion to present the options:
 If the user picks A, B, or C, run:
 
 ```bash
-node ~/.claude/utils/store-local.js \
+node ~/.claude/skills/researchskills-extract/scripts/store-local.js \
   --target <claude|codex|both> \
   --session-ids <ALL-research-session-ids-csv>
 ```
@@ -271,7 +271,7 @@ If the user consents, re-run finalize with `--upload`.
 When the user has consented via the prompt above, pass `--consent` to include `consent: true` in the upload payload.
 
 ```bash
-node ~/.claude/utils/finalize.js \
+node ~/.claude/skills/researchskills-extract/scripts/finalize.js \
   --session-ids <ALL-research-session-ids-csv> \
   --domain <domain> \
   --subdomain <subdomain> \
