@@ -90,27 +90,25 @@ After running, submit via [**here →**](https://researchskills.ai/submit-manual
 Write your own skill following the [**guide →**](https://researchskills.ai/submit-manually/#manual-entry)
 
 <details>
-<summary><strong>Method D: Submit Existing Skills via Claude Code / Codex</strong></summary>
+<summary><strong>Method D: Convert Existing Skills via Claude Code / Codex</strong></summary>
 
-Already have research skills in notes, documents, or another AI tool's memory? Paste this prompt into Claude Code or Codex — it will ask you a few questions and handle the rest.
+Already have research skills in notes, documents, or any format? Run one command — it reads your files, converts them, and opens a PR.
 
-```
-I want to contribute my research skills to ResearchSkills (https://github.com/ScienceIntelligence/ResearchSkills). Please guide me through the process. Ask me these questions one at a time:
-
-1. Where are your skills? (a file path, a directory, or "I'll paste them here")
-2. What is your research domain? (e.g., physics/geophysics, computer-science/machine-learning)
-3. What is your GitHub username? (for the contributor field)
-
-After I answer, read the files (or my pasted text), then convert each skill into a ```skill-md fenced block. Only extract genuine research skills — skip generic software engineering, DevOps, or textbook knowledge. For each skill, pick the best memory_type and subtype:
-
-- procedural (tie | no-change | constraint-failure | operator-fail): Sections: When, Decision, Local Verifiers, Failure Handling, Anti-exemplars
-- semantic (frontier | non-public | correction): Sections: Fact, Evidence, LLM Default Belief (correction only), Expiry Signal
-- episodic (failure | adaptation | anomalous): Sections: Situation, Action, Outcome, Lesson, Retrieval Cues
-
-De-identify all output: remove personal names, private file paths, internal URLs, lab identifiers. All output must be in English. Then help me submit the results to researchskills.ai/submit-manually/#auto-parse.
+```bash
+npm install -g @scienceintelligence/researchskills-extract
 ```
 
-After Claude Code generates the output, paste it into [**researchskills.ai/submit-manually →**](https://researchskills.ai/submit-manually/#auto-parse) to review and submit.
+**Claude Code:**
+```
+/researchskills-convert
+```
+
+**Codex:**
+```
+$researchskills-convert
+```
+
+The command asks where your skills are, reads them, converts each one into the correct format, and opens a PR to this repository. Forking, branching, file placement, and de-identification are handled automatically.
 
 </details>
 
