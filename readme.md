@@ -58,6 +58,8 @@ Each skill encodes the knowledge, tools, reasoning protocols, and common pitfall
 
 ### Method A: Auto-Extract with `/researchskills-extract` (Recommended)
 
+> **Prerequisite:** [Install Node.js](https://nodejs.org/) (includes npm). LTS version recommended.
+
 ```bash
 npm install -g @scienceintelligence/researchskills-extract
 ```
