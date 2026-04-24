@@ -113,7 +113,7 @@ ${taxonomyStr}
 ## Task
 ${isTest
     ? 'TEST MODE: Accept both research AND engineering projects. Map engineering to computer-science/software-engineering or the closest match.'
-    : 'PRODUCTION MODE: Only classify as "research" if the sessions involve genuine scientific inquiry, research methodology, hypothesis testing, or academic writing. Software engineering (web dev, deployment, debugging, UI work) is NOT research regardless of difficulty.'}
+    : 'PRODUCTION MODE: Only classify as "research" if the sessions involve genuine scientific inquiry, research methodology, hypothesis testing, academic writing, OR computational science where the code is written to answer or validate a research question (simulations, solvers, numerical methods, scientific data analysis pipelines). Reusable numerics libraries or benchmark harnesses with no specific scientific inquiry are engineering, not research. Software engineering (web dev, deployment, debugging non-scientific tools, UI work, auth, package management) is NOT research regardless of difficulty.'}
 
 Respond with EXACTLY this JSON (no markdown fences, no other text):
 {"type":"research","domain":"...","subdomain":"...","project_name":"...","reason":"one sentence why","skip_patterns":["pattern1"]}

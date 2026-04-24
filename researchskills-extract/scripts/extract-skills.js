@@ -171,13 +171,13 @@ function buildPrompt(segmentFile) {
 
 1. **Non-obvious** — would a domain expert find this surprising?
 2. **Session-specific** — grounded in a concrete event here, not generic advice?
-3. **Research-only** — about scientific methodology, reasoning, or knowledge? Reject all engineering (UI, DevOps, database, build tools, git, auth, package management, visualization) even if the project is research-related.
+3. **Research-only** — about scientific methodology, reasoning, knowledge, OR computational science methods (simulations, solvers, numerical algorithms, scientific data analysis)? Reject pure software engineering (UI, DevOps, database, build tools, git, auth, package management) even if the project is research-related. But DO extract skills about scientific computing where the code implements or validates a scientific method.
 
 ## Boundary examples — same project, different verdicts
 
 A research project contains BOTH research and engineering work. Extract only the research.
 
-❌ REJECT (engineering):
+❌ REJECT (pure engineering):
 - "Supabase onAuthStateChange callback deadlocks on re-entry" → auth/infra debugging
 - "GitHub Rulesets vs Branch Protection Rules show different UI warnings" → platform ops
 - "Static PNG unreadable at 130+ nodes, switch to interactive HTML/JS tree" → UI/visualization choice
@@ -189,7 +189,13 @@ A research project contains BOTH research and engineering work. Extract only the
 - "LLMs fail at research due to task structure mismatch (long horizon + no verifier), not reasoning deficits" → frontier knowledge about AI capabilities
 - "Predefined 20-action vocabulary with escape hatch balances structure vs flexibility for research ontology" → schema design for knowledge representation
 
-When in doubt, ask: "Is this about HOW to do science, or HOW to build software?" Only the former qualifies.
+✅ EXTRACT (computational science — code IS the science):
+- "FFT-based spectral method converges 10x faster than finite-difference for periodic MHD boundary conditions" → numerical method selection for domain physics
+- "Helmholtz decomposition requires divergence-free initial field; naive random initialization violates ∇·B=0" → constraint on simulation setup
+- "Tracking magnetic field lines near coil edges fails with RK4 step > 0.01 due to high curvature" → numerical stability boundary for specific geometry
+- "Alfvénic wave flux from PSP data requires detrending at spacecraft spin period before spectral analysis" → data preprocessing for space physics
+
+When in doubt, ask: "Is this about HOW to do science (including computational science), or HOW to build software unrelated to the research question?" Only the former qualifies.
 
 ## Skill types
 
