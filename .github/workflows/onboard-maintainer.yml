@@ -119,6 +119,7 @@ jobs:
               'EESS': 'eess',
               'Economics': 'economics',
               'Quantitative Finance': 'quantitative-finance',
+              'Management': 'management',
             };
 
             // Build array of subdomain entries
@@ -291,6 +292,7 @@ jobs:
               'Statistics': '#60a5fa',
               'Economics': '#818cf8',
               'Quantitative Finance': '#c084fc',
+              'Management': '#f472b6',
             };
 
             for (const sub of subdomains) {

@@ -197,7 +197,7 @@ Reviewers are domain experts who guard the scientific quality of skills in their
 
 <div align="center">
 
-Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy). 8 domains, 155 subcategories.
+Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy) and extended domains. 9 domains, 165 subcategories.
 
 | Domain                                      | arXiv                                              | Subcategories | Reviewer(s)        |
 | --------------------------------------------- | ---------------------------------------------------- | --------------- | -------------------- |
@@ -209,8 +209,9 @@ Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy).
 | ⚡ Electrical Engineering & Systems Science | eess                                               | 4             | *Seeking reviewer* |
 | 📈 Economics                                | econ                                               | 3             | *Seeking reviewer* |
 | 💹 Quantitative Finance                     | q-fin                                              | 9             | *Seeking reviewer* |
+| 🎯 Management                               | mgmt                                               | 10            | *Seeking reviewer* |
 
-[View all 155 subcategories in the interactive knowledge tree →](https://scienceintelligence.github.io/ResearchSkills/)
+[View all 165 subcategories in the interactive knowledge tree →](https://scienceintelligence.github.io/ResearchSkills/)
 
 </div>
 
