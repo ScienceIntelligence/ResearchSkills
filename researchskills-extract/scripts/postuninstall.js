@@ -20,26 +20,60 @@ const HELPER_SCRIPTS = [
 ];
 
 // --- Claude Code ---
-const CC_COMMAND_TARGET = path.join(os.homedir(), ".claude", "commands", "researchskills-extract.md");
-const CC_CONVERT_TARGET = path.join(os.homedir(), ".claude", "commands", "researchskills-convert.md");
-const CC_UTILS_DIR = path.join(os.homedir(), ".claude", "utils");
+const CC_SKILL_DIR = path.join(os.homedir(), ".claude", "skills", "researchskills-extract");
+const CC_SKILL_TARGET = path.join(CC_SKILL_DIR, "SKILL.md");
+const CC_SCRIPTS_DIR = path.join(CC_SKILL_DIR, "scripts");
+const CC_CONVERT_DIR = path.join(os.homedir(), ".claude", "skills", "researchskills-convert");
 
 try {
-  if (fs.existsSync(CC_COMMAND_TARGET)) {
-    fs.unlinkSync(CC_COMMAND_TARGET);
-    console.log("✓ Claude Code: /researchskills-extract removed");
-  }
-  if (fs.existsSync(CC_CONVERT_TARGET)) {
-    fs.unlinkSync(CC_CONVERT_TARGET);
-    console.log("✓ Claude Code: /researchskills-convert removed");
+  if (fs.existsSync(CC_SKILL_TARGET)) {
+    fs.unlinkSync(CC_SKILL_TARGET);
+    console.log("✓ Claude Code: /researchskills-extract SKILL.md removed");
   }
   for (const script of HELPER_SCRIPTS) {
-    const p = path.join(CC_UTILS_DIR, script);
+    const p = path.join(CC_SCRIPTS_DIR, script);
     if (fs.existsSync(p)) fs.unlinkSync(p);
+  }
+  // Remove dirs if empty
+  try {
+    if (fs.existsSync(CC_SCRIPTS_DIR)) {
+      const remaining = fs.readdirSync(CC_SCRIPTS_DIR);
+      if (remaining.length === 0) fs.rmdirSync(CC_SCRIPTS_DIR);
+    }
+    if (fs.existsSync(CC_SKILL_DIR)) {
+      const skillRemaining = fs.readdirSync(CC_SKILL_DIR);
+      if (skillRemaining.length === 0) fs.rmdirSync(CC_SKILL_DIR);
+    }
+  } catch (_) { /* best effort */ }
+  if (fs.existsSync(CC_CONVERT_DIR)) {
+    fs.rmSync(CC_CONVERT_DIR, { recursive: true, force: true });
+    console.log("✓ Claude Code: /researchskills-convert removed");
   }
   console.log("✓ Claude Code: helper scripts removed");
 } catch (err) {
   // ignore
+}
+
+// --- Clean up legacy Claude Code paths (in case they still exist) ---
+try {
+  const LEGACY_CC_COMMANDS_DIR = path.join(os.homedir(), ".claude", "commands");
+  const LEGACY_CC_UTILS_DIR = path.join(os.homedir(), ".claude", "utils");
+  const legacyCcExtract = path.join(LEGACY_CC_COMMANDS_DIR, "researchskills-extract.md");
+  const legacyCcConvert = path.join(LEGACY_CC_COMMANDS_DIR, "researchskills-convert.md");
+  if (fs.existsSync(legacyCcExtract)) fs.unlinkSync(legacyCcExtract);
+  if (fs.existsSync(legacyCcConvert)) fs.unlinkSync(legacyCcConvert);
+  for (const script of HELPER_SCRIPTS) {
+    const p = path.join(LEGACY_CC_UTILS_DIR, script);
+    if (fs.existsSync(p)) fs.unlinkSync(p);
+  }
+  try {
+    if (fs.existsSync(LEGACY_CC_UTILS_DIR)) {
+      const remaining = fs.readdirSync(LEGACY_CC_UTILS_DIR);
+      if (remaining.length === 0) fs.rmdirSync(LEGACY_CC_UTILS_DIR);
+    }
+  } catch (_) { /* best effort */ }
+} catch (err) {
+  // ignore — legacy paths may not exist
 }
 
 // --- Codex ---

@@ -19,7 +19,7 @@ npm install -g @scienceintelligence/researchskills-extract
 ```
 
 This installs the command automatically to both platforms:
-- **Claude Code** → `~/.claude/commands/researchskills-extract.md`
+- **Claude Code** → `~/.claude/skills/researchskills-extract/SKILL.md`
 - **Codex** → `~/.codex/skills/researchskills-extract/SKILL.md`
 
 ## Usage

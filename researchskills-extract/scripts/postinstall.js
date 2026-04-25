@@ -26,31 +26,62 @@ const HELPER_SCRIPTS = [
 ];
 
 // --- Claude Code ---
-const CC_COMMANDS_DIR = path.join(os.homedir(), ".claude", "commands");
-const CC_COMMAND_TARGET = path.join(CC_COMMANDS_DIR, "researchskills-extract.md");
-const CC_UTILS_DIR = path.join(os.homedir(), ".claude", "utils");
+const CC_SKILL_DIR = path.join(os.homedir(), ".claude", "skills", "researchskills-extract");
+const CC_SKILL_TARGET = path.join(CC_SKILL_DIR, "SKILL.md");
+const CC_SCRIPTS_DIR = path.join(CC_SKILL_DIR, "scripts");
 
 try {
-  fs.mkdirSync(CC_COMMANDS_DIR, { recursive: true });
-  fs.mkdirSync(CC_UTILS_DIR, { recursive: true });
-  fs.copyFileSync(SOURCE_CC_COMMAND, CC_COMMAND_TARGET);
-  const CC_CONVERT_TARGET = path.join(CC_COMMANDS_DIR, "researchskills-convert.md");
-  fs.copyFileSync(SOURCE_CC_CONVERT, CC_CONVERT_TARGET);
-  console.log("✓ Claude Code: /researchskills-extract installed to ~/.claude/commands/");
-  console.log("✓ Claude Code: /researchskills-convert installed to ~/.claude/commands/");
+  fs.mkdirSync(CC_SKILL_DIR, { recursive: true });
+  fs.mkdirSync(CC_SCRIPTS_DIR, { recursive: true });
+  fs.copyFileSync(SOURCE_CC_COMMAND, CC_SKILL_TARGET);
+  const CC_CONVERT_DIR = path.join(os.homedir(), ".claude", "skills", "researchskills-convert");
+  fs.mkdirSync(CC_CONVERT_DIR, { recursive: true });
+  fs.copyFileSync(SOURCE_CC_CONVERT, path.join(CC_CONVERT_DIR, "SKILL.md"));
+  console.log("✓ Claude Code: /researchskills-extract installed to ~/.claude/skills/researchskills-extract/");
+  console.log("✓ Claude Code: /researchskills-convert installed to ~/.claude/skills/researchskills-convert/");
 
   for (const script of HELPER_SCRIPTS) {
     const src = path.join(__dirname, script);
-    const dst = path.join(CC_UTILS_DIR, script);
+    const dst = path.join(CC_SCRIPTS_DIR, script);
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, dst);
     } else {
       console.warn(`⚠ Claude Code: ${script} not found in package, skipping`);
     }
   }
-  console.log(`✓ Claude Code: ${HELPER_SCRIPTS.length} scripts installed to ~/.claude/utils/`);
+  console.log(`✓ Claude Code: ${HELPER_SCRIPTS.length} scripts installed to ~/.claude/skills/researchskills-extract/scripts/`);
 } catch (err) {
   console.error("⚠ Claude Code: could not install —", err.message);
+}
+
+// --- Clean up legacy Claude Code paths ---
+const LEGACY_CC_COMMANDS_DIR = path.join(os.homedir(), ".claude", "commands");
+const LEGACY_CC_UTILS_DIR = path.join(os.homedir(), ".claude", "utils");
+try {
+  const legacyCcExtract = path.join(LEGACY_CC_COMMANDS_DIR, "researchskills-extract.md");
+  if (fs.existsSync(legacyCcExtract)) {
+    fs.unlinkSync(legacyCcExtract);
+    console.log("✓ Removed legacy ~/.claude/commands/researchskills-extract.md");
+  }
+  const legacyCcConvert = path.join(LEGACY_CC_COMMANDS_DIR, "researchskills-convert.md");
+  if (fs.existsSync(legacyCcConvert)) {
+    fs.unlinkSync(legacyCcConvert);
+    console.log("✓ Removed legacy ~/.claude/commands/researchskills-convert.md");
+  }
+  for (const script of HELPER_SCRIPTS) {
+    const p = path.join(LEGACY_CC_UTILS_DIR, script);
+    if (fs.existsSync(p)) fs.unlinkSync(p);
+  }
+  // Remove utils dir if empty
+  try {
+    if (fs.existsSync(LEGACY_CC_UTILS_DIR)) {
+      const remaining = fs.readdirSync(LEGACY_CC_UTILS_DIR);
+      if (remaining.length === 0) fs.rmdirSync(LEGACY_CC_UTILS_DIR);
+    }
+  } catch (_) { /* best effort */ }
+  console.log("✓ Cleaned up legacy ~/.claude/commands/ and ~/.claude/utils/ paths");
+} catch (err) {
+  console.warn("⚠ Could not clean up legacy Claude Code paths —", err.message);
 }
 
 // --- Codex ---
