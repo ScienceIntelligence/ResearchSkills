@@ -217,6 +217,18 @@ Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy),
 
 ---
 
+<h2 align="center">Join the Community</h2>
+
+<div align="center">
+
+Scan the QR code below to join our WeChat group.
+
+<img src=".context/WXGroup_QR_Code.jpg" alt="WeChat Group QR Code" width="240" />
+
+</div>
+
+---
+
 ## License
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — free to share and adapt, with attribution.

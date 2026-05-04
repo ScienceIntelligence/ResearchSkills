@@ -286,6 +286,18 @@ skills/
 
 ---
 
+<h2 align="center">加入社群</h2>
+
+<div align="center">
+
+扫描下方二维码加入微信群。
+
+<img src=".context/WXGroup_QR_Code.jpg" alt="微信群二维码" width="240" />
+
+</div>
+
+---
+
 ## 许可证
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — 自由分享与改编，需注明出处。
