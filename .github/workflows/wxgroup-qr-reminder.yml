@@ -1,0 +1,38 @@
+name: WeChat Group QR Code Reminder
+
+on:
+  schedule:
+    # Every 7 days at 09:00 UTC (Mondays)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open reminder issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Reminder: refresh WeChat group QR code (.context/WXGroup_QR_Code.jpg)';
+            const body = [
+              'WeChat group QR codes expire (typically every 7 days).',
+              '',
+              'Please regenerate the QR code from the group settings and replace `.context/WXGroup_QR_Code.jpg`.',
+              '',
+              'Checklist:',
+              '- [ ] Replace `.context/WXGroup_QR_Code.jpg` with a fresh QR image',
+              '- [ ] Verify the image renders in `readme.md` and `readme_zh.md`',
+              '',
+              'Close this issue once the QR has been refreshed.',
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+            });
