@@ -167,8 +167,8 @@ Classified using Case-Based Reasoning terminology:
 
 ```
 skills/
-└── {domain}/                    # 8 arXiv-aligned domains
-    └── {subdomain}/             # 155 subcategories
+└── {domain}/                    # 8 arXiv-aligned domains + management
+    └── {subdomain}/             # 181 subcategories
         └── {contributor}/       # Your name
             ├── procedural/      # tie--, no-change--, constraint-failure--, operator-fail--
             ├── semantic/        # frontier--, non-public--, correction--
@@ -197,7 +197,7 @@ Reviewers are domain experts who guard the scientific quality of skills in their
 
 <div align="center">
 
-Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy) and extended domains. 9 domains, 165 subcategories.
+Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy), plus one management domain. 9 domains, 181 subcategories.
 
 | Domain                                      | arXiv                                              | Subcategories | Reviewer(s)        |
 | --------------------------------------------- | ---------------------------------------------------- | --------------- | -------------------- |
@@ -208,10 +208,25 @@ Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy) 
 | 📊 Statistics                               | stat                                               | 6             | *Seeking reviewer* |
 | ⚡ Electrical Engineering & Systems Science | eess                                               | 4             | *Seeking reviewer* |
 | 📈 Economics                                | econ                                               | 3             | *Seeking reviewer* |
+| 🏢 Management                               | N/A                                                | 26            | *Seeking reviewer* |
 | 💹 Quantitative Finance                     | q-fin                                              | 9             | *Seeking reviewer* |
 | 🎯 Management                               | mgmt                                               | 10            | *Seeking reviewer* |
 
-[View all 165 subcategories in the interactive knowledge tree →](https://scienceintelligence.github.io/ResearchSkills/)
+
+[View all 181 subcategories in the interactive knowledge tree →](https://scienceintelligence.github.io/ResearchSkills/)
+
+</div>
+
+---
+
+<h2 align="center">Join the Community</h2>
+
+<div align="center">
+
+Scan the QR code below to join our WeChat group.
+
+<img src=".context/WXGroup_QR_Code.jpg" alt="WeChat Group QR Code" width="240" />
+
 
 </div>
 

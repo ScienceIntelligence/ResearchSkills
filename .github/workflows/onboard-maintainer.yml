@@ -4,8 +4,12 @@ on:
   issues:
     types: [labeled]
 
+# SECURITY AUDIT 2026-05-01: Removed 'contents: write'
+# All git/push operations use PAT_TOKEN from checkout, not GITHUB_TOKEN.
+# Only 'issues: write' is needed for issue lock/unlock/comment operations.
+# TODO: PAT_TOKEN must be migrated from classic to fine-grained token.
+# See: https://github.com/ScienceIntelligence/ResearchSkills/issues/<TBD>
 permissions:
-  contents: write
   issues: write
 
 jobs:

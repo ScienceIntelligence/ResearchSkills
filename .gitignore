@@ -9,3 +9,7 @@ webserver/
 webserver/.env
 __pycache__/
 .worktrees/
+
+# Keep WeChat group QR code tracked (referenced from READMEs and website)
+!.context/
+!.context/WXGroup_QR_Code.jpg

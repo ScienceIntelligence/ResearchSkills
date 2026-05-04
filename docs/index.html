@@ -181,7 +181,7 @@
   <h1><span class="emoji">🌍</span> ResearchSkills</h1>
   <p>Interactive knowledge tree — aligned with the
     <a href="https://arxiv.org/category_taxonomy" target="_blank">arXiv category taxonomy</a>.
-    Click a domain to explore its subcategories.
+    Includes an additional management domain. Click a domain to explore its subcategories.
   </p>
 </header>
 
@@ -392,6 +392,36 @@ var DATA = [
       { name: "Supply Chain Management", code: "mgmt.SC" },
       { name: "Project Management", code: "mgmt.PM" },
       { name: "General Management", code: "mgmt.GN" },
+    ]},
+  ]},
+  { name: "Social Sciences", icon: "\ud83e\udde9", children: [
+    { name: "Management", icon: "\ud83c\udfe2", code: "", color: "#f472b6", children: [
+      { name: "Careers" },
+      { name: "Communication, Digital Technology, and Organization" },
+      { name: "Conflict Management" },
+      { name: "Critical Management Studies" },
+      { name: "Diversity, Equity, and Inclusion" },
+      { name: "Entrepreneurship" },
+      { name: "Health Care Management" },
+      { name: "Human Resources" },
+      { name: "International Management" },
+      { name: "Management Consulting" },
+      { name: "Management Education and Development" },
+      { name: "Management History" },
+      { name: "Management Spirituality and Religion" },
+      { name: "Managerial and Organizational Cognition" },
+      { name: "Operations and Supply Chain Management" },
+      { name: "Organization and Management Theory" },
+      { name: "Organization Development and Change" },
+      { name: "Organizational Behavior" },
+      { name: "Organizational Neuroscience and Biology" },
+      { name: "Organizations and the Natural Environment" },
+      { name: "Public and Nonprofit" },
+      { name: "Research Methods" },
+      { name: "Social Issues in Management" },
+      { name: "Strategic Management" },
+      { name: "Strategizing Activities and Practices" },
+      { name: "Technology and Innovation Management" },
     ]},
   ]},
 ];
@@ -624,7 +654,7 @@ function countReviewers(arr) {
   return n;
 }
 
-var totalDomains = 8;
+var totalDomains = 9;
 var totalSubs = DATA.reduce(function(s,g){ return s + countLeaves(g); }, 0);
 var totalReviewers = countReviewers(DATA);
 

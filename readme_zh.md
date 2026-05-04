@@ -236,8 +236,8 @@ ResearchSkills 的 Skill 设计基于认知架构理论 — [Soar](https://en.wi
 
 ```
 skills/
-└── {domain}/                    # 8 个 arXiv 对齐的顶层领域
-    └── {subdomain}/             # 155 个子领域
+└── {domain}/                    # 8 个 arXiv 对齐的顶层领域 + management
+    └── {subdomain}/             # 181 个子领域
         └── {contributor}/       # 你的名字
             ├── procedural/      # tie--, no-change--, constraint-failure--, operator-fail--
             ├── semantic/        # frontier--, non-public--, correction--
@@ -266,7 +266,7 @@ skills/
 
 <div align="center">
 
-对齐 [arXiv 分类体系](https://arxiv.org/category_taxonomy)。8 个顶层领域，155 个子领域。
+对齐 [arXiv 分类体系](https://arxiv.org/category_taxonomy)，并补充了 management 领域。9 个顶层领域，181 个子领域。
 
 | 领域                                                           | arXiv                                              | 子领域数 | 审稿人   |
 | ---------------------------------------------------------------- | ---------------------------------------------------- | ---------- | ---------- |
@@ -277,9 +277,22 @@ skills/
 | 📊 Statistics 统计学                                           | stat                                               | 6        | *招募中* |
 | ⚡ Electrical Engineering & Systems Science 电气工程与系统科学 | eess                                               | 4        | *招募中* |
 | 📈 Economics 经济学                                            | econ                                               | 3        | *招募中* |
+| 🏢 Management 管理学                                           | N/A                                                | 26       | *招募中* |
 | 💹 Quantitative Finance 定量金融                               | q-fin                                              | 9        | *招募中* |
 
-[查看全部 155 个子领域（交互式知识树）→](https://scienceintelligence.github.io/ResearchSkills/)
+[查看全部 181 个子领域（交互式知识树）→](https://scienceintelligence.github.io/ResearchSkills/)
+
+</div>
+
+---
+
+<h2 align="center">加入社群</h2>
+
+<div align="center">
+
+扫描下方二维码加入微信群。
+
+<img src=".context/WXGroup_QR_Code.jpg" alt="微信群二维码" width="240" />
 
 </div>
 
