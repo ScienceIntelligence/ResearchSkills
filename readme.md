@@ -210,6 +210,8 @@ Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy),
 | 📈 Economics                                | econ                                               | 3             | *Seeking reviewer* |
 | 🏢 Management                               | N/A                                                | 26            | *Seeking reviewer* |
 | 💹 Quantitative Finance                     | q-fin                                              | 9             | *Seeking reviewer* |
+| 🎯 Management                               | mgmt                                               | 10            | *Seeking reviewer* |
+
 
 [View all 181 subcategories in the interactive knowledge tree →](https://scienceintelligence.github.io/ResearchSkills/)
 
@@ -224,6 +226,7 @@ Aligned with the [arXiv category taxonomy](https://arxiv.org/category_taxonomy),
 Scan the QR code below to join our WeChat group.
 
 <img src=".context/WXGroup_QR_Code.jpg" alt="WeChat Group QR Code" width="240" />
+
 
 </div>
 

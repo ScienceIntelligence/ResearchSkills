@@ -164,6 +164,16 @@ body:
         - "Statistics / Methodology"
         - "Statistics / Other Statistics"
         - "Statistics / Statistics Theory"
+        - "Management / Strategic Management"
+        - "Management / Organizational Behavior"
+        - "Management / Human Resource Management"
+        - "Management / Operations Management"
+        - "Management / Marketing"
+        - "Management / Entrepreneurship"
+        - "Management / Innovation and Technology Management"
+        - "Management / Supply Chain Management"
+        - "Management / Project Management"
+        - "Management / General Management"
     validations:
       required: true
 

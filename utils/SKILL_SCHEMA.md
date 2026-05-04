@@ -12,7 +12,7 @@ This document defines the specification for ResearchSkills skill files (manually
 skills/<domain>/<subdomain>/<skill-name>.md
 ```
 
-- `domain` must match one of: `physics`, `mathematics`, `computer-science`, `quantitative-biology`, `statistics`, `eess`, `economics`, `quantitative-finance`
+- `domain` must match one of: `physics`, `mathematics`, `computer-science`, `quantitative-biology`, `statistics`, `eess`, `economics`, `quantitative-finance`, `management`
 - `subdomain` must match one of the arXiv-aligned subdomain folders under each domain (see `skills/<domain>/` for the full list)
 - `skill-name` must be lowercase, hyphen-separated
 
@@ -24,7 +24,7 @@ skills/<domain>/<subdomain>/<skill-name>.md
 ---
 name: <string>                  # REQUIRED. Unique identifier. Lowercase, hyphen-separated.
 description: <string>           # REQUIRED. 1-2 sentences. When should this skill be invoked?
-domain: <string>                # REQUIRED. One of: physics | mathematics | computer-science | quantitative-biology | statistics | eess | economics | quantitative-finance
+domain: <string>                # REQUIRED. One of: physics | mathematics | computer-science | quantitative-biology | statistics | eess | economics | quantitative-finance | management
 subdomain: <string>             # optional. More specific area within the domain.
 author: <string>                # REQUIRED. "Full Name (Affiliation)"
 expertise_level: <string>       # REQUIRED. One of: beginner | intermediate | advanced
